@@ -87,30 +87,39 @@ const ProvidersMap = () => {
 
     // Add markers for providers
     providers.forEach((provider) => {
-      // Create a custom marker element
+      // Create a custom marker element with proper anchoring
       const el = document.createElement('div');
       el.className = 'custom-marker';
-      el.style.width = '32px';
-      el.style.height = '32px';
+      el.style.width = '40px';
+      el.style.height = '40px';
       el.style.cursor = 'pointer';
       el.style.display = 'flex';
       el.style.alignItems = 'center';
       el.style.justifyContent = 'center';
-      el.style.transition = 'transform 0.2s ease';
+      el.style.transition = 'transform 0.15s ease-out';
+      el.style.position = 'relative';
+      el.style.zIndex = '1';
       
       // Add hover effect
       el.addEventListener('mouseenter', () => {
-        el.style.transform = 'scale(1.1)';
+        el.style.transform = 'scale(1.15)';
+        el.style.zIndex = '10';
       });
       
       el.addEventListener('mouseleave', () => {
         el.style.transform = 'scale(1)';
+        el.style.zIndex = '1';
       });
       
-      // Create the pin icon
+      // Create the crispy pin icon with proper SVG optimization
       el.innerHTML = `
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));">
-          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="#f97316" stroke="#ffffff" stroke-width="1"/>
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 4px 8px rgba(0,0,0,0.25)); image-rendering: crisp-edges; shape-rendering: geometricPrecision;">
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" 
+                fill="#f97316" 
+                stroke="#ffffff" 
+                stroke-width="1.5" 
+                vector-effect="non-scaling-stroke"/>
+          <circle cx="12" cy="9" r="1.5" fill="#ffffff"/>
         </svg>
       `;
 
@@ -124,7 +133,11 @@ const ProvidersMap = () => {
         });
       });
 
-      const marker = new mapboxgl.Marker(el)
+      // Create marker with proper anchor point (bottom center of the pin)
+      const marker = new mapboxgl.Marker({
+        element: el,
+        anchor: 'bottom'
+      })
         .setLngLat([provider.longitude, provider.latitude])
         .addTo(map.current!);
 
