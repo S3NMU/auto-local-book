@@ -54,7 +54,7 @@ const ProviderBookings = ({ onBookingUpdate }: ProviderBookingsProps) => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("all");
-  const [showDeleted, setShowDeleted] = useState(false);
+  const [viewFilter, setViewFilter] = useState("active");
   const [editingBooking, setEditingBooking] = useState<Booking | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
@@ -62,7 +62,7 @@ const ProviderBookings = ({ onBookingUpdate }: ProviderBookingsProps) => {
     if (user) {
       fetchBookings();
     }
-  }, [user, showDeleted]);
+  }, [user, viewFilter]);
 
   const fetchBookings = async () => {
     if (!user) return;
@@ -74,10 +74,21 @@ const ProviderBookings = ({ onBookingUpdate }: ProviderBookingsProps) => {
         .select('*')
         .eq('provider_id', user.id);
 
-      if (showDeleted) {
-        query = query.not('deleted_at', 'is', null);
-      } else {
+      const now = new Date();
+      const currentMonth = now.getMonth();
+      const currentYear = now.getFullYear();
+      const firstDayOfMonth = new Date(currentYear, currentMonth, 1).toISOString();
+      const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0, 23, 59, 59).toISOString();
+
+      if (viewFilter === "active") {
         query = query.is('deleted_at', null);
+      } else if (viewFilter === "deleted") {
+        query = query.not('deleted_at', 'is', null);
+      } else if (viewFilter === "this_month") {
+        query = query
+          .not('deleted_at', 'is', null)
+          .gte('deleted_at', firstDayOfMonth)
+          .lte('deleted_at', lastDayOfMonth);
       }
 
       const { data, error } = await query.order('scheduled_date', { ascending: false });
@@ -263,18 +274,22 @@ const ProviderBookings = ({ onBookingUpdate }: ProviderBookingsProps) => {
               <SelectItem value="cancelled">Cancelled</SelectItem>
             </SelectContent>
           </Select>
-          <Select value={showDeleted ? "deleted" : "active"} onValueChange={(value) => {
-            setShowDeleted(value === "deleted");
-          }}>
+          <Select value={viewFilter} onValueChange={setViewFilter}>
             <SelectTrigger className="w-[180px]">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="active">Active Bookings</SelectItem>
+              <SelectItem value="this_month">
+                <div className="flex items-center gap-2">
+                  <Calendar className="w-4 h-4" />
+                  This Month
+                </div>
+              </SelectItem>
               <SelectItem value="deleted">
                 <div className="flex items-center gap-2">
                   <Archive className="w-4 h-4" />
-                  Deleted
+                  All Deleted
                 </div>
               </SelectItem>
             </SelectContent>
@@ -310,7 +325,7 @@ const ProviderBookings = ({ onBookingUpdate }: ProviderBookingsProps) => {
                     </Badge>
                   </div>
                   <div className="flex items-center gap-2">
-                    {!showDeleted ? (
+                    {viewFilter === "active" ? (
                       <>
                         <Dialog open={isEditDialogOpen && editingBooking?.id === booking.id} onOpenChange={setIsEditDialogOpen}>
                           <DialogTrigger asChild>
@@ -373,41 +388,16 @@ const ProviderBookings = ({ onBookingUpdate }: ProviderBookingsProps) => {
                       </DialogContent>
                     </Dialog>
                     
-                    {booking.status === 'pending' && (
-                      <>
-                        <Button 
-                          size="sm" 
-                          onClick={() => updateBookingStatus(booking.id, 'confirmed')}
-                        >
-                          <Check className="w-4 h-4" />
-                        </Button>
-                        <Button 
-                          variant="destructive" 
-                          size="sm" 
-                          onClick={() => updateBookingStatus(booking.id, 'cancelled')}
-                        >
-                          <X className="w-4 h-4" />
-                        </Button>
-                      </>
-                    )}
-                    
-                    {booking.status === 'confirmed' && (
-                      <Button 
-                        size="sm" 
-                        onClick={() => updateBookingStatus(booking.id, 'in_progress')}
-                      >
-                        Start
-                      </Button>
-                    )}
-                    
-                    {booking.status === 'in_progress' && (
-                      <Button 
-                        size="sm" 
-                        onClick={() => updateBookingStatus(booking.id, 'completed')}
-                      >
-                          Complete
-                        </Button>
-                      )}
+                    <Select value={booking.status} onValueChange={(status) => updateBookingStatus(booking.id, status)}>
+                      <SelectTrigger className="w-[120px]">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="pending">Pending</SelectItem>
+                        <SelectItem value="confirmed">Confirmed</SelectItem>
+                        <SelectItem value="cancelled">Cancelled</SelectItem>
+                      </SelectContent>
+                    </Select>
                       
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
