@@ -81,7 +81,7 @@ const Contact = () => {
     {
       icon: Mail,
       title: "Email",
-      details: "support@autotrails.com",
+      details: "support@h3automo.com",
       description: "Send us an email and we'll respond within 24 hours"
     },
     {
