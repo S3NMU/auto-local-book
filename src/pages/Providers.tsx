@@ -62,12 +62,16 @@ const Providers = () => {
       
       let providersData = data || [];
       
-      // If user has a location, calculate distance and sort by proximity
+      // If user has a location, filter by distance and sort by proximity
       if (location) {
+        const maxDistance = 50; // 50 miles radius
+        
         providersData = providersData.map(provider => ({
           ...provider,
           distance: calculateDistanceValue(provider.latitude, provider.longitude)
-        })).sort((a, b) => (a.distance || 0) - (b.distance || 0));
+        }))
+        .filter(provider => provider.distance <= maxDistance) // Only show providers within 50 miles
+        .sort((a, b) => (a.distance || 0) - (b.distance || 0));
       }
       
       setProviders(providersData);
@@ -141,14 +145,14 @@ const Providers = () => {
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             {location 
-              ? `Find trusted automotive service providers near ${location.address}`
+              ? `Find trusted automotive service providers within 50 miles of ${location.address}`
               : "Find trusted automotive service providers in your area"
             }
           </p>
           {location && (
             <div className="mt-4 flex items-center justify-center gap-2 text-sm text-muted-foreground">
               <Navigation className="w-4 h-4" />
-              Showing results near your location
+              Showing results within 50 miles of your location
             </div>
           )}
         </div>
@@ -251,7 +255,12 @@ const Providers = () => {
 
         {providers.length === 0 && !loading && (
           <div className="text-center py-12">
-            <p className="text-muted-foreground">No providers found in your area.</p>
+            <p className="text-muted-foreground">
+              {location 
+                ? "No providers found within 50 miles of your location. Try expanding your search area."
+                : "No providers found. Please set your location to find nearby services."
+              }
+            </p>
           </div>
         )}
       </div>
