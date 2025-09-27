@@ -82,11 +82,18 @@ const Header = () => {
             <Button 
               variant="ghost" 
               size="sm" 
-              className="hidden sm:flex"
+              className="hidden sm:flex flex-col items-start"
               onClick={() => setLocationDialogOpen(true)}
             >
-              <MapPin className="w-4 h-4" />
-              {location ? "Change Location" : "Find Location"}
+              <div className="flex items-center gap-2">
+                <MapPin className="w-4 h-4" />
+                <span>{location ? "Change Location" : "Find Location"}</span>
+              </div>
+              {location && (
+                <span className="text-xs text-muted-foreground truncate max-w-32">
+                  {location.address.split(',')[0]}
+                </span>
+              )}
             </Button>
             {session ? (
               <Button variant="outline" size="sm" onClick={handleSignOut}>
