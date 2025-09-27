@@ -10,6 +10,8 @@ import Providers from "./pages/Providers";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Auth from "./pages/Auth";
+import AccountSettings from "./pages/AccountSettings";
+import ListShop from "./pages/ListShop";
 import NotFound from "./pages/NotFound";
 
 const App = () => (
@@ -27,6 +29,8 @@ const App = () => (
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/account" element={<AccountSettings />} />
+            <Route path="/list-shop" element={<ListShop />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
