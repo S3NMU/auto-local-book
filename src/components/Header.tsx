@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { MapPin, User, LogOut, ChevronDown, Settings, Store, Shield } from "lucide-react";
+import { MapPin, User, LogOut, ChevronDown, Settings, Store, Shield, X } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -52,6 +52,16 @@ const Header = () => {
         description: "You have been successfully signed out.",
       });
     }
+  };
+
+  const handleClearLocation = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setLocation(null);
+    toast({
+      title: "Location cleared",
+      description: "Your location has been cleared successfully.",
+    });
   };
 
   const isActive = (path: string) => {
@@ -122,8 +132,21 @@ const Header = () => {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-64 bg-background border border-border shadow-lg z-50">
                   <div className="p-3 border-b border-border">
-                    <p className="text-sm font-medium">Current Location</p>
-                    <p className="text-xs text-muted-foreground mt-1">{location.address}</p>
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium">Current Location</p>
+                        <p className="text-xs text-muted-foreground mt-1 truncate">{location.address}</p>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleClearLocation}
+                        className="h-6 w-6 p-0 hover:bg-destructive hover:text-destructive-foreground ml-2 flex-shrink-0"
+                        title="Clear location"
+                      >
+                        <X className="w-3 h-3" />
+                      </Button>
+                    </div>
                   </div>
                   <DropdownMenuItem 
                     onClick={() => setLocationDialogOpen(true)}
