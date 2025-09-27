@@ -19,6 +19,7 @@ interface Provider {
   address: string;
   city: string;
   state: string;
+  zip_code: string;
   latitude: number;
   longitude: number;
   rating: number;
@@ -42,6 +43,9 @@ const Providers = () => {
   const [selectedSpecialty, setSelectedSpecialty] = useState<string>('all');
   const [mobileServiceFilter, setMobileServiceFilter] = useState<boolean | null>(null);
   const [minRating, setMinRating] = useState<number>(0);
+  const [selectedState, setSelectedState] = useState<string>('all');
+  const [selectedCity, setSelectedCity] = useState<string>('all');
+  const [zipCodeFilter, setZipCodeFilter] = useState<string>('');
   const [showFilters, setShowFilters] = useState(false);
   const { location } = useLocation();
   const { toast } = useToast();
@@ -54,8 +58,20 @@ const Providers = () => {
     { value: 1000, label: "Show all" },
   ];
 
-  // Get unique specialties for filter dropdown
+  // Get unique specialties, states, and cities for filter dropdowns
   const allSpecialties = Array.from(new Set(providers.flatMap(p => p.specialties || [])))
+    .filter(Boolean)
+    .sort();
+    
+  const allStates = Array.from(new Set(providers.map(p => p.state)))
+    .filter(Boolean)
+    .sort();
+    
+  const allCities = Array.from(new Set(
+    providers
+      .filter(p => selectedState === 'all' || p.state === selectedState)
+      .map(p => p.city)
+  ))
     .filter(Boolean)
     .sort();
 
@@ -126,6 +142,21 @@ const Providers = () => {
       );
     }
 
+    // Location filters
+    if (selectedState !== 'all') {
+      filtered = filtered.filter(provider => provider.state === selectedState);
+    }
+    
+    if (selectedCity !== 'all') {
+      filtered = filtered.filter(provider => provider.city === selectedCity);
+    }
+    
+    if (zipCodeFilter) {
+      filtered = filtered.filter(provider => 
+        provider.zip_code && provider.zip_code.includes(zipCodeFilter)
+      );
+    }
+
     // Specialty filter
     if (selectedSpecialty !== 'all') {
       filtered = filtered.filter(provider => 
@@ -153,13 +184,23 @@ const Providers = () => {
   // Update filtered providers when filters change
   useEffect(() => {
     filterProviders();
-  }, [providers, searchTerm, selectedSpecialty, mobileServiceFilter, minRating]);
+  }, [providers, searchTerm, selectedSpecialty, mobileServiceFilter, minRating, selectedState, selectedCity, zipCodeFilter]);
+
+  // Reset city when state changes
+  useEffect(() => {
+    if (selectedState !== 'all') {
+      setSelectedCity('all');
+    }
+  }, [selectedState]);
 
   const clearFilters = () => {
     setSearchTerm('');
     setSelectedSpecialty('all');
     setMobileServiceFilter(null);
     setMinRating(0);
+    setSelectedState('all');
+    setSelectedCity('all');
+    setZipCodeFilter('');
   };
 
   useEffect(() => {
@@ -234,32 +275,6 @@ const Providers = () => {
               : "Find trusted automotive service providers in your area"
             }
           </p>
-          {location && (
-            <div className="mt-4 flex flex-col items-center gap-4">
-              <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-                <Navigation className="w-4 h-4" />
-                {searchRadius >= 1000 ? 'Showing all available providers' : `Showing results within ${searchRadius} miles`}
-              </div>
-              
-              {/* Radius Selector */}
-              <div className="flex items-center gap-3 bg-card rounded-lg p-4 shadow-sm border">
-                <Settings className="w-4 h-4 text-muted-foreground" />
-                <Label htmlFor="radius-select" className="text-sm font-medium">Search radius:</Label>
-                <Select value={searchRadius.toString()} onValueChange={handleRadiusChange}>
-                  <SelectTrigger className="w-32">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {radiusOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value.toString()}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Search and Filters Section */}
@@ -284,18 +299,21 @@ const Providers = () => {
             >
               <Filter className="h-4 w-4" />
               Filters
-              {(selectedSpecialty !== 'all' || mobileServiceFilter !== null || minRating > 0) && (
+              {(selectedSpecialty !== 'all' || mobileServiceFilter !== null || minRating > 0 || selectedState !== 'all' || selectedCity !== 'all' || zipCodeFilter) && (
                 <Badge variant="secondary" className="ml-1">
                   {[
                     selectedSpecialty !== 'all' ? 1 : 0,
                     mobileServiceFilter !== null ? 1 : 0,
-                    minRating > 0 ? 1 : 0
+                    minRating > 0 ? 1 : 0,
+                    selectedState !== 'all' ? 1 : 0,
+                    selectedCity !== 'all' ? 1 : 0,
+                    zipCodeFilter ? 1 : 0
                   ].reduce((a, b) => a + b, 0)}
                 </Badge>
               )}
             </Button>
             
-            {(searchTerm || selectedSpecialty !== 'all' || mobileServiceFilter !== null || minRating > 0) && (
+            {(searchTerm || selectedSpecialty !== 'all' || mobileServiceFilter !== null || minRating > 0 || selectedState !== 'all' || selectedCity !== 'all' || zipCodeFilter) && (
               <Button variant="ghost" onClick={clearFilters} className="flex items-center gap-1">
                 <X className="h-4 w-4" />
                 Clear all
@@ -306,57 +324,138 @@ const Providers = () => {
           {/* Filters Panel */}
           {showFilters && (
             <div className="bg-card rounded-lg p-6 border space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {/* Service Type Filter */}
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">Service Type</Label>
-                  <Select value={selectedSpecialty} onValueChange={setSelectedSpecialty}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="All services" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-background border border-border shadow-lg z-50">
-                      <SelectItem value="all">All services</SelectItem>
-                      {allSpecialties.map((specialty) => (
-                        <SelectItem key={specialty} value={specialty}>
-                          {specialty}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+              {/* Location Filters Row */}
+              <div>
+                <h3 className="text-sm font-medium mb-4 flex items-center gap-2">
+                  <MapPin className="h-4 w-4" />
+                  Location Filters
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  {/* Search Radius */}
+                  {location && (
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium">Search Radius</Label>
+                      <Select value={searchRadius.toString()} onValueChange={handleRadiusChange}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-background border border-border shadow-lg z-50">
+                          {radiusOptions.map((option) => (
+                            <SelectItem key={option.value} value={option.value.toString()}>
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
 
-                {/* Mobile Service Filter */}
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">Service Location</Label>
-                  <Select 
-                    value={mobileServiceFilter === null ? "all" : mobileServiceFilter.toString()} 
-                    onValueChange={(value) => setMobileServiceFilter(value === "all" ? null : value === "true")}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="All locations" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-background border border-border shadow-lg z-50">
-                      <SelectItem value="all">All locations</SelectItem>
-                      <SelectItem value="true">Mobile service only</SelectItem>
-                      <SelectItem value="false">Shop location only</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                  {/* State Filter */}
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium">State</Label>
+                    <Select value={selectedState} onValueChange={setSelectedState}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="All states" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-background border border-border shadow-lg z-50">
+                        <SelectItem value="all">All states</SelectItem>
+                        {allStates.map((state) => (
+                          <SelectItem key={state} value={state}>
+                            {state}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-                {/* Rating Filter */}
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">Minimum Rating</Label>
-                  <Select value={minRating.toString()} onValueChange={(value) => setMinRating(Number(value))}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Any rating" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-background border border-border shadow-lg z-50">
-                      <SelectItem value="0">Any rating</SelectItem>
-                      <SelectItem value="3">3+ stars</SelectItem>
-                      <SelectItem value="4">4+ stars</SelectItem>
-                      <SelectItem value="4.5">4.5+ stars</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  {/* City Filter */}
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium">City</Label>
+                    <Select value={selectedCity} onValueChange={setSelectedCity}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="All cities" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-background border border-border shadow-lg z-50">
+                        <SelectItem value="all">All cities</SelectItem>
+                        {allCities.map((city) => (
+                          <SelectItem key={city} value={city}>
+                            {city}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* ZIP Code Filter */}
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium">ZIP Code</Label>
+                    <Input
+                      placeholder="Enter ZIP code"
+                      value={zipCodeFilter}
+                      onChange={(e) => setZipCodeFilter(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Service Filters Row */}
+              <div>
+                <h3 className="text-sm font-medium mb-4 flex items-center gap-2">
+                  <Settings className="h-4 w-4" />
+                  Service Filters
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {/* Service Type Filter */}
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium">Service Type</Label>
+                    <Select value={selectedSpecialty} onValueChange={setSelectedSpecialty}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="All services" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-background border border-border shadow-lg z-50">
+                        <SelectItem value="all">All services</SelectItem>
+                        {allSpecialties.map((specialty) => (
+                          <SelectItem key={specialty} value={specialty}>
+                            {specialty}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Mobile Service Filter */}
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium">Service Location</Label>
+                    <Select 
+                      value={mobileServiceFilter === null ? "all" : mobileServiceFilter.toString()} 
+                      onValueChange={(value) => setMobileServiceFilter(value === "all" ? null : value === "true")}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="All locations" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-background border border-border shadow-lg z-50">
+                        <SelectItem value="all">All locations</SelectItem>
+                        <SelectItem value="true">Mobile service only</SelectItem>
+                        <SelectItem value="false">Shop location only</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Rating Filter */}
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium">Minimum Rating</Label>
+                    <Select value={minRating.toString()} onValueChange={(value) => setMinRating(Number(value))}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Any rating" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-background border border-border shadow-lg z-50">
+                        <SelectItem value="0">Any rating</SelectItem>
+                        <SelectItem value="3">3+ stars</SelectItem>
+                        <SelectItem value="4">4+ stars</SelectItem>
+                        <SelectItem value="4.5">4.5+ stars</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
               </div>
             </div>
