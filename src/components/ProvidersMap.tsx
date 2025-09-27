@@ -87,16 +87,41 @@ const ProvidersMap = () => {
 
     // Add markers for providers
     providers.forEach((provider) => {
+      // Create a custom marker element
       const el = document.createElement('div');
-      el.className = 'marker';
-      el.style.backgroundImage = 'url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDJDOC4xIDIgNSA1LjEgNSA5QzUgMTQuMjUgMTIgMjIgMTIgMjJTMTkgMTQuMjUgMTkgOUMxOSA1LjEgMTUuOSAyIDEyIDJaTTEyIDExLjVDMTAuNjIgMTEuNSA5LjUgMTAuMzggOS41IDlTMTAuNjIgNi41IDEyIDYuNVMxNC41IDcuNjIgMTQuNSA5UzEzLjM4IDExLjUgMTIgMTEuNVoiIGZpbGw9IiNmNjc2MTYiLz4KPHN2Zz4K)';
-      el.style.width = '30px';
-      el.style.height = '30px';
-      el.style.backgroundSize = 'contain';
+      el.className = 'custom-marker';
+      el.style.width = '32px';
+      el.style.height = '32px';
       el.style.cursor = 'pointer';
+      el.style.display = 'flex';
+      el.style.alignItems = 'center';
+      el.style.justifyContent = 'center';
+      el.style.transition = 'transform 0.2s ease';
+      
+      // Add hover effect
+      el.addEventListener('mouseenter', () => {
+        el.style.transform = 'scale(1.1)';
+      });
+      
+      el.addEventListener('mouseleave', () => {
+        el.style.transform = 'scale(1)';
+      });
+      
+      // Create the pin icon
+      el.innerHTML = `
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));">
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="#f97316" stroke="#ffffff" stroke-width="1"/>
+        </svg>
+      `;
 
       el.addEventListener('click', () => {
         setSelectedProvider(provider);
+        // Center the map on the clicked provider
+        map.current?.flyTo({
+          center: [provider.longitude, provider.latitude],
+          zoom: 10,
+          duration: 1000
+        });
       });
 
       const marker = new mapboxgl.Marker(el)
@@ -107,26 +132,32 @@ const ProvidersMap = () => {
       const popup = new mapboxgl.Popup({
         closeButton: false,
         closeOnClick: false,
-        offset: 25
+        offset: [0, -40] // Offset above the pin
       });
 
+      // Add information popup on hover
       el.addEventListener('mouseenter', () => {
+        // Scale effect (already handled above)
+        // Show popup
         popup
           .setLngLat([provider.longitude, provider.latitude])
           .setHTML(`
-            <div class="p-2">
-              <h3 class="font-semibold">${provider.business_name}</h3>
-              <p class="text-sm text-gray-600">${provider.city}, ${provider.state}</p>
-              <div class="flex items-center mt-1">
-                <span class="text-yellow-500">★</span>
-                <span class="text-sm ml-1">${provider.rating.toFixed(1)} (${provider.review_count})</span>
+            <div style="padding: 8px; min-width: 200px;">
+              <h3 style="font-weight: 600; margin: 0 0 4px 0; color: #1f2937;">${provider.business_name}</h3>
+              <p style="margin: 0 0 4px 0; color: #6b7280; font-size: 14px;">${provider.city}, ${provider.state}</p>
+              <div style="display: flex; align-items: center; gap: 4px;">
+                <span style="color: #f59e0b;">★</span>
+                <span style="font-size: 14px; color: #374151;">${provider.rating.toFixed(1)} (${provider.review_count} reviews)</span>
               </div>
+              <p style="margin: 4px 0 0 0; font-size: 12px; color: #9ca3af;">Click for details</p>
             </div>
           `)
           .addTo(map.current!);
       });
 
       el.addEventListener('mouseleave', () => {
+        // Scale reset (already handled above)
+        // Remove popup
         popup.remove();
       });
     });
