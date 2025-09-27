@@ -13,8 +13,13 @@ const Admin = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!loading && (!user || !isAdmin)) {
+    // Only redirect if we're done loading and user is definitely not admin
+    if (!loading && user && !isAdmin) {
       navigate('/');
+    }
+    // If no user and not loading, redirect to auth
+    if (!loading && !user) {
+      navigate('/auth');
     }
   }, [user, loading, isAdmin, navigate]);
 
