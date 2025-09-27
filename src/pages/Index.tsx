@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import Hero from "@/components/Hero";
-import ServiceCategories from "@/components/ServiceCategories";
+
 import FeaturedProviders from "@/components/FeaturedProviders";
 import ProvidersDirectory from "@/components/ProvidersDirectory";
 import HowItWorks from "@/components/HowItWorks";
@@ -41,18 +41,6 @@ const Index = () => {
         </div>
       </div>
 
-      {/* Popular Services Section */}
-      <div className="py-8 md:py-16 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-8 md:mb-12">
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-4">Popular Services</h2>
-            <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
-              Browse our most requested automotive services with detailed information and transparent pricing
-            </p>
-          </div>
-          <ServiceCategories />
-        </div>
-      </div>
 
       <FeaturedProviders />
       <HowItWorks />
