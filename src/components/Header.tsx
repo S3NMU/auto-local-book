@@ -4,11 +4,15 @@ import { MapPin, User, LogOut } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useLocation } from "@/hooks/useLocation";
+import LocationDialog from "./LocationDialog";
 import type { Session } from "@supabase/supabase-js";
 
 const Header = () => {
   const [session, setSession] = useState<Session | null>(null);
+  const [locationDialogOpen, setLocationDialogOpen] = useState(false);
   const { toast } = useToast();
+  const { location, setLocation } = useLocation();
 
   useEffect(() => {
     // Set up auth state listener
@@ -75,9 +79,14 @@ const Header = () => {
 
           {/* Actions */}
           <div className="flex items-center space-x-3">
-            <Button variant="ghost" size="sm" className="hidden sm:flex">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="hidden sm:flex"
+              onClick={() => setLocationDialogOpen(true)}
+            >
               <MapPin className="w-4 h-4" />
-              Find Location
+              {location ? "Change Location" : "Find Location"}
             </Button>
             {session ? (
               <Button variant="outline" size="sm" onClick={handleSignOut}>
@@ -98,6 +107,12 @@ const Header = () => {
           </div>
         </div>
       </div>
+
+      <LocationDialog
+        open={locationDialogOpen}
+        onOpenChange={setLocationDialogOpen}
+        onLocationSelect={setLocation}
+      />
     </header>
   );
 };
