@@ -37,7 +37,9 @@ const Index = () => {
               Explore our network of verified automotive service providers across the country
             </p>
           </div>
-          <ProvidersMap />
+          <div className="h-[600px]">
+            <ProvidersMap />
+          </div>
         </div>
       </div>
 
