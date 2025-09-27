@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Edit, Trash2, Search, ExternalLink, Users, UserCheck, UserX, UserMinus } from 'lucide-react';
+import { Edit, Trash2, Search, ExternalLink, Users, UserCheck, UserX, UserMinus, UserPlus } from 'lucide-react';
 
 interface Provider {
   id: string;
@@ -154,6 +154,32 @@ export const ProviderManagement = () => {
     }
   };
 
+  const handleReactivate = async (id: string) => {
+    if (!confirm('Are you sure you want to reactivate this provider?')) return;
+
+    try {
+      const { error } = await supabase
+        .from('providers')
+        .update({ status: 'active' })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Provider reactivated successfully",
+      });
+
+      fetchProviders();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to reactivate provider",
+        variant: "destructive",
+      });
+    }
+  };
+
   const filterProvidersByStatus = (status?: string) => {
     let filtered = providers.filter(provider =>
       provider.business_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -254,6 +280,16 @@ export const ProviderManagement = () => {
                         className="text-orange-600 hover:text-orange-700"
                       >
                         <UserMinus className="h-4 w-4" />
+                      </Button>
+                    )}
+                    {provider.status === 'inactive' && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleReactivate(provider.id)}
+                        className="text-green-600 hover:text-green-700"
+                      >
+                        <UserPlus className="h-4 w-4" />
                       </Button>
                     )}
                     <Button
