@@ -14,6 +14,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import AvatarUpload from "@/components/AvatarUpload";
 import { User, Mail, Bell, Shield, CreditCard, Trash2, Camera } from "lucide-react";
 import type { Session } from "@supabase/supabase-js";
 
@@ -43,6 +44,7 @@ const AccountSettings = () => {
   const [loading, setLoading] = useState(true);
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [marketingEmails, setMarketingEmails] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string>("");
   const { toast } = useToast();
 
   const profileForm = useForm<ProfileForm>({
@@ -72,6 +74,7 @@ const AccountSettings = () => {
         profileForm.setValue("email", session.user.email || "");
         profileForm.setValue("display_name", session.user.user_metadata?.display_name || "");
         profileForm.setValue("bio", session.user.user_metadata?.bio || "");
+        setAvatarUrl(session.user.user_metadata?.avatar_url || "");
       }
       
       setLoading(false);
@@ -82,11 +85,18 @@ const AccountSettings = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         setSession(session);
+        if (session?.user) {
+          setAvatarUrl(session.user.user_metadata?.avatar_url || "");
+        }
       }
     );
 
     return () => subscription.unsubscribe();
   }, [profileForm]);
+
+  const handleAvatarUpdate = (url: string) => {
+    setAvatarUrl(url);
+  };
 
   const onProfileSubmit = async (data: ProfileForm) => {
     try {
@@ -206,18 +216,12 @@ const AccountSettings = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="flex items-center gap-4">
-                  <Avatar className="w-20 h-20">
-                    <AvatarImage src={session.user.user_metadata?.avatar_url} />
-                    <AvatarFallback>
-                      {session.user.email?.charAt(0).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <Button variant="outline" size="sm">
-                    <Camera className="w-4 h-4 mr-2" />
-                    Change Avatar
-                  </Button>
-                </div>
+                <AvatarUpload
+                  session={session}
+                  currentAvatarUrl={avatarUrl}
+                  onAvatarUpdate={handleAvatarUpdate}
+                  size="lg"
+                />
 
                 <form onSubmit={profileForm.handleSubmit(onProfileSubmit)} className="space-y-4">
                   <div className="space-y-2">

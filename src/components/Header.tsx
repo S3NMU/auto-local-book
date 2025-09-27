@@ -13,6 +13,7 @@ import type { Session } from "@supabase/supabase-js";
 const Header = () => {
   const [session, setSession] = useState<Session | null>(null);
   const [locationDialogOpen, setLocationDialogOpen] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string>("");
   const { toast } = useToast();
   const { location, setLocation } = useLocation();
 
@@ -21,12 +22,14 @@ const Header = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         setSession(session);
+        setAvatarUrl(session?.user?.user_metadata?.avatar_url || "");
       }
     );
 
     // Check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
+      setAvatarUrl(session?.user?.user_metadata?.avatar_url || "");
     });
 
     return () => subscription.unsubscribe();
@@ -129,7 +132,7 @@ const Header = () => {
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="sm" className="flex items-center gap-2">
                     <Avatar className="w-6 h-6">
-                      <AvatarImage src={session.user.user_metadata?.avatar_url} />
+                      <AvatarImage src={avatarUrl} />
                       <AvatarFallback className="text-xs">
                         {session.user.email?.charAt(0).toUpperCase()}
                       </AvatarFallback>
