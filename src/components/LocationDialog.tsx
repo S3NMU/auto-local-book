@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { MapPin, Search, Navigation, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import mapboxgl from 'mapbox-gl';
 
 interface LocationDialogProps {
@@ -33,9 +34,14 @@ const LocationDialog = ({ open, onOpenChange, onLocationSelect }: LocationDialog
   useEffect(() => {
     const getMapboxToken = async () => {
       try {
-        const response = await fetch('/api/get-mapbox-token');
-        if (response.ok) {
-          const data = await response.json();
+        const { data, error } = await supabase.functions.invoke('get-mapbox-token');
+        
+        if (error) {
+          console.error('Error calling edge function:', error);
+          return;
+        }
+        
+        if (data && data.token) {
           setMapboxToken(data.token);
           mapboxgl.accessToken = data.token;
         }
