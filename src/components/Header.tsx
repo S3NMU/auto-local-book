@@ -93,7 +93,7 @@ const Header = () => {
           </Link>
 
           {/* Navigation - Desktop */}
-          <nav className="hidden md:flex items-center space-x-6">
+          <nav className="hidden lg:flex items-center space-x-6">
             <Link to="/" className={getLinkClassName("/")}>
               Home
             </Link>
@@ -103,8 +103,17 @@ const Header = () => {
             <Link to="/providers" className={getLinkClassName("/providers")}>
               Providers
             </Link>
+            <Link to="/how-it-works" className={getLinkClassName("/how-it-works")}>
+              How It Works
+            </Link>
             <Link to="/about" className={getLinkClassName("/about")}>
               About
+            </Link>
+            <Link to="/careers" className={getLinkClassName("/careers")}>
+              Careers
+            </Link>
+            <Link to="/blog" className={getLinkClassName("/blog")}>
+              Blog
             </Link>
             <Link to="/contact" className={getLinkClassName("/contact")}>
               Contact

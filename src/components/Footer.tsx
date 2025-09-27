@@ -56,12 +56,12 @@ const Footer = () => {
           <div className="space-y-4">
             <h3 className="font-semibold text-lg">Company</h3>
             <ul className="space-y-2 text-sm text-primary-foreground/80">
-              <li><a href="#" className="hover:text-primary-foreground transition-fast">About Us</a></li>
-              <li><a href="#" className="hover:text-primary-foreground transition-fast">How It Works</a></li>
-              <li><a href="#" className="hover:text-primary-foreground transition-fast">List Your Shop</a></li>
-              <li><a href="#" className="hover:text-primary-foreground transition-fast">Careers</a></li>
-              <li><a href="#" className="hover:text-primary-foreground transition-fast">Press</a></li>
-              <li><a href="#" className="hover:text-primary-foreground transition-fast">Blog</a></li>
+              <li><Link to="/about" className="hover:text-primary-foreground transition-fast">About Us</Link></li>
+              <li><Link to="/how-it-works" className="hover:text-primary-foreground transition-fast">How It Works</Link></li>
+              <li><Link to="/list-shop" className="hover:text-primary-foreground transition-fast">List Your Shop</Link></li>
+              <li><Link to="/careers" className="hover:text-primary-foreground transition-fast">Careers</Link></li>
+              <li><Link to="/press" className="hover:text-primary-foreground transition-fast">Press</Link></li>
+              <li><Link to="/blog" className="hover:text-primary-foreground transition-fast">Blog</Link></li>
             </ul>
           </div>
 

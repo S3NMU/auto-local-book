@@ -14,6 +14,10 @@ import AccountSettings from "./pages/AccountSettings";
 import ListShop from "./pages/ListShop";
 import Admin from "./pages/Admin";
 import ProviderDashboard from "./pages/ProviderDashboard";
+import HowItWorks from "./pages/HowItWorks";
+import Careers from "./pages/Careers";
+import Press from "./pages/Press";
+import Blog from "./pages/Blog";
 import NotFound from "./pages/NotFound";
 
 const App = () => (
@@ -30,6 +34,10 @@ const App = () => (
             <Route path="/providers" element={<Providers />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/how-it-works" element={<HowItWorks />} />
+            <Route path="/careers" element={<Careers />} />
+            <Route path="/press" element={<Press />} />
+            <Route path="/blog" element={<Blog />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/account" element={<AccountSettings />} />
             <Route path="/list-shop" element={<ListShop />} />
