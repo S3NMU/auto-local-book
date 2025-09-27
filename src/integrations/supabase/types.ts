@@ -14,7 +14,203 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      provider_services: {
+        Row: {
+          created_at: string
+          duration_minutes: number | null
+          id: string
+          is_available: boolean | null
+          notes: string | null
+          price_max: number | null
+          price_min: number | null
+          provider_id: string
+          service_id: string
+        }
+        Insert: {
+          created_at?: string
+          duration_minutes?: number | null
+          id?: string
+          is_available?: boolean | null
+          notes?: string | null
+          price_max?: number | null
+          price_min?: number | null
+          provider_id: string
+          service_id: string
+        }
+        Update: {
+          created_at?: string
+          duration_minutes?: number | null
+          id?: string
+          is_available?: boolean | null
+          notes?: string | null
+          price_max?: number | null
+          price_min?: number | null
+          provider_id?: string
+          service_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "provider_services_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "providers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "provider_services_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      providers: {
+        Row: {
+          address: string
+          business_hours: Json | null
+          business_name: string
+          city: string
+          created_at: string
+          description: string | null
+          email: string | null
+          id: string
+          is_mobile: boolean | null
+          is_verified: boolean | null
+          latitude: number
+          longitude: number
+          owner_name: string | null
+          phone: string | null
+          rating: number | null
+          review_count: number | null
+          specialties: string[] | null
+          state: string
+          updated_at: string
+          website_url: string | null
+          zip_code: string
+        }
+        Insert: {
+          address: string
+          business_hours?: Json | null
+          business_name: string
+          city: string
+          created_at?: string
+          description?: string | null
+          email?: string | null
+          id?: string
+          is_mobile?: boolean | null
+          is_verified?: boolean | null
+          latitude: number
+          longitude: number
+          owner_name?: string | null
+          phone?: string | null
+          rating?: number | null
+          review_count?: number | null
+          specialties?: string[] | null
+          state: string
+          updated_at?: string
+          website_url?: string | null
+          zip_code: string
+        }
+        Update: {
+          address?: string
+          business_hours?: Json | null
+          business_name?: string
+          city?: string
+          created_at?: string
+          description?: string | null
+          email?: string | null
+          id?: string
+          is_mobile?: boolean | null
+          is_verified?: boolean | null
+          latitude?: number
+          longitude?: number
+          owner_name?: string | null
+          phone?: string | null
+          rating?: number | null
+          review_count?: number | null
+          specialties?: string[] | null
+          state?: string
+          updated_at?: string
+          website_url?: string | null
+          zip_code?: string
+        }
+        Relationships: []
+      }
+      reviews: {
+        Row: {
+          created_at: string
+          customer_name: string
+          id: string
+          provider_id: string
+          rating: number
+          review_text: string | null
+          service_type: string | null
+        }
+        Insert: {
+          created_at?: string
+          customer_name: string
+          id?: string
+          provider_id: string
+          rating: number
+          review_text?: string | null
+          service_type?: string | null
+        }
+        Update: {
+          created_at?: string
+          customer_name?: string
+          id?: string
+          provider_id?: string
+          rating?: number
+          review_text?: string | null
+          service_type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      services: {
+        Row: {
+          base_price_max: number | null
+          base_price_min: number | null
+          category: string
+          created_at: string
+          description: string | null
+          duration_minutes: number | null
+          id: string
+          is_mobile_available: boolean | null
+          name: string
+        }
+        Insert: {
+          base_price_max?: number | null
+          base_price_min?: number | null
+          category: string
+          created_at?: string
+          description?: string | null
+          duration_minutes?: number | null
+          id?: string
+          is_mobile_available?: boolean | null
+          name: string
+        }
+        Update: {
+          base_price_max?: number | null
+          base_price_min?: number | null
+          category?: string
+          created_at?: string
+          description?: string | null
+          duration_minutes?: number | null
+          id?: string
+          is_mobile_available?: boolean | null
+          name?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
