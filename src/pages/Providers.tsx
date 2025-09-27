@@ -157,6 +157,12 @@ const Providers = () => {
             </Card>
           ))}
         </div>
+
+        {providers.length === 0 && !loading && (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">No providers found in your area.</p>
+          </div>
+        )}
       </div>
     </div>
   );
