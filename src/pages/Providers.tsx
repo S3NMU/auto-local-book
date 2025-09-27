@@ -265,14 +265,15 @@ const Providers = () => {
   return (
     <div className="bg-background">
       <div className="container mx-auto px-4 py-8">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-foreground mb-4">
+        {/* Hero Section */}
+        <div className="text-center mb-16">
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
             Service Providers
           </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
             {location 
-              ? `Find trusted automotive service providers ${searchRadius >= 1000 ? 'anywhere' : `within ${searchRadius} miles of ${location.address}`}`
-              : "Find trusted automotive service providers in your area"
+              ? `Find trusted automotive service providers ${searchRadius >= 1000 ? 'anywhere' : `within ${searchRadius} miles of ${location.address}`}. All providers are verified and rated by real customers.`
+              : "Find trusted automotive service providers in your area. All providers are verified and rated by real customers for your peace of mind."
             }
           </p>
         </div>

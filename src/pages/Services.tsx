@@ -99,12 +99,14 @@ const Services = () => {
   return (
     <div className="bg-background scroll-smooth">
       <div className="container mx-auto px-4 py-8">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-foreground mb-4">
+        {/* Hero Section */}
+        <div className="text-center mb-16">
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
             Auto Service Guide
           </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Learn about essential automotive services and what each one involves
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+            Learn about essential automotive services and what each one involves. 
+            Understanding these services helps you make informed decisions about your vehicle's maintenance and care.
           </p>
         </div>
 
