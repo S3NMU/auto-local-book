@@ -63,10 +63,6 @@ const ServicePricing = () => {
     price_max: 0,
     duration_minutes: 60,
     currency: "USD",
-    pickup_available: false,
-    pickup_fee: 0,
-    dropoff_available: false,
-    dropoff_fee: 0,
     is_available: true,
     notes: ""
   });
@@ -154,10 +150,6 @@ const ServicePricing = () => {
         price_max: 0,
         duration_minutes: 60,
         currency: "USD",
-        pickup_available: false,
-        pickup_fee: 0,
-        dropoff_available: false,
-        dropoff_fee: 0,
         is_available: true,
         notes: ""
       });
@@ -184,10 +176,6 @@ const ServicePricing = () => {
           price_max: editingService.price_max,
           duration_minutes: editingService.duration_minutes,
           currency: editingService.currency,
-          pickup_available: editingService.pickup_available,
-          pickup_fee: editingService.pickup_fee,
-          dropoff_available: editingService.dropoff_available,
-          dropoff_fee: editingService.dropoff_fee,
           is_available: editingService.is_available,
           notes: editingService.notes
         })
@@ -359,68 +347,6 @@ const ServicePricing = () => {
                     duration_minutes: parseInt(e.target.value) || 60 
                   })}
                 />
-              </div>
-
-              <div className="space-y-4 border-t pt-4">
-                <h4 className="font-medium">Vehicle Transport Options</h4>
-                
-                <div className="flex items-center justify-between">
-                  <div className="space-y-1">
-                    <Label>Pickup Service</Label>
-                    <p className="text-sm text-muted-foreground">Offer vehicle pickup</p>
-                  </div>
-                  <Switch
-                    checked={newServiceForm.pickup_available}
-                    onCheckedChange={(checked) => setNewServiceForm({ 
-                      ...newServiceForm, 
-                      pickup_available: checked 
-                    })}
-                  />
-                </div>
-
-                {newServiceForm.pickup_available && (
-                  <div>
-                    <Label>Pickup Fee</Label>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      value={newServiceForm.pickup_fee}
-                      onChange={(e) => setNewServiceForm({ 
-                        ...newServiceForm, 
-                        pickup_fee: parseFloat(e.target.value) || 0 
-                      })}
-                    />
-                  </div>
-                )}
-
-                <div className="flex items-center justify-between">
-                  <div className="space-y-1">
-                    <Label>Dropoff Service</Label>
-                    <p className="text-sm text-muted-foreground">Offer vehicle dropoff</p>
-                  </div>
-                  <Switch
-                    checked={newServiceForm.dropoff_available}
-                    onCheckedChange={(checked) => setNewServiceForm({ 
-                      ...newServiceForm, 
-                      dropoff_available: checked 
-                    })}
-                  />
-                </div>
-
-                {newServiceForm.dropoff_available && (
-                  <div>
-                    <Label>Dropoff Fee</Label>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      value={newServiceForm.dropoff_fee}
-                      onChange={(e) => setNewServiceForm({ 
-                        ...newServiceForm, 
-                        dropoff_fee: parseFloat(e.target.value) || 0 
-                      })}
-                    />
-                  </div>
-                )}
               </div>
 
               <div>
