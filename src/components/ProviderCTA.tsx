@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Link } from "react-router-dom";
 import { 
   TrendingUp, 
   Calendar, 
@@ -81,10 +82,12 @@ const ProviderCTA = () => {
               </div>
 
               <div className="pt-4">
-                <Button variant="hero" size="lg" className="group">
-                  List Your Shop
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-fast" />
-                </Button>
+                <Link to="/about">
+                  <Button variant="hero" size="lg" className="group">
+                    Learn More About Growing Your Business
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-fast" />
+                  </Button>
+                </Link>
               </div>
             </div>
 
@@ -96,10 +99,10 @@ const ProviderCTA = () => {
                   Get started in minutes with our simple onboarding process. 
                   No technical skills required.
                 </p>
-                <div className="flex items-center text-sm text-primary">
+                <Link to="/about" className="flex items-center text-sm text-primary hover:text-primary/80 transition-colors">
                   <span>Learn more</span>
                   <ArrowRight className="w-4 h-4 ml-1" />
-                </div>
+                </Link>
               </div>
 
               <div className="bg-gradient-subtle rounded-xl p-6 border border-border">
@@ -108,10 +111,10 @@ const ProviderCTA = () => {
                   Competitive 10% platform fee only when you get paid. 
                   No monthly subscriptions.
                 </p>
-                <div className="flex items-center text-sm text-primary">
+                <Link to="/about" className="flex items-center text-sm text-primary hover:text-primary/80 transition-colors">
                   <span>View pricing</span>
                   <ArrowRight className="w-4 h-4 ml-1" />
-                </div>
+                </Link>
               </div>
 
               <div className="bg-gradient-subtle rounded-xl p-6 border border-border">
@@ -120,10 +123,10 @@ const ProviderCTA = () => {
                   Dedicated support team to help you maximize your bookings 
                   and grow your business.
                 </p>
-                <div className="flex items-center text-sm text-primary">
+                <Link to="/about" className="flex items-center text-sm text-primary hover:text-primary/80 transition-colors">
                   <span>Contact support</span>
                   <ArrowRight className="w-4 h-4 ml-1" />
-                </div>
+                </Link>
               </div>
             </div>
           </div>
