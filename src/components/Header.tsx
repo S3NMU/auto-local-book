@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import logoImage from "@/assets/h3-automo-logo.png";
+import logoImage from "@/assets/crossed-wrenches-logo.jpg";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -83,7 +83,7 @@ const Header = () => {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <div className="w-10 h-10 rounded-lg overflow-hidden">
+            <div className="w-10 h-10 rounded-lg overflow-hidden bg-primary/10 p-1">
               <img src={logoImage} alt="H3 Automo Logo" className="w-full h-full object-contain" />
             </div>
             <div className="flex flex-col">

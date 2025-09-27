@@ -1,3 +1,4 @@
+import logoImage from "@/assets/crossed-wrenches-logo.jpg";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { 
@@ -20,8 +21,8 @@ const Footer = () => {
           {/* Company Info */}
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center">
-                <span className="text-accent-foreground font-bold">H3</span>
+              <div className="w-8 h-8 bg-accent/20 rounded-lg flex items-center justify-center p-1">
+                <img src={logoImage} alt="H3 Automo Logo" className="w-full h-full object-contain" />
               </div>
               <span className="text-xl font-bold">H3 Automo</span>
             </div>
