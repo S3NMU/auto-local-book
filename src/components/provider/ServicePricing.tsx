@@ -90,7 +90,7 @@ const ServicePricing = () => {
         .from('provider_services')
         .select(`
           *,
-          services!inner(*)
+          services(*)
         `)
         .eq('provider_id', user!.id);
 
