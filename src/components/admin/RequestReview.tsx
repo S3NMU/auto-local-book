@@ -6,7 +6,8 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { CheckCircle, XCircle, Clock, ExternalLink, Search, ChevronDown, ChevronUp, Trash2 } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, ExternalLink, Search, ChevronDown, ChevronUp, Trash2, Settings } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface ProviderRequest {
   id: string;
@@ -60,36 +61,49 @@ export const RequestReview = () => {
     }
   };
 
-  const handleApprove = async (request: ProviderRequest) => {
+  const handleStatusChange = async (request: ProviderRequest, newStatus: string) => {
     try {
-      // Create provider from request
-      const { error: providerError } = await supabase
-        .from('providers')
-        .insert({
-          business_name: request.business_name,
-          owner_name: request.owner_name,
-          phone: request.phone,
-          email: request.email,
-          address: request.address,
-          city: request.city,
-          state: request.state,
-          zip_code: request.zip_code,
-          latitude: request.latitude,
-          longitude: request.longitude,
-          description: request.description,
-          website_url: request.website_url,
-          specialties: request.specialties,
-          is_mobile: request.is_mobile,
-          status: 'active',
-        });
+      // If changing from approved to pending/rejected, remove from providers table
+      if (request.status === 'approved' && newStatus !== 'approved') {
+        const { error: deleteProviderError } = await supabase
+          .from('providers')
+          .delete()
+          .eq('business_name', request.business_name)
+          .eq('email', request.email);
 
-      if (providerError) throw providerError;
+        if (deleteProviderError) throw deleteProviderError;
+      }
+
+      // If changing to approved, create provider entry
+      if (newStatus === 'approved' && request.status !== 'approved') {
+        const { error: providerError } = await supabase
+          .from('providers')
+          .insert({
+            business_name: request.business_name,
+            owner_name: request.owner_name,
+            phone: request.phone,
+            email: request.email,
+            address: request.address,
+            city: request.city,
+            state: request.state,
+            zip_code: request.zip_code,
+            latitude: request.latitude,
+            longitude: request.longitude,
+            description: request.description,
+            website_url: request.website_url,
+            specialties: request.specialties,
+            is_mobile: request.is_mobile,
+            status: 'active',
+          });
+
+        if (providerError) throw providerError;
+      }
 
       // Update request status
       const { error: updateError } = await supabase
         .from('provider_requests')
         .update({
-          status: 'approved',
+          status: newStatus,
           reviewed_at: new Date().toISOString(),
         })
         .eq('id', request.id);
@@ -98,41 +112,14 @@ export const RequestReview = () => {
 
       toast({
         title: "Success",
-        description: "Request approved and provider created",
+        description: `Request ${newStatus} successfully`,
       });
 
       fetchRequests();
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to approve request",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleReject = async (requestId: string) => {
-    try {
-      const { error } = await supabase
-        .from('provider_requests')
-        .update({
-          status: 'rejected',
-          reviewed_at: new Date().toISOString(),
-        })
-        .eq('id', requestId);
-
-      if (error) throw error;
-
-      toast({
-        title: "Success",
-        description: "Request rejected",
-      });
-
-      fetchRequests();
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to reject request",
+        description: `Failed to update request status`,
         variant: "destructive",
       });
     }
@@ -268,36 +255,51 @@ export const RequestReview = () => {
             </div>
           )}
 
-          {showActions && request.status === 'pending' && (
+          {showActions && (
             <div className="flex gap-2 pt-4 border-t">
-              <Button
-                onClick={() => handleApprove(request)}
-                className="flex items-center gap-2"
-              >
-                <CheckCircle className="h-4 w-4" />
-                Approve
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => handleReject(request.id)}
-                className="flex items-center gap-2 text-red-600 hover:text-red-700"
-              >
-                <XCircle className="h-4 w-4" />
-                Reject
-              </Button>
-            </div>
-          )}
-          
-          {request.status === 'rejected' && (
-            <div className="flex gap-2 pt-4 border-t">
-              <Button
-                variant="outline"
-                onClick={() => handleDelete(request.id)}
-                className="flex items-center gap-2 text-red-600 hover:text-red-700"
-              >
-                <Trash2 className="h-4 w-4" />
-                Delete Permanently
-              </Button>
+              <div className="flex items-center gap-2">
+                <Settings className="h-4 w-4" />
+                <span className="text-sm font-medium">Change Status:</span>
+                <Select
+                  value={request.status}
+                  onValueChange={(value) => handleStatusChange(request, value)}
+                >
+                  <SelectTrigger className="w-32">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-background border shadow-lg z-50">
+                    <SelectItem value="pending">
+                      <div className="flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        Pending
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="approved">
+                      <div className="flex items-center gap-1">
+                        <CheckCircle className="h-3 w-3" />
+                        Approved
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="rejected">
+                      <div className="flex items-center gap-1">
+                        <XCircle className="h-3 w-3" />
+                        Rejected
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              {request.status === 'rejected' && (
+                <Button
+                  variant="outline"
+                  onClick={() => handleDelete(request.id)}
+                  className="flex items-center gap-2 text-red-600 hover:text-red-700 ml-auto"
+                >
+                  <Trash2 className="h-4 w-4" />
+                  Delete Permanently
+                </Button>
+              )}
             </div>
           )}
         </CardContent>
@@ -359,7 +361,7 @@ export const RequestReview = () => {
               {searchTerm ? 'No approved requests match your search.' : 'No approved requests found.'}
             </div>
           ) : (
-            approvedRequests.map((request) => renderRequestCard(request, false))
+            approvedRequests.map((request) => renderRequestCard(request, true))
           )}
         </TabsContent>
 
@@ -369,7 +371,7 @@ export const RequestReview = () => {
               {searchTerm ? 'No rejected requests match your search.' : 'No rejected requests found.'}
             </div>
           ) : (
-            rejectedRequests.map((request) => renderRequestCard(request, false))
+            rejectedRequests.map((request) => renderRequestCard(request, true))
           )}
         </TabsContent>
       </Tabs>
