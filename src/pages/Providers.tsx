@@ -2,7 +2,9 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MapPin, Star, Phone, Mail, Clock, Navigation } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { MapPin, Star, Phone, Mail, Clock, Navigation, Settings } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useLocation } from "@/hooks/useLocation";
@@ -31,8 +33,17 @@ const Providers = () => {
   const [providers, setProviders] = useState<Provider[]>([]);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [searchRadius, setSearchRadius] = useState<number>(50); // Default 50 miles
   const { location } = useLocation();
   const { toast } = useToast();
+
+  const radiusOptions = [
+    { value: 25, label: "25 miles" },
+    { value: 50, label: "50 miles" },
+    { value: 100, label: "100 miles" },
+    { value: 200, label: "200 miles" },
+    { value: 1000, label: "Show all" },
+  ];
 
   useEffect(() => {
     // Get session and set up auth listener
@@ -64,13 +75,11 @@ const Providers = () => {
       
       // If user has a location, filter by distance and sort by proximity
       if (location) {
-        const maxDistance = 50; // 50 miles radius
-        
         providersData = providersData.map(provider => ({
           ...provider,
           distance: calculateDistanceValue(provider.latitude, provider.longitude)
         }))
-        .filter(provider => provider.distance <= maxDistance) // Only show providers within 50 miles
+        .filter(provider => searchRadius >= 1000 || provider.distance <= searchRadius) // Show all if radius is 1000+
         .sort((a, b) => (a.distance || 0) - (b.distance || 0));
       }
       
@@ -91,10 +100,20 @@ const Providers = () => {
     fetchProviders();
   }, []);
 
-  // Refetch providers when location changes
+  // Refetch providers when location or radius changes
   useEffect(() => {
     fetchProviders();
-  }, [location]);
+  }, [location, searchRadius]);
+
+  const handleRadiusChange = (newRadius: string) => {
+    const radius = parseInt(newRadius);
+    setSearchRadius(radius);
+    
+    toast({
+      title: "Search radius updated",
+      description: `Now showing providers within ${radius >= 1000 ? 'unlimited distance' : `${radius} miles`}`,
+    });
+  };
 
   const calculateDistanceValue = (providerLat: number, providerLng: number): number => {
     if (!location) return 0;
@@ -145,14 +164,34 @@ const Providers = () => {
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             {location 
-              ? `Find trusted automotive service providers within 50 miles of ${location.address}`
+              ? `Find trusted automotive service providers ${searchRadius >= 1000 ? 'anywhere' : `within ${searchRadius} miles of ${location.address}`}`
               : "Find trusted automotive service providers in your area"
             }
           </p>
           {location && (
-            <div className="mt-4 flex items-center justify-center gap-2 text-sm text-muted-foreground">
-              <Navigation className="w-4 h-4" />
-              Showing results within 50 miles of your location
+            <div className="mt-4 flex flex-col items-center gap-4">
+              <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                <Navigation className="w-4 h-4" />
+                {searchRadius >= 1000 ? 'Showing all available providers' : `Showing results within ${searchRadius} miles`}
+              </div>
+              
+              {/* Radius Selector */}
+              <div className="flex items-center gap-3 bg-card rounded-lg p-4 shadow-sm border">
+                <Settings className="w-4 h-4 text-muted-foreground" />
+                <Label htmlFor="radius-select" className="text-sm font-medium">Search radius:</Label>
+                <Select value={searchRadius.toString()} onValueChange={handleRadiusChange}>
+                  <SelectTrigger className="w-32">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {radiusOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value.toString()}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           )}
         </div>
@@ -257,7 +296,7 @@ const Providers = () => {
           <div className="text-center py-12">
             <p className="text-muted-foreground">
               {location 
-                ? "No providers found within 50 miles of your location. Try expanding your search area."
+                ? `No providers found within ${searchRadius >= 1000 ? 'any distance' : `${searchRadius} miles`} of your location. ${searchRadius < 200 ? 'Try expanding your search radius above.' : ''}`
                 : "No providers found. Please set your location to find nearby services."
               }
             </p>

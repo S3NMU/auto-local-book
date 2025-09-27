@@ -15,12 +15,14 @@ interface SearchDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   defaultServices?: string[];
+  defaultRadius?: number;
 }
 
-const SearchDialog = ({ open, onOpenChange, defaultServices = [] }: SearchDialogProps) => {
+const SearchDialog = ({ open, onOpenChange, defaultServices = [], defaultRadius = 50 }: SearchDialogProps) => {
   const [selectedServices, setSelectedServices] = useState<string[]>(defaultServices);
   const [priceRange, setPriceRange] = useState("");
   const [timePreference, setTimePreference] = useState("");
+  const [searchRadius, setSearchRadius] = useState<number>(defaultRadius);
   const navigate = useNavigate();
   const { location } = useLocation();
   const { toast } = useToast();
@@ -29,6 +31,14 @@ const SearchDialog = ({ open, onOpenChange, defaultServices = [] }: SearchDialog
     "Oil Change", "Brake Service", "Diagnostics", "Tune-Up", 
     "Inspection", "Auto Detailing", "Tire Service", "Battery Replacement",
     "Engine Repair", "Transmission Service", "Air Conditioning", "Electrical Work"
+  ];
+
+  const radiusOptions = [
+    { value: 25, label: "25 miles" },
+    { value: 50, label: "50 miles" },
+    { value: 100, label: "100 miles" },
+    { value: 200, label: "200 miles" },
+    { value: 1000, label: "Show all" },
   ];
 
   const handleServiceToggle = (service: string) => {
@@ -60,6 +70,7 @@ const SearchDialog = ({ open, onOpenChange, defaultServices = [] }: SearchDialog
     }
     if (priceRange) searchParams.set('price', priceRange);
     if (timePreference) searchParams.set('time', timePreference);
+    if (searchRadius !== 50) searchParams.set('radius', searchRadius.toString());
     
     // Navigate to providers page with search filters
     navigate(`/providers?${searchParams.toString()}`);
@@ -69,9 +80,11 @@ const SearchDialog = ({ open, onOpenChange, defaultServices = [] }: SearchDialog
       ? selectedServices.join(', ') 
       : 'automotive';
     
+    const radiusText = searchRadius >= 1000 ? 'anywhere' : `within ${searchRadius} miles`;
+    
     toast({
       title: "Searching providers",
-      description: `Finding providers for ${serviceText} services near ${location.address}`,
+      description: `Finding providers for ${serviceText} services ${radiusText} of ${location.address}`,
     });
   };
 
@@ -153,6 +166,22 @@ const SearchDialog = ({ open, onOpenChange, defaultServices = [] }: SearchDialog
                 <SelectItem value="this-week">This Week</SelectItem>
                 <SelectItem value="next-week">Next Week</SelectItem>
                 <SelectItem value="flexible">I'm Flexible</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="search-radius">Search radius</Label>
+            <Select value={searchRadius.toString()} onValueChange={(value) => setSearchRadius(parseInt(value))}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {radiusOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value.toString()}>
+                    {option.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
