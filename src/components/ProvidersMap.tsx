@@ -87,7 +87,7 @@ const ProvidersMap = () => {
 
   // Filter providers by state
   useEffect(() => {
-    if (selectedState) {
+    if (selectedState && selectedState !== 'all') {
       const filtered = providers.filter(p => p.state === selectedState);
       setFilteredProviders(filtered);
     } else {
@@ -263,7 +263,7 @@ const ProvidersMap = () => {
                       <SelectValue placeholder="All States" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All States</SelectItem>
+                      <SelectItem value="all">All States</SelectItem>
                       {availableStates.map(state => (
                         <SelectItem key={state} value={state}>{state}</SelectItem>
                       ))}
@@ -294,7 +294,7 @@ const ProvidersMap = () => {
                 {filteredProviders.length === 0 ? (
                   <div className="p-6 text-center text-muted-foreground">
                     <MapPin className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                    <p>No providers found{selectedState ? ` in ${selectedState}` : ''}</p>
+                    <p>No providers found{selectedState && selectedState !== 'all' ? ` in ${selectedState}` : ''}</p>
                   </div>
                 ) : (
                   <div className="space-y-1">
