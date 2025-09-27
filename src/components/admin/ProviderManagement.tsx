@@ -284,9 +284,8 @@ export const ProviderManagement = () => {
           {renderProvidersTable(inactiveProviders)}
         </TabsContent>
       </Tabs>
-    </div>
-  );
 
+      {/* Edit Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
