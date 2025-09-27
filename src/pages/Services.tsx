@@ -98,17 +98,20 @@ const Services = () => {
 
   return (
     <div className="bg-background scroll-smooth">
-      <div className="container mx-auto px-4 py-8">
-        {/* Hero Section */}
-        <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
+      {/* Hero Section */}
+      <section className="bg-gradient-to-r from-primary to-primary-light py-20">
+        <div className="container mx-auto px-4 text-center">
+          <h1 className="text-4xl md:text-5xl font-bold text-primary-foreground mb-6">
             Auto Service Guide
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xl text-primary-foreground/90 max-w-3xl mx-auto leading-relaxed">
             Learn about essential automotive services and what each one involves. 
             Understanding these services helps you make informed decisions about your vehicle's maintenance and care.
           </p>
         </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8">
 
         <div className="grid grid-cols-1 gap-8">
           {services.map((service) => {
