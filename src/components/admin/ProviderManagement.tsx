@@ -4,11 +4,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Edit, Trash2, Search, ExternalLink } from 'lucide-react';
+import { Edit, Trash2, Search, ExternalLink, Users, UserCheck, UserX } from 'lucide-react';
 
 interface Provider {
   id: string;
@@ -43,6 +44,7 @@ export const ProviderManagement = () => {
       const { data, error } = await supabase
         .from('providers')
         .select('*')
+        .order('status', { ascending: false }) // Active first
         .order('business_name');
 
       if (error) throw error;
@@ -126,42 +128,52 @@ export const ProviderManagement = () => {
     }
   };
 
-  const filteredProviders = providers.filter(provider =>
-    provider.business_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    provider.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    provider.state.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filterProvidersByStatus = (status?: string) => {
+    let filtered = providers.filter(provider =>
+      provider.business_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      provider.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      provider.state.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
-  if (loading) {
-    return <div className="text-center py-8">Loading providers...</div>;
-  }
+    if (status) {
+      filtered = filtered.filter(provider => provider.status === status);
+    }
 
-  return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-2">
-        <Search className="h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="Search providers..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="max-w-sm"
-        />
-      </div>
+    // Sort: active first, then by business name
+    return filtered.sort((a, b) => {
+      if (a.status === b.status) {
+        return a.business_name.localeCompare(b.business_name);
+      }
+      return a.status === 'active' ? -1 : 1;
+    });
+  };
 
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
+  const allProviders = filterProvidersByStatus();
+  const activeProviders = filterProvidersByStatus('active');
+  const inactiveProviders = filterProvidersByStatus('inactive');
+
+  const renderProvidersTable = (providers: Provider[]) => (
+    <div className="rounded-md border">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Business Name</TableHead>
+            <TableHead>Contact</TableHead>
+            <TableHead>Location</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Rating</TableHead>
+            <TableHead>Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {providers.length === 0 ? (
             <TableRow>
-              <TableHead>Business Name</TableHead>
-              <TableHead>Contact</TableHead>
-              <TableHead>Location</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Rating</TableHead>
-              <TableHead>Actions</TableHead>
+              <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                {searchTerm ? 'No providers match your search.' : 'No providers found.'}
+              </TableCell>
             </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredProviders.map((provider) => (
+          ) : (
+            providers.map((provider) => (
               <TableRow key={provider.id}>
                 <TableCell>
                   <div>
@@ -219,10 +231,61 @@ export const ProviderManagement = () => {
                   </div>
                 </TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            ))
+          )}
+        </TableBody>
+      </Table>
+    </div>
+  );
+
+  if (loading) {
+    return <div className="text-center py-8">Loading providers...</div>;
+  }
+
+  return (
+    <div className="space-y-4">
+      {/* Search Bar */}
+      <div className="flex items-center gap-2">
+        <Search className="h-4 w-4 text-muted-foreground" />
+        <Input
+          placeholder="Search providers..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="max-w-sm"
+        />
       </div>
+
+      {/* Tabs for different statuses */}
+      <Tabs defaultValue="all" className="w-full">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="all" className="flex items-center gap-2">
+            <Users className="h-4 w-4" />
+            All ({allProviders.length})
+          </TabsTrigger>
+          <TabsTrigger value="active" className="flex items-center gap-2">
+            <UserCheck className="h-4 w-4" />
+            Active ({activeProviders.length})
+          </TabsTrigger>
+          <TabsTrigger value="inactive" className="flex items-center gap-2">
+            <UserX className="h-4 w-4" />
+            Inactive ({inactiveProviders.length})
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="all" className="space-y-4">
+          {renderProvidersTable(allProviders)}
+        </TabsContent>
+
+        <TabsContent value="active" className="space-y-4">
+          {renderProvidersTable(activeProviders)}
+        </TabsContent>
+
+        <TabsContent value="inactive" className="space-y-4">
+          {renderProvidersTable(inactiveProviders)}
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
 
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="max-w-2xl">
