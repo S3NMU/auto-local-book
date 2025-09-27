@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { CheckCircle, XCircle, Clock, ExternalLink, Search, ChevronDown, ChevronUp } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, ExternalLink, Search, ChevronDown, ChevronUp, Trash2 } from 'lucide-react';
 
 interface ProviderRequest {
   id: string;
@@ -138,6 +138,32 @@ export const RequestReview = () => {
     }
   };
 
+  const handleDelete = async (requestId: string) => {
+    if (!confirm('Are you sure you want to PERMANENTLY DELETE this rejected request? This action cannot be undone.')) return;
+
+    try {
+      const { error } = await supabase
+        .from('provider_requests')
+        .delete()
+        .eq('id', requestId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Rejected request permanently deleted",
+      });
+
+      fetchRequests();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete request",
+        variant: "destructive",
+      });
+    }
+  };
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'pending':
@@ -258,6 +284,32 @@ export const RequestReview = () => {
               >
                 <XCircle className="h-4 w-4" />
                 Reject
+              </Button>
+            </div>
+          )}
+          
+          {request.status === 'rejected' && (
+            <div className="flex gap-2 pt-4 border-t">
+              <Button
+                variant="outline"
+                onClick={() => handleDelete(request.id)}
+                className="flex items-center gap-2 text-red-600 hover:text-red-700"
+              >
+                <Trash2 className="h-4 w-4" />
+                Delete Permanently
+              </Button>
+            </div>
+          )}
+          
+          {request.status === 'rejected' && (
+            <div className="flex gap-2 pt-4 border-t">
+              <Button
+                variant="outline"
+                onClick={() => handleDelete(request.id)}
+                className="flex items-center gap-2 text-red-600 hover:text-red-700"
+              >
+                <Trash2 className="h-4 w-4" />
+                Delete Permanently
               </Button>
             </div>
           )}
