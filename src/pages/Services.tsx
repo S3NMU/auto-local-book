@@ -113,7 +113,7 @@ const Services = () => {
             const IconComponent = service.icon;
             const expectationsList = service.whatToExpect || [];
             return (
-              <Card key={service.id} className="hover:shadow-lg transition-shadow">
+              <Card key={service.id} id={service.title.toLowerCase().replace(/[\s&]/g, '-')} className="hover:shadow-lg transition-shadow">
                 <CardHeader>
                   <div className="flex items-start space-x-4">
                     <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">

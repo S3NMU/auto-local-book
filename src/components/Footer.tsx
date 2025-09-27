@@ -1,6 +1,7 @@
 import logoImage from "@/assets/crossed-wrenches-logo.jpg";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Link } from "react-router-dom";
 import { 
   Mail, 
   Phone, 
@@ -42,12 +43,12 @@ const Footer = () => {
           <div className="space-y-4">
             <h3 className="font-semibold text-lg">Services</h3>
             <ul className="space-y-2 text-sm text-primary-foreground/80">
-              <li><a href="#" className="hover:text-primary-foreground transition-fast">Oil Change</a></li>
-              <li><a href="#" className="hover:text-primary-foreground transition-fast">Brake Service</a></li>
-              <li><a href="#" className="hover:text-primary-foreground transition-fast">Diagnostics</a></li>
-              <li><a href="#" className="hover:text-primary-foreground transition-fast">Tune-Up</a></li>
-              <li><a href="#" className="hover:text-primary-foreground transition-fast">Inspection</a></li>
-              <li><a href="#" className="hover:text-primary-foreground transition-fast">Auto Detailing</a></li>
+              <li><Link to="/services#oil-change" className="hover:text-primary-foreground transition-fast">Oil Change</Link></li>
+              <li><Link to="/services#brake-service" className="hover:text-primary-foreground transition-fast">Brake Service</Link></li>
+              <li><Link to="/services#computer-diagnostic" className="hover:text-primary-foreground transition-fast">Diagnostics</Link></li>
+              <li><Link to="/services#tire-service" className="hover:text-primary-foreground transition-fast">Tire Service</Link></li>
+              <li><Link to="/services#battery-electrical" className="hover:text-primary-foreground transition-fast">Battery & Electrical</Link></li>
+              <li><Link to="/services#air-conditioning" className="hover:text-primary-foreground transition-fast">Air Conditioning</Link></li>
             </ul>
           </div>
 
