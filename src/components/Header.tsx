@@ -2,11 +2,12 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { MapPin, User, LogOut, ChevronDown, Settings, Store } from "lucide-react";
+import { MapPin, User, LogOut, ChevronDown, Settings, Store, Shield } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "@/hooks/useLocation";
+import { useAuth } from "@/hooks/useAuth";
 import LocationDialog from "./LocationDialog";
 import type { Session } from "@supabase/supabase-js";
 
@@ -16,6 +17,7 @@ const Header = () => {
   const [avatarUrl, setAvatarUrl] = useState<string>("");
   const { toast } = useToast();
   const { location, setLocation } = useLocation();
+  const { isAdmin } = useAuth();
 
   useEffect(() => {
     // Set up auth state listener
@@ -154,6 +156,14 @@ const Header = () => {
                       Account Settings
                     </Link>
                   </DropdownMenuItem>
+                  {isAdmin && (
+                    <DropdownMenuItem asChild>
+                      <Link to="/admin" className="cursor-pointer">
+                        <Shield className="w-4 h-4 mr-2" />
+                        Admin Dashboard
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-destructive">
                     <LogOut className="w-4 h-4 mr-2" />

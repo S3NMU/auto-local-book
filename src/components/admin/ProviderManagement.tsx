@@ -1,0 +1,348 @@
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/hooks/use-toast';
+import { Edit, Trash2, Search, ExternalLink } from 'lucide-react';
+
+interface Provider {
+  id: string;
+  business_name: string;
+  owner_name: string;
+  phone: string;
+  email: string;
+  address: string;
+  city: string;
+  state: string;
+  zip_code: string;
+  website_url: string;
+  status: string;
+  rating: number;
+  review_count: number;
+}
+
+export const ProviderManagement = () => {
+  const [providers, setProviders] = useState<Provider[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [editingProvider, setEditingProvider] = useState<Provider | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    fetchProviders();
+  }, []);
+
+  const fetchProviders = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('providers')
+        .select('*')
+        .order('business_name');
+
+      if (error) throw error;
+      setProviders(data || []);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to fetch providers",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEdit = (provider: Provider) => {
+    setEditingProvider(provider);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editingProvider) return;
+
+    try {
+      const { error } = await supabase
+        .from('providers')
+        .update({
+          business_name: editingProvider.business_name,
+          owner_name: editingProvider.owner_name,
+          phone: editingProvider.phone,
+          email: editingProvider.email,
+          address: editingProvider.address,
+          city: editingProvider.city,
+          state: editingProvider.state,
+          zip_code: editingProvider.zip_code,
+          website_url: editingProvider.website_url,
+        })
+        .eq('id', editingProvider.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Provider updated successfully",
+      });
+
+      setIsEditDialogOpen(false);
+      fetchProviders();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update provider",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this provider?')) return;
+
+    try {
+      const { error } = await supabase
+        .from('providers')
+        .update({ status: 'inactive' })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Provider deleted successfully",
+      });
+
+      fetchProviders();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete provider",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const filteredProviders = providers.filter(provider =>
+    provider.business_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    provider.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    provider.state.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  if (loading) {
+    return <div className="text-center py-8">Loading providers...</div>;
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-2">
+        <Search className="h-4 w-4 text-muted-foreground" />
+        <Input
+          placeholder="Search providers..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="max-w-sm"
+        />
+      </div>
+
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Business Name</TableHead>
+              <TableHead>Contact</TableHead>
+              <TableHead>Location</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Rating</TableHead>
+              <TableHead>Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredProviders.map((provider) => (
+              <TableRow key={provider.id}>
+                <TableCell>
+                  <div>
+                    <div className="font-medium">{provider.business_name}</div>
+                    <div className="text-sm text-muted-foreground">{provider.owner_name}</div>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="text-sm">
+                    <div>{provider.phone}</div>
+                    <div>{provider.email}</div>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="text-sm">
+                    {provider.city}, {provider.state} {provider.zip_code}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <Badge variant={provider.status === 'active' ? 'default' : 'secondary'}>
+                    {provider.status}
+                  </Badge>
+                </TableCell>
+                <TableCell>
+                  <div className="text-sm">
+                    ⭐ {provider.rating.toFixed(1)} ({provider.review_count})
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleEdit(provider)}
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    {provider.website_url && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => window.open(provider.website_url, '_blank')}
+                      >
+                        <ExternalLink className="h-4 w-4" />
+                      </Button>
+                    )}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleDelete(provider.id)}
+                      className="text-red-600 hover:text-red-700"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Edit Provider</DialogTitle>
+          </DialogHeader>
+          {editingProvider && (
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="business_name">Business Name</Label>
+                <Input
+                  id="business_name"
+                  value={editingProvider.business_name}
+                  onChange={(e) => setEditingProvider({
+                    ...editingProvider,
+                    business_name: e.target.value
+                  })}
+                />
+              </div>
+              <div>
+                <Label htmlFor="owner_name">Owner Name</Label>
+                <Input
+                  id="owner_name"
+                  value={editingProvider.owner_name || ''}
+                  onChange={(e) => setEditingProvider({
+                    ...editingProvider,
+                    owner_name: e.target.value
+                  })}
+                />
+              </div>
+              <div>
+                <Label htmlFor="phone">Phone</Label>
+                <Input
+                  id="phone"
+                  value={editingProvider.phone || ''}
+                  onChange={(e) => setEditingProvider({
+                    ...editingProvider,
+                    phone: e.target.value
+                  })}
+                />
+              </div>
+              <div>
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={editingProvider.email || ''}
+                  onChange={(e) => setEditingProvider({
+                    ...editingProvider,
+                    email: e.target.value
+                  })}
+                />
+              </div>
+              <div className="col-span-2">
+                <Label htmlFor="address">Address</Label>
+                <Input
+                  id="address"
+                  value={editingProvider.address}
+                  onChange={(e) => setEditingProvider({
+                    ...editingProvider,
+                    address: e.target.value
+                  })}
+                />
+              </div>
+              <div>
+                <Label htmlFor="city">City</Label>
+                <Input
+                  id="city"
+                  value={editingProvider.city}
+                  onChange={(e) => setEditingProvider({
+                    ...editingProvider,
+                    city: e.target.value
+                  })}
+                />
+              </div>
+              <div>
+                <Label htmlFor="state">State</Label>
+                <Input
+                  id="state"
+                  value={editingProvider.state}
+                  onChange={(e) => setEditingProvider({
+                    ...editingProvider,
+                    state: e.target.value
+                  })}
+                />
+              </div>
+              <div>
+                <Label htmlFor="zip_code">ZIP Code</Label>
+                <Input
+                  id="zip_code"
+                  value={editingProvider.zip_code}
+                  onChange={(e) => setEditingProvider({
+                    ...editingProvider,
+                    zip_code: e.target.value
+                  })}
+                />
+              </div>
+              <div>
+                <Label htmlFor="website_url">Website URL</Label>
+                <Input
+                  id="website_url"
+                  value={editingProvider.website_url || ''}
+                  onChange={(e) => setEditingProvider({
+                    ...editingProvider,
+                    website_url: e.target.value
+                  })}
+                />
+              </div>
+              <div className="col-span-2 flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={handleSaveEdit}>
+                  Save Changes
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+};
