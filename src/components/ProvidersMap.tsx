@@ -34,12 +34,16 @@ const ProvidersMap = () => {
       try {
         const { data, error } = await supabase.functions.invoke('get-mapbox-token');
         if (error) throw error;
-        setMapboxToken(data.token);
+        if (data?.token) {
+          setMapboxToken(data.token);
+        } else {
+          throw new Error('No token received');
+        }
       } catch (error) {
         console.error('Error fetching Mapbox token:', error);
         toast({
           title: "Map not available",
-          description: "Unable to load map. Please contact support.",
+          description: "Unable to load map. Please check your Mapbox token configuration.",
           variant: "destructive",
         });
       }
@@ -77,9 +81,10 @@ const ProvidersMap = () => {
     
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/light-v11',
+      style: 'mapbox://styles/mapbox/streets-v12', // Updated to a more reliable style
       center: [-98.5795, 39.8283], // Center of US
       zoom: 4,
+      attributionControl: false, // Remove attribution to reduce clutter
     });
 
     // Add navigation controls
