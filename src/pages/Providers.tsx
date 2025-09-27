@@ -3,8 +3,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { MapPin, Star, Phone, Mail, Clock, Navigation, Settings, ExternalLink, Globe } from "lucide-react";
+import { MapPin, Star, Phone, Mail, Clock, Navigation, Settings, ExternalLink, Globe, Search, Filter, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useLocation } from "@/hooks/useLocation";
@@ -32,9 +34,15 @@ interface Provider {
 
 const Providers = () => {
   const [providers, setProviders] = useState<Provider[]>([]);
+  const [filteredProviders, setFilteredProviders] = useState<Provider[]>([]);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchRadius, setSearchRadius] = useState<number>(50); // Default 50 miles
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedSpecialty, setSelectedSpecialty] = useState<string>('all');
+  const [mobileServiceFilter, setMobileServiceFilter] = useState<boolean | null>(null);
+  const [minRating, setMinRating] = useState<number>(0);
+  const [showFilters, setShowFilters] = useState(false);
   const { location } = useLocation();
   const { toast } = useToast();
 
@@ -45,6 +53,11 @@ const Providers = () => {
     { value: 200, label: "200 miles" },
     { value: 1000, label: "Show all" },
   ];
+
+  // Get unique specialties for filter dropdown
+  const allSpecialties = Array.from(new Set(providers.flatMap(p => p.specialties || [])))
+    .filter(Boolean)
+    .sort();
 
   useEffect(() => {
     // Get session and set up auth listener
@@ -95,6 +108,58 @@ const Providers = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Filter providers based on search and filter criteria
+  const filterProviders = () => {
+    let filtered = providers;
+
+    // Text search
+    if (searchTerm) {
+      const searchLower = searchTerm.toLowerCase();
+      filtered = filtered.filter(provider => 
+        provider.business_name.toLowerCase().includes(searchLower) ||
+        provider.city.toLowerCase().includes(searchLower) ||
+        provider.state.toLowerCase().includes(searchLower) ||
+        provider.specialties?.some(s => s.toLowerCase().includes(searchLower)) ||
+        provider.description?.toLowerCase().includes(searchLower)
+      );
+    }
+
+    // Specialty filter
+    if (selectedSpecialty !== 'all') {
+      filtered = filtered.filter(provider => 
+        provider.specialties?.includes(selectedSpecialty)
+      );
+    }
+
+    // Mobile service filter
+    if (mobileServiceFilter !== null) {
+      filtered = filtered.filter(provider => 
+        provider.is_mobile === mobileServiceFilter
+      );
+    }
+
+    // Rating filter
+    if (minRating > 0) {
+      filtered = filtered.filter(provider => 
+        provider.rating >= minRating
+      );
+    }
+
+    setFilteredProviders(filtered);
+  };
+
+  // Update filtered providers when filters change
+  useEffect(() => {
+    filterProviders();
+  }, [providers, searchTerm, selectedSpecialty, mobileServiceFilter, minRating]);
+
+  const clearFilters = () => {
+    setSearchTerm('');
+    setSelectedSpecialty('all');
+    setMobileServiceFilter(null);
+    setMinRating(0);
   };
 
   useEffect(() => {
@@ -197,8 +262,117 @@ const Providers = () => {
           )}
         </div>
 
+        {/* Search and Filters Section */}
+        <div className="mb-8 space-y-4">
+          {/* Search Bar */}
+          <div className="relative">
+            <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search by business name, location, or service type..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 pr-4 py-3 text-base"
+            />
+          </div>
+
+          {/* Filter Toggle Button */}
+          <div className="flex items-center justify-between">
+            <Button
+              variant="outline"
+              onClick={() => setShowFilters(!showFilters)}
+              className="flex items-center gap-2"
+            >
+              <Filter className="h-4 w-4" />
+              Filters
+              {(selectedSpecialty !== 'all' || mobileServiceFilter !== null || minRating > 0) && (
+                <Badge variant="secondary" className="ml-1">
+                  {[
+                    selectedSpecialty !== 'all' ? 1 : 0,
+                    mobileServiceFilter !== null ? 1 : 0,
+                    minRating > 0 ? 1 : 0
+                  ].reduce((a, b) => a + b, 0)}
+                </Badge>
+              )}
+            </Button>
+            
+            {(searchTerm || selectedSpecialty !== 'all' || mobileServiceFilter !== null || minRating > 0) && (
+              <Button variant="ghost" onClick={clearFilters} className="flex items-center gap-1">
+                <X className="h-4 w-4" />
+                Clear all
+              </Button>
+            )}
+          </div>
+
+          {/* Filters Panel */}
+          {showFilters && (
+            <div className="bg-card rounded-lg p-6 border space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* Service Type Filter */}
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Service Type</Label>
+                  <Select value={selectedSpecialty} onValueChange={setSelectedSpecialty}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="All services" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-background border border-border shadow-lg z-50">
+                      <SelectItem value="all">All services</SelectItem>
+                      {allSpecialties.map((specialty) => (
+                        <SelectItem key={specialty} value={specialty}>
+                          {specialty}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Mobile Service Filter */}
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Service Location</Label>
+                  <Select 
+                    value={mobileServiceFilter === null ? "all" : mobileServiceFilter.toString()} 
+                    onValueChange={(value) => setMobileServiceFilter(value === "all" ? null : value === "true")}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="All locations" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-background border border-border shadow-lg z-50">
+                      <SelectItem value="all">All locations</SelectItem>
+                      <SelectItem value="true">Mobile service only</SelectItem>
+                      <SelectItem value="false">Shop location only</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Rating Filter */}
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Minimum Rating</Label>
+                  <Select value={minRating.toString()} onValueChange={(value) => setMinRating(Number(value))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Any rating" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-background border border-border shadow-lg z-50">
+                      <SelectItem value="0">Any rating</SelectItem>
+                      <SelectItem value="3">3+ stars</SelectItem>
+                      <SelectItem value="4">4+ stars</SelectItem>
+                      <SelectItem value="4.5">4.5+ stars</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Results Summary */}
+          <div className="flex items-center justify-between text-sm text-muted-foreground">
+            <span>
+              Showing {filteredProviders.length} of {providers.length} providers
+              {searchTerm && ` for "${searchTerm}"`}
+            </span>
+          </div>
+        </div>
+
         <div className="space-y-6">
-          {providers.map((provider) => (
+          {filteredProviders.map((provider) => (
             <Card key={provider.id} className="hover:shadow-lg transition-shadow">
               <CardHeader>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
@@ -315,12 +489,14 @@ const Providers = () => {
           ))}
         </div>
 
-        {providers.length === 0 && !loading && (
+        {filteredProviders.length === 0 && !loading && (
           <div className="text-center py-12">
             <p className="text-muted-foreground">
-              {location 
-                ? `No providers found within ${searchRadius >= 1000 ? 'any distance' : `${searchRadius} miles`} of your location. ${searchRadius < 200 ? 'Try expanding your search radius above.' : ''}`
-                : "No providers found. Please set your location to find nearby services."
+              {searchTerm || selectedSpecialty !== 'all' || mobileServiceFilter !== null || minRating > 0
+                ? "No providers match your search criteria. Try adjusting your filters or search terms."
+                : location 
+                  ? `No providers found within ${searchRadius >= 1000 ? 'any distance' : `${searchRadius} miles`} of your location. ${searchRadius < 200 ? 'Try expanding your search radius above.' : ''}`
+                  : "No providers found. Please set your location to find nearby services."
               }
             </p>
           </div>
