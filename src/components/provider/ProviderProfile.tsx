@@ -23,6 +23,10 @@ interface ProviderProfile {
   license_number: string;
   is_mobile_service: boolean;
   service_radius_miles: number;
+  pickup_available: boolean;
+  dropoff_available: boolean;
+  pickup_fee: number;
+  dropoff_fee: number;
 }
 
 const ProviderProfile = () => {
@@ -42,7 +46,11 @@ const ProviderProfile = () => {
     years_experience: 0,
     license_number: "",
     is_mobile_service: false,
-    service_radius_miles: 25
+    service_radius_miles: 25,
+    pickup_available: false,
+    dropoff_available: false,
+    pickup_fee: 0,
+    dropoff_fee: 0
   });
 
   useEffect(() => {
@@ -76,7 +84,11 @@ const ProviderProfile = () => {
           years_experience: data.years_experience || 0,
           license_number: data.license_number || "",
           is_mobile_service: data.is_mobile_service || false,
-          service_radius_miles: data.service_radius_miles || 25
+          service_radius_miles: data.service_radius_miles || 25,
+          pickup_available: data.pickup_available || false,
+          dropoff_available: data.dropoff_available || false,
+          pickup_fee: data.pickup_fee || 0,
+          dropoff_fee: data.dropoff_fee || 0
         });
       }
     } catch (error) {
@@ -250,7 +262,55 @@ const ProviderProfile = () => {
                 onCheckedChange={(checked) => setProfile({ ...profile, is_mobile_service: checked as boolean })}
               />
               <Label htmlFor="mobile_service">I offer mobile services</Label>
+          </div>
+
+          <div className="space-y-4 border-t pt-4">
+            <h4 className="font-medium">Vehicle Transportation Services</h4>
+            
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="pickup_available"
+                checked={profile.pickup_available}
+                onCheckedChange={(checked) => setProfile({ ...profile, pickup_available: checked as boolean })}
+              />
+              <Label htmlFor="pickup_available">I offer vehicle pickup service</Label>
             </div>
+
+            {profile.pickup_available && (
+              <div>
+                <Label>Pickup Fee ($)</Label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  placeholder="0.00"
+                  value={profile.pickup_fee}
+                  onChange={(e) => setProfile({ ...profile, pickup_fee: parseFloat(e.target.value) || 0 })}
+                />
+              </div>
+            )}
+
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="dropoff_available"
+                checked={profile.dropoff_available}
+                onCheckedChange={(checked) => setProfile({ ...profile, dropoff_available: checked as boolean })}
+              />
+              <Label htmlFor="dropoff_available">I offer vehicle dropoff service</Label>
+            </div>
+
+            {profile.dropoff_available && (
+              <div>
+                <Label>Dropoff Fee ($)</Label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  placeholder="0.00"
+                  value={profile.dropoff_fee}
+                  onChange={(e) => setProfile({ ...profile, dropoff_fee: parseFloat(e.target.value) || 0 })}
+                />
+              </div>
+            )}
+          </div>
 
             {profile.is_mobile_service && (
               <div>
