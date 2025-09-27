@@ -10,8 +10,19 @@ import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { DollarSign, Plus, Calendar, Edit, Trash2, CreditCard } from "lucide-react";
+import { DollarSign, Plus, Calendar, Edit, Trash2, CreditCard, Archive, RotateCcw } from "lucide-react";
 import { format } from "date-fns";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface RevenueEntry {
   id: string;
@@ -34,6 +45,7 @@ const ProviderRevenue = ({ onRevenueUpdate }: ProviderRevenueProps) => {
   const { toast } = useToast();
   const [revenues, setRevenues] = useState<RevenueEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showDeleted, setShowDeleted] = useState(false);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingRevenue, setEditingRevenue] = useState<RevenueEntry | null>(null);
@@ -50,18 +62,25 @@ const ProviderRevenue = ({ onRevenueUpdate }: ProviderRevenueProps) => {
     if (user) {
       fetchRevenues();
     }
-  }, [user]);
+  }, [user, showDeleted]);
 
   const fetchRevenues = async () => {
     if (!user) return;
 
     setLoading(true);
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from('revenue_entries')
         .select('*')
-        .eq('provider_id', user.id)
-        .order('entry_date', { ascending: false });
+        .eq('provider_id', user.id);
+
+      if (showDeleted) {
+        query = query.not('deleted_at', 'is', null);
+      } else {
+        query = query.is('deleted_at', null);
+      }
+
+      const { data, error } = await query.order('entry_date', { ascending: false });
 
       if (error) throw error;
       setRevenues(data || []);
@@ -169,14 +188,14 @@ const ProviderRevenue = ({ onRevenueUpdate }: ProviderRevenueProps) => {
     try {
       const { error } = await supabase
         .from('revenue_entries')
-        .delete()
+        .update({ deleted_at: new Date().toISOString() })
         .eq('id', id);
 
       if (error) throw error;
 
       toast({
         title: "Revenue Deleted",
-        description: "Revenue entry has been deleted",
+        description: "Revenue entry has been moved to archive",
       });
 
       fetchRevenues();
@@ -186,6 +205,32 @@ const ProviderRevenue = ({ onRevenueUpdate }: ProviderRevenueProps) => {
       toast({
         title: "Error",
         description: "Failed to delete revenue entry",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const restoreRevenue = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('revenue_entries')
+        .update({ deleted_at: null })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Revenue Restored",
+        description: "Revenue entry has been restored",
+      });
+
+      fetchRevenues();
+      onRevenueUpdate();
+    } catch (error) {
+      console.error('Error restoring revenue:', error);
+      toast({
+        title: "Error",
+        description: "Failed to restore revenue entry",
         variant: "destructive",
       });
     }
@@ -220,7 +265,24 @@ const ProviderRevenue = ({ onRevenueUpdate }: ProviderRevenueProps) => {
           <h2 className="text-2xl font-bold">Revenue Management</h2>
           <p className="text-muted-foreground">Track your income and payments</p>
         </div>
-        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+        <div className="flex gap-2">
+          <Select value={showDeleted ? "deleted" : "active"} onValueChange={(value) => {
+            setShowDeleted(value === "deleted");
+          }}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="active">Active Revenue</SelectItem>
+              <SelectItem value="deleted">
+                <div className="flex items-center gap-2">
+                  <Archive className="w-4 h-4" />
+                  Deleted
+                </div>
+              </SelectItem>
+            </SelectContent>
+          </Select>
+          <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
             <Button>
               <Plus className="w-4 h-4 mr-2" />
@@ -299,6 +361,7 @@ const ProviderRevenue = ({ onRevenueUpdate }: ProviderRevenueProps) => {
             </div>
           </DialogContent>
         </Dialog>
+        </div>
       </div>
 
       {/* Summary Cards */}
@@ -360,16 +423,18 @@ const ProviderRevenue = ({ onRevenueUpdate }: ProviderRevenueProps) => {
                     <Badge variant={revenue.is_paid ? "default" : "secondary"}>
                       {revenue.is_paid ? "Paid" : "Pending"}
                     </Badge>
-                    <Dialog open={isEditDialogOpen && editingRevenue?.id === revenue.id} onOpenChange={setIsEditDialogOpen}>
-                      <DialogTrigger asChild>
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => setEditingRevenue(revenue)}
-                        >
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                      </DialogTrigger>
+                    {!showDeleted ? (
+                      <>
+                        <Dialog open={isEditDialogOpen && editingRevenue?.id === revenue.id} onOpenChange={setIsEditDialogOpen}>
+                          <DialogTrigger asChild>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => setEditingRevenue(revenue)}
+                            >
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                          </DialogTrigger>
                       <DialogContent>
                         <DialogHeader>
                           <DialogTitle>Edit Revenue Entry</DialogTitle>
@@ -453,16 +518,41 @@ const ProviderRevenue = ({ onRevenueUpdate }: ProviderRevenueProps) => {
                               Save Changes
                             </Button>
                           </div>
-                        )}
-                      </DialogContent>
-                    </Dialog>
-                    <Button 
-                      variant="destructive" 
-                      size="sm" 
-                      onClick={() => deleteRevenue(revenue.id)}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
+                          )}
+                        </DialogContent>
+                      </Dialog>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="destructive" size="sm">
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Delete Revenue Entry</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Are you sure you want to delete this revenue entry of ${revenue.amount.toFixed(2)}? This action will move it to the archive. You can restore it later.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => deleteRevenue(revenue.id)}>
+                              Delete
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </>
+                    ) : (
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => restoreRevenue(revenue.id)}
+                      >
+                        <RotateCcw className="w-4 h-4 mr-1" />
+                        Restore
+                      </Button>
+                    )}
                   </div>
                 </div>
               </CardHeader>

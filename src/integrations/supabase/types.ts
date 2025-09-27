@@ -23,6 +23,7 @@ export type Database = {
           customer_id: string | null
           customer_name: string
           customer_phone: string | null
+          deleted_at: string | null
           dropoff_address: string | null
           dropoff_fee: number | null
           dropoff_requested: boolean | null
@@ -55,6 +56,7 @@ export type Database = {
           customer_id?: string | null
           customer_name: string
           customer_phone?: string | null
+          deleted_at?: string | null
           dropoff_address?: string | null
           dropoff_fee?: number | null
           dropoff_requested?: boolean | null
@@ -87,6 +89,7 @@ export type Database = {
           customer_id?: string | null
           customer_name?: string
           customer_phone?: string | null
+          deleted_at?: string | null
           dropoff_address?: string | null
           dropoff_fee?: number | null
           dropoff_requested?: boolean | null
@@ -120,6 +123,7 @@ export type Database = {
           customer_email: string | null
           customer_name: string
           customer_phone: string | null
+          deleted_at: string | null
           id: string
           last_service_date: string | null
           notes: string | null
@@ -138,6 +142,7 @@ export type Database = {
           customer_email?: string | null
           customer_name: string
           customer_phone?: string | null
+          deleted_at?: string | null
           id?: string
           last_service_date?: string | null
           notes?: string | null
@@ -156,6 +161,7 @@ export type Database = {
           customer_email?: string | null
           customer_name?: string
           customer_phone?: string | null
+          deleted_at?: string | null
           id?: string
           last_service_date?: string | null
           notes?: string | null
@@ -451,6 +457,7 @@ export type Database = {
           amount: number
           booking_id: string | null
           created_at: string
+          deleted_at: string | null
           description: string
           entry_date: string
           id: string
@@ -464,6 +471,7 @@ export type Database = {
           amount: number
           booking_id?: string | null
           created_at?: string
+          deleted_at?: string | null
           description: string
           entry_date?: string
           id?: string
@@ -477,6 +485,7 @@ export type Database = {
           amount?: number
           booking_id?: string | null
           created_at?: string
+          deleted_at?: string | null
           description?: string
           entry_date?: string
           id?: string

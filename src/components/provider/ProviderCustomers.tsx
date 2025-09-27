@@ -9,9 +9,21 @@ import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Users, Plus, Search, Phone, Mail, Calendar, DollarSign, Car, Edit, Trash2, CalendarPlus } from "lucide-react";
+import { Users, Plus, Search, Phone, Mail, Calendar, DollarSign, Car, Edit, Trash2, CalendarPlus, RotateCcw, Archive } from "lucide-react";
 import BookingDialog from "./BookingDialog";
 import { format } from "date-fns";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface CustomerRecord {
   id: string;
@@ -36,6 +48,7 @@ const ProviderCustomers = () => {
   const [customers, setCustomers] = useState<CustomerRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [showDeleted, setShowDeleted] = useState(false);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isBookingDialogOpen, setIsBookingDialogOpen] = useState(false);
@@ -57,18 +70,25 @@ const ProviderCustomers = () => {
     if (user) {
       fetchCustomers();
     }
-  }, [user]);
+  }, [user, showDeleted]);
 
   const fetchCustomers = async () => {
     if (!user) return;
 
     setLoading(true);
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from('customer_records')
         .select('*')
-        .eq('provider_id', user.id)
-        .order('created_at', { ascending: false });
+        .eq('provider_id', user.id);
+
+      if (showDeleted) {
+        query = query.not('deleted_at', 'is', null);
+      } else {
+        query = query.is('deleted_at', null);
+      }
+
+      const { data, error } = await query.order('created_at', { ascending: false });
 
       if (error) throw error;
       setCustomers(data || []);
@@ -183,14 +203,14 @@ const ProviderCustomers = () => {
     try {
       const { error } = await supabase
         .from('customer_records')
-        .delete()
+        .update({ deleted_at: new Date().toISOString() })
         .eq('id', id);
 
       if (error) throw error;
 
       toast({
         title: "Customer Deleted",
-        description: "Customer record has been deleted",
+        description: "Customer record has been moved to archive",
       });
 
       fetchCustomers();
@@ -199,6 +219,31 @@ const ProviderCustomers = () => {
       toast({
         title: "Error",
         description: "Failed to delete customer record",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const restoreCustomer = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('customer_records')
+        .update({ deleted_at: null })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Customer Restored",
+        description: "Customer record has been restored",
+      });
+
+      fetchCustomers();
+    } catch (error) {
+      console.error('Error restoring customer:', error);
+      toast({
+        title: "Error",
+        description: "Failed to restore customer record",
         variant: "destructive",
       });
     }
@@ -334,15 +379,33 @@ const ProviderCustomers = () => {
         </Dialog>
       </div>
 
-      {/* Search */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-        <Input
-          placeholder="Search customers by name, email, or vehicle..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-10"
-        />
+      {/* Search and Filter */}
+      <div className="flex gap-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+          <Input
+            placeholder="Search customers by name, email, or vehicle..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+        <Select value={showDeleted ? "deleted" : "active"} onValueChange={(value) => {
+          setShowDeleted(value === "deleted");
+        }}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="active">Active Customers</SelectItem>
+            <SelectItem value="deleted">
+              <div className="flex items-center gap-2">
+                <Archive className="w-4 h-4" />
+                Deleted
+              </div>
+            </SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Statistics */}
@@ -425,16 +488,18 @@ const ProviderCustomers = () => {
                       <CalendarPlus className="w-4 h-4 mr-1" />
                       Book Service
                     </Button>
-                    <Dialog open={isEditDialogOpen && editingCustomer?.id === customer.id} onOpenChange={setIsEditDialogOpen}>
-                      <DialogTrigger asChild>
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => setEditingCustomer(customer)}
-                        >
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                      </DialogTrigger>
+                    {!showDeleted ? (
+                      <>
+                        <Dialog open={isEditDialogOpen && editingCustomer?.id === customer.id} onOpenChange={setIsEditDialogOpen}>
+                          <DialogTrigger asChild>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => setEditingCustomer(customer)}
+                            >
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                          </DialogTrigger>
                       <DialogContent className="max-w-2xl">
                         <DialogHeader>
                           <DialogTitle>Edit Customer</DialogTitle>
@@ -546,16 +611,41 @@ const ProviderCustomers = () => {
                               Save Changes
                             </Button>
                           </div>
-                        )}
-                      </DialogContent>
-                    </Dialog>
-                    <Button 
-                      variant="destructive" 
-                      size="sm" 
-                      onClick={() => deleteCustomer(customer.id)}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
+                          )}
+                        </DialogContent>
+                      </Dialog>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="destructive" size="sm">
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Delete Customer</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Are you sure you want to delete {customer.customer_name}? This action will move the customer to the archive. You can restore it later.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => deleteCustomer(customer.id)}>
+                              Delete
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </>
+                    ) : (
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => restoreCustomer(customer.id)}
+                      >
+                        <RotateCcw className="w-4 h-4 mr-1" />
+                        Restore
+                      </Button>
+                    )}
                   </div>
                 </div>
               </CardHeader>

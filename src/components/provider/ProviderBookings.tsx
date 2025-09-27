@@ -10,8 +10,19 @@ import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Calendar, Clock, Phone, Mail, MapPin, Edit, Check, X, Plus } from "lucide-react";
+import { Calendar, Clock, Phone, Mail, MapPin, Edit, Check, X, Plus, Archive, RotateCcw, Trash2 } from "lucide-react";
 import { format } from "date-fns";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface Booking {
   id: string;
@@ -43,6 +54,7 @@ const ProviderBookings = ({ onBookingUpdate }: ProviderBookingsProps) => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("all");
+  const [showDeleted, setShowDeleted] = useState(false);
   const [editingBooking, setEditingBooking] = useState<Booking | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
@@ -50,18 +62,25 @@ const ProviderBookings = ({ onBookingUpdate }: ProviderBookingsProps) => {
     if (user) {
       fetchBookings();
     }
-  }, [user]);
+  }, [user, showDeleted]);
 
   const fetchBookings = async () => {
     if (!user) return;
 
     setLoading(true);
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from('bookings')
         .select('*')
-        .eq('provider_id', user.id)
-        .order('scheduled_date', { ascending: false });
+        .eq('provider_id', user.id);
+
+      if (showDeleted) {
+        query = query.not('deleted_at', 'is', null);
+      } else {
+        query = query.is('deleted_at', null);
+      }
+
+      const { data, error } = await query.order('scheduled_date', { ascending: false });
 
       if (error) throw error;
       setBookings(data || []);
@@ -143,6 +162,58 @@ const ProviderBookings = ({ onBookingUpdate }: ProviderBookingsProps) => {
     }
   };
 
+  const deleteBooking = async (bookingId: string) => {
+    try {
+      const { error } = await supabase
+        .from('bookings')
+        .update({ deleted_at: new Date().toISOString() })
+        .eq('id', bookingId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Booking Deleted",
+        description: "Booking has been moved to archive",
+      });
+
+      fetchBookings();
+      onBookingUpdate();
+    } catch (error) {
+      console.error('Error deleting booking:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete booking",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const restoreBooking = async (bookingId: string) => {
+    try {
+      const { error } = await supabase
+        .from('bookings')
+        .update({ deleted_at: null })
+        .eq('id', bookingId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Booking Restored",
+        description: "Booking has been restored",
+      });
+
+      fetchBookings();
+      onBookingUpdate();
+    } catch (error) {
+      console.error('Error restoring booking:', error);
+      toast({
+        title: "Error",
+        description: "Failed to restore booking",
+        variant: "destructive",
+      });
+    }
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'pending': return 'bg-yellow-100 text-yellow-800';
@@ -178,19 +249,37 @@ const ProviderBookings = ({ onBookingUpdate }: ProviderBookingsProps) => {
           <h2 className="text-2xl font-bold">Booking Management</h2>
           <p className="text-muted-foreground">Manage your service appointments</p>
         </div>
-        <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Filter by status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Bookings</SelectItem>
-            <SelectItem value="pending">Pending</SelectItem>
-            <SelectItem value="confirmed">Confirmed</SelectItem>
-            <SelectItem value="in_progress">In Progress</SelectItem>
-            <SelectItem value="completed">Completed</SelectItem>
-            <SelectItem value="cancelled">Cancelled</SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="flex gap-2">
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Filter by status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Bookings</SelectItem>
+              <SelectItem value="pending">Pending</SelectItem>
+              <SelectItem value="confirmed">Confirmed</SelectItem>
+              <SelectItem value="in_progress">In Progress</SelectItem>
+              <SelectItem value="completed">Completed</SelectItem>
+              <SelectItem value="cancelled">Cancelled</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={showDeleted ? "deleted" : "active"} onValueChange={(value) => {
+            setShowDeleted(value === "deleted");
+          }}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="active">Active Bookings</SelectItem>
+              <SelectItem value="deleted">
+                <div className="flex items-center gap-2">
+                  <Archive className="w-4 h-4" />
+                  Deleted
+                </div>
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {filteredBookings.length === 0 ? (
@@ -221,16 +310,18 @@ const ProviderBookings = ({ onBookingUpdate }: ProviderBookingsProps) => {
                     </Badge>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Dialog open={isEditDialogOpen && editingBooking?.id === booking.id} onOpenChange={setIsEditDialogOpen}>
-                      <DialogTrigger asChild>
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => setEditingBooking(booking)}
-                        >
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                      </DialogTrigger>
+                    {!showDeleted ? (
+                      <>
+                        <Dialog open={isEditDialogOpen && editingBooking?.id === booking.id} onOpenChange={setIsEditDialogOpen}>
+                          <DialogTrigger asChild>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => setEditingBooking(booking)}
+                            >
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                          </DialogTrigger>
                       <DialogContent>
                         <DialogHeader>
                           <DialogTitle>Edit Booking</DialogTitle>
@@ -314,7 +405,40 @@ const ProviderBookings = ({ onBookingUpdate }: ProviderBookingsProps) => {
                         size="sm" 
                         onClick={() => updateBookingStatus(booking.id, 'completed')}
                       >
-                        Complete
+                          Complete
+                        </Button>
+                      )}
+                      
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="destructive" size="sm">
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Delete Booking</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Are you sure you want to delete this booking for {booking.customer_name}? This action will move the booking to the archive. You can restore it later.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => deleteBooking(booking.id)}>
+                              Delete
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </>
+                    ) : (
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => restoreBooking(booking.id)}
+                      >
+                        <RotateCcw className="w-4 h-4 mr-1" />
+                        Restore
                       </Button>
                     )}
                   </div>
