@@ -410,11 +410,11 @@ const ServicePricing = () => {
                         </Button>
                       </DialogTrigger>
                       <DialogContent className="max-w-2xl">
-                        <DialogHeader>
-                          <DialogTitle>Edit Service Pricing</DialogTitle>
-                          <DialogDescription>
-                            Update pricing and options for {editingService.custom_name || editingService.service?.name}
-                          </DialogDescription>
+                         <DialogHeader>
+                           <DialogTitle>Edit Service Pricing</DialogTitle>
+                           <DialogDescription>
+                             Update pricing and options for {editingService?.custom_name || editingService?.service?.name || 'this service'}
+                           </DialogDescription>
                         </DialogHeader>
                         {editingService && (
                           <div className="space-y-4 max-h-[60vh] overflow-y-auto">
