@@ -17,7 +17,7 @@ const Header = () => {
   const [avatarUrl, setAvatarUrl] = useState<string>("");
   const { toast } = useToast();
   const { location, setLocation } = useGeoLocation();
-  const { isAdmin } = useAuth();
+  const { isAdmin, isProvider } = useAuth();
   const routerLocation = useLocation();
 
   useEffect(() => {
@@ -200,6 +200,14 @@ const Header = () => {
                       <Link to="/admin" className="cursor-pointer">
                         <Shield className="w-4 h-4 mr-2" />
                         Admin Dashboard
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                  {isProvider && (
+                    <DropdownMenuItem asChild>
+                      <Link to="/provider-dashboard" className="cursor-pointer">
+                        <Store className="w-4 h-4 mr-2" />
+                        Provider Dashboard
                       </Link>
                     </DropdownMenuItem>
                   )}
