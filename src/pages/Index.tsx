@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import Hero from "@/components/Hero";
 import ServiceCategories from "@/components/ServiceCategories";
 import FeaturedProviders from "@/components/FeaturedProviders";
-import WorldProvidersMap from "@/components/WorldProvidersMap";
+import ProvidersDirectory from "@/components/ProvidersDirectory";
 import HowItWorks from "@/components/HowItWorks";
 import ProviderCTA from "@/components/ProviderCTA";
 import { useToast } from "@/hooks/use-toast";
@@ -37,9 +37,7 @@ const Index = () => {
               Explore our network of verified automotive service providers across the country
             </p>
           </div>
-          <div className="h-[400px] md:h-[500px] lg:h-[600px]">
-            <WorldProvidersMap />
-          </div>
+          <ProvidersDirectory />
         </div>
       </div>
 
