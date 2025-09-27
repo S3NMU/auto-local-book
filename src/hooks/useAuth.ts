@@ -11,21 +11,24 @@ export const useAuth = () => {
   // Function to check admin role safely
   const checkAdminRole = async (userId: string) => {
     try {
-      const { data, error } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', userId)
-        .eq('role', 'admin')
-        .single();
-      
-      if (!error) {
-        setIsAdmin(!!data);
-      } else {
+      const { data, error } = await supabase.rpc('has_role', {
+        _user_id: userId,
+        _role: 'admin'
+      });
+
+      if (error) {
+        console.error('Error checking admin role via RPC:', error);
         setIsAdmin(false);
+        return false;
       }
+
+      const isAdminRole = data === true;
+      setIsAdmin(isAdminRole);
+      return isAdminRole;
     } catch (error) {
       console.error('Error checking admin role:', error);
       setIsAdmin(false);
+      return false;
     }
   };
 
@@ -39,23 +42,24 @@ export const useAuth = () => {
         // Defer admin role checking to prevent deadlocks
         if (session?.user) {
           setTimeout(() => {
-            checkAdminRole(session.user.id);
+            checkAdminRole(session.user!.id);
           }, 0);
         } else {
           setIsAdmin(false);
+          setLoading(false);
         }
-        
-        setLoading(false);
       }
     );
 
     // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
       
       if (session?.user) {
-        checkAdminRole(session.user.id);
+        await checkAdminRole(session.user.id);
+      } else {
+        setIsAdmin(false);
       }
       setLoading(false);
     });
