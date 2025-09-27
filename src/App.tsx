@@ -12,10 +12,6 @@ import Contact from "./pages/Contact";
 import Auth from "./pages/Auth";
 import AccountSettings from "./pages/AccountSettings";
 import ListShop from "./pages/ListShop";
-import HowItWorks from "./pages/HowItWorks";
-import Careers from "./pages/Careers";
-import Press from "./pages/Press";
-import Blog from "./pages/Blog";
 import Admin from "./pages/Admin";
 import ProviderDashboard from "./pages/ProviderDashboard";
 import NotFound from "./pages/NotFound";
@@ -37,10 +33,6 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/account" element={<AccountSettings />} />
             <Route path="/list-shop" element={<ListShop />} />
-            <Route path="/how-it-works" element={<HowItWorks />} />
-            <Route path="/careers" element={<Careers />} />
-            <Route path="/press" element={<Press />} />
-            <Route path="/blog" element={<Blog />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/provider-dashboard" element={<ProviderDashboard />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
