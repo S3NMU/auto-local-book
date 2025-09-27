@@ -7,28 +7,40 @@ export const useAuth = () => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isProvider, setIsProvider] = useState(false);
 
-  // Function to check admin role safely
-  const checkAdminRole = async (userId: string) => {
+  // Function to check user roles safely
+  const checkUserRoles = async (userId: string) => {
     try {
-      const { data, error } = await supabase.rpc('has_role', {
-        _user_id: userId,
-        _role: 'admin'
-      });
+      const [adminCheck, providerCheck] = await Promise.all([
+        supabase.rpc('has_role', {
+          _user_id: userId,
+          _role: 'admin'
+        }),
+        supabase.rpc('has_role', {
+          _user_id: userId,
+          _role: 'provider'
+        })
+      ]);
 
-      if (error) {
-        console.error('Error checking admin role via RPC:', error);
+      if (adminCheck.error) {
+        console.error('Error checking admin role:', adminCheck.error);
         setIsAdmin(false);
-        return false;
+      } else {
+        setIsAdmin(adminCheck.data === true);
       }
 
-      const isAdminRole = data === true;
-      setIsAdmin(isAdminRole);
-      return isAdminRole;
+      if (providerCheck.error) {
+        console.error('Error checking provider role:', providerCheck.error);
+        setIsProvider(false);
+      } else {
+        setIsProvider(providerCheck.data === true);
+      }
+
     } catch (error) {
-      console.error('Error checking admin role:', error);
+      console.error('Error checking user roles:', error);
       setIsAdmin(false);
-      return false;
+      setIsProvider(false);
     }
   };
 
@@ -39,13 +51,14 @@ export const useAuth = () => {
         setSession(session);
         setUser(session?.user ?? null);
         
-        // Defer admin role checking to prevent deadlocks
+        // Defer user role checking to prevent deadlocks
         if (session?.user) {
           setTimeout(() => {
-            checkAdminRole(session.user!.id);
+            checkUserRoles(session.user!.id);
           }, 0);
         } else {
           setIsAdmin(false);
+          setIsProvider(false);
           setLoading(false);
         }
       }
@@ -57,9 +70,10 @@ export const useAuth = () => {
       setUser(session?.user ?? null);
       
       if (session?.user) {
-        await checkAdminRole(session.user.id);
+        await checkUserRoles(session.user.id);
       } else {
         setIsAdmin(false);
+        setIsProvider(false);
       }
       setLoading(false);
     });
@@ -67,5 +81,5 @@ export const useAuth = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  return { user, session, loading, isAdmin };
+  return { user, session, loading, isAdmin, isProvider };
 };

@@ -9,9 +9,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Eye, EyeOff, ArrowLeft } from "lucide-react";
+import { Eye, EyeOff, ArrowLeft, User, Wrench } from "lucide-react";
 
 // Validation schemas
 const signInSchema = z.object({
@@ -25,6 +26,9 @@ const signUpSchema = z.object({
     .min(8, "Password must be at least 8 characters")
     .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, "Password must contain at least one uppercase letter, one lowercase letter, and one number"),
   confirmPassword: z.string(),
+  userType: z.enum(["user", "provider"], {
+    required_error: "Please select your account type",
+  }),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],
@@ -54,6 +58,7 @@ const Auth = () => {
       email: "",
       password: "",
       confirmPassword: "",
+      userType: "user",
     },
   });
 
@@ -120,11 +125,14 @@ const Auth = () => {
     try {
       const redirectUrl = `${window.location.origin}/`;
       
-      const { error } = await supabase.auth.signUp({
+      const { data: authData, error } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
         options: {
-          emailRedirectTo: redirectUrl
+          emailRedirectTo: redirectUrl,
+          data: {
+            user_type: data.userType
+          }
         }
       });
 
@@ -145,9 +153,36 @@ const Auth = () => {
         return;
       }
 
+      // If user was created successfully, add their role
+      if (authData.user) {
+        const { error: roleError } = await supabase
+          .from('user_roles')
+          .insert({
+            user_id: authData.user.id,
+            role: data.userType === 'provider' ? 'provider' : 'user'
+          });
+
+        if (roleError) {
+          console.error('Error setting user role:', roleError);
+        }
+
+        // If it's a provider, create their profile
+        if (data.userType === 'provider') {
+          const { error: profileError } = await supabase
+            .from('provider_profiles')
+            .insert({
+              user_id: authData.user.id
+            });
+
+          if (profileError) {
+            console.error('Error creating provider profile:', profileError);
+          }
+        }
+      }
+
       toast({
         title: "Account created!",
-        description: "Please check your email and click the confirmation link to complete registration.",
+        description: `Please check your email and click the confirmation link to complete your ${data.userType} registration.`,
       });
       
       // Switch to sign in tab
@@ -255,6 +290,41 @@ const Auth = () => {
                 </Alert>
 
                 <form onSubmit={signUpForm.handleSubmit(onSignUp)} className="space-y-4">
+                  <div className="space-y-3">
+                    <Label>Account Type</Label>
+                    <RadioGroup
+                      value={signUpForm.watch("userType")}
+                      onValueChange={(value) => signUpForm.setValue("userType", value as "user" | "provider")}
+                      className="grid grid-cols-2 gap-4"
+                    >
+                      <div className="flex items-center space-x-2 border rounded-lg p-4 hover:bg-accent cursor-pointer">
+                        <RadioGroupItem value="user" id="user" />
+                        <Label htmlFor="user" className="flex items-center gap-2 cursor-pointer flex-1">
+                          <User className="w-4 h-4" />
+                          <div>
+                            <div className="font-medium">Customer</div>
+                            <div className="text-xs text-muted-foreground">Find and book services</div>
+                          </div>
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2 border rounded-lg p-4 hover:bg-accent cursor-pointer">
+                        <RadioGroupItem value="provider" id="provider" />
+                        <Label htmlFor="provider" className="flex items-center gap-2 cursor-pointer flex-1">
+                          <Wrench className="w-4 h-4" />
+                          <div>
+                            <div className="font-medium">Service Provider</div>
+                            <div className="text-xs text-muted-foreground">Offer automotive services</div>
+                          </div>
+                        </Label>
+                      </div>
+                    </RadioGroup>
+                    {signUpForm.formState.errors.userType && (
+                      <p className="text-sm text-destructive">
+                        {signUpForm.formState.errors.userType.message}
+                      </p>
+                    )}
+                  </div>
+
                   <div className="space-y-2">
                     <Label htmlFor="signup-email">Email</Label>
                     <Input

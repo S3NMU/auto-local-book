@@ -14,6 +14,192 @@ export type Database = {
   }
   public: {
     Tables: {
+      bookings: {
+        Row: {
+          created_at: string
+          customer_email: string | null
+          customer_id: string | null
+          customer_name: string
+          customer_phone: string | null
+          duration_minutes: number | null
+          id: string
+          location_address: string | null
+          location_city: string | null
+          location_state: string | null
+          location_zip_code: string | null
+          notes: string | null
+          price_final: number | null
+          price_quoted: number | null
+          provider_id: string
+          scheduled_date: string
+          service_description: string | null
+          service_type: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          customer_email?: string | null
+          customer_id?: string | null
+          customer_name: string
+          customer_phone?: string | null
+          duration_minutes?: number | null
+          id?: string
+          location_address?: string | null
+          location_city?: string | null
+          location_state?: string | null
+          location_zip_code?: string | null
+          notes?: string | null
+          price_final?: number | null
+          price_quoted?: number | null
+          provider_id: string
+          scheduled_date: string
+          service_description?: string | null
+          service_type: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          customer_email?: string | null
+          customer_id?: string | null
+          customer_name?: string
+          customer_phone?: string | null
+          duration_minutes?: number | null
+          id?: string
+          location_address?: string | null
+          location_city?: string | null
+          location_state?: string | null
+          location_zip_code?: string | null
+          notes?: string | null
+          price_final?: number | null
+          price_quoted?: number | null
+          provider_id?: string
+          scheduled_date?: string
+          service_description?: string | null
+          service_type?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      customer_records: {
+        Row: {
+          created_at: string
+          customer_address: string | null
+          customer_email: string | null
+          customer_name: string
+          customer_phone: string | null
+          id: string
+          last_service_date: string | null
+          notes: string | null
+          provider_id: string
+          total_services: number | null
+          total_spent: number | null
+          updated_at: string
+          vehicle_make: string | null
+          vehicle_model: string | null
+          vehicle_vin: string | null
+          vehicle_year: number | null
+        }
+        Insert: {
+          created_at?: string
+          customer_address?: string | null
+          customer_email?: string | null
+          customer_name: string
+          customer_phone?: string | null
+          id?: string
+          last_service_date?: string | null
+          notes?: string | null
+          provider_id: string
+          total_services?: number | null
+          total_spent?: number | null
+          updated_at?: string
+          vehicle_make?: string | null
+          vehicle_model?: string | null
+          vehicle_vin?: string | null
+          vehicle_year?: number | null
+        }
+        Update: {
+          created_at?: string
+          customer_address?: string | null
+          customer_email?: string | null
+          customer_name?: string
+          customer_phone?: string | null
+          id?: string
+          last_service_date?: string | null
+          notes?: string | null
+          provider_id?: string
+          total_services?: number | null
+          total_spent?: number | null
+          updated_at?: string
+          vehicle_make?: string | null
+          vehicle_model?: string | null
+          vehicle_vin?: string | null
+          vehicle_year?: number | null
+        }
+        Relationships: []
+      }
+      provider_profiles: {
+        Row: {
+          business_address: string | null
+          business_city: string | null
+          business_description: string | null
+          business_hours: Json | null
+          business_name: string | null
+          business_phone: string | null
+          business_state: string | null
+          business_zip_code: string | null
+          created_at: string
+          id: string
+          is_mobile_service: boolean | null
+          license_number: string | null
+          service_radius_miles: number | null
+          specialties: string[] | null
+          updated_at: string
+          user_id: string
+          years_experience: number | null
+        }
+        Insert: {
+          business_address?: string | null
+          business_city?: string | null
+          business_description?: string | null
+          business_hours?: Json | null
+          business_name?: string | null
+          business_phone?: string | null
+          business_state?: string | null
+          business_zip_code?: string | null
+          created_at?: string
+          id?: string
+          is_mobile_service?: boolean | null
+          license_number?: string | null
+          service_radius_miles?: number | null
+          specialties?: string[] | null
+          updated_at?: string
+          user_id: string
+          years_experience?: number | null
+        }
+        Update: {
+          business_address?: string | null
+          business_city?: string | null
+          business_description?: string | null
+          business_hours?: Json | null
+          business_name?: string | null
+          business_phone?: string | null
+          business_state?: string | null
+          business_zip_code?: string | null
+          created_at?: string
+          id?: string
+          is_mobile_service?: boolean | null
+          license_number?: string | null
+          service_radius_miles?: number | null
+          specialties?: string[] | null
+          updated_at?: string
+          user_id?: string
+          years_experience?: number | null
+        }
+        Relationships: []
+      }
       provider_requests: {
         Row: {
           address: string
@@ -215,6 +401,48 @@ export type Database = {
         }
         Relationships: []
       }
+      revenue_entries: {
+        Row: {
+          amount: number
+          booking_id: string | null
+          created_at: string
+          description: string
+          entry_date: string
+          id: string
+          is_paid: boolean | null
+          notes: string | null
+          payment_method: string | null
+          provider_id: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          booking_id?: string | null
+          created_at?: string
+          description: string
+          entry_date?: string
+          id?: string
+          is_paid?: boolean | null
+          notes?: string | null
+          payment_method?: string | null
+          provider_id: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          booking_id?: string | null
+          created_at?: string
+          description?: string
+          entry_date?: string
+          id?: string
+          is_paid?: boolean | null
+          notes?: string | null
+          payment_method?: string | null
+          provider_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       reviews: {
         Row: {
           created_at: string
@@ -351,7 +579,7 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "admin" | "user"
+      app_role: "admin" | "user" | "provider"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -479,7 +707,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "user"],
+      app_role: ["admin", "user", "provider"],
     },
   },
 } as const
