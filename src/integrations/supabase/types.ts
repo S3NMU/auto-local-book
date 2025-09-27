@@ -378,7 +378,29 @@ export type Database = {
       }
     }
     Functions: {
-      [_ in never]: never
+      get_public_providers: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          address: string
+          business_hours: Json
+          business_name: string
+          city: string
+          created_at: string
+          description: string
+          id: string
+          is_mobile: boolean
+          is_verified: boolean
+          latitude: number
+          longitude: number
+          rating: number
+          review_count: number
+          specialties: string[]
+          state: string
+          updated_at: string
+          website_url: string
+          zip_code: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
