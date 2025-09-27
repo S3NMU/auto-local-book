@@ -30,7 +30,7 @@ const ServiceCategories = () => {
     if (!location) {
       toast({
         title: "Location required",
-        description: "Please set your location first to find nearby services.",
+        description: "Please set your location first to find nearby providers.",
         variant: "destructive",
       });
       return;
@@ -171,7 +171,7 @@ const ServiceCategories = () => {
         <SearchDialog
           open={searchDialogOpen}
           onOpenChange={setSearchDialogOpen}
-          defaultService={selectedService}
+          defaultServices={selectedService ? [selectedService] : []}
         />
       </div>
     </section>

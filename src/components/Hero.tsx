@@ -63,7 +63,7 @@ const Hero = () => {
                   />
                 </div>
                 <Button variant="hero" size="lg" className="w-full py-3" onClick={handleSearchSubmit}>
-                  Find Services
+                  Find Providers
                 </Button>
               </div>
             </div>
@@ -142,7 +142,7 @@ const Hero = () => {
       <SearchDialog
         open={searchDialogOpen}
         onOpenChange={setSearchDialogOpen}
-        defaultService={serviceQuery}
+        defaultServices={serviceQuery ? [serviceQuery] : []}
       />
     </section>
   );

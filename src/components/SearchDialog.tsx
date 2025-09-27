@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Search, MapPin, Filter, Calendar } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Search, MapPin, Filter, Calendar, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "@/hooks/useLocation";
 import { useToast } from "@/hooks/use-toast";
@@ -13,11 +14,11 @@ import { useToast } from "@/hooks/use-toast";
 interface SearchDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  defaultService?: string;
+  defaultServices?: string[];
 }
 
-const SearchDialog = ({ open, onOpenChange, defaultService = "" }: SearchDialogProps) => {
-  const [service, setService] = useState(defaultService);
+const SearchDialog = ({ open, onOpenChange, defaultServices = [] }: SearchDialogProps) => {
+  const [selectedServices, setSelectedServices] = useState<string[]>(defaultServices);
   const [priceRange, setPriceRange] = useState("");
   const [timePreference, setTimePreference] = useState("");
   const navigate = useNavigate();
@@ -26,14 +27,27 @@ const SearchDialog = ({ open, onOpenChange, defaultService = "" }: SearchDialogP
 
   const serviceOptions = [
     "Oil Change", "Brake Service", "Diagnostics", "Tune-Up", 
-    "Inspection", "Auto Detailing", "Tire Service", "Battery Replacement"
+    "Inspection", "Auto Detailing", "Tire Service", "Battery Replacement",
+    "Engine Repair", "Transmission Service", "Air Conditioning", "Electrical Work"
   ];
+
+  const handleServiceToggle = (service: string) => {
+    setSelectedServices(prev => 
+      prev.includes(service) 
+        ? prev.filter(s => s !== service)
+        : [...prev, service]
+    );
+  };
+
+  const removeService = (service: string) => {
+    setSelectedServices(prev => prev.filter(s => s !== service));
+  };
 
   const handleSearch = () => {
     if (!location) {
       toast({
         title: "Location required",
-        description: "Please set your location first to find nearby services.",
+        description: "Please set your location first to find nearby providers.",
         variant: "destructive",
       });
       return;
@@ -41,7 +55,9 @@ const SearchDialog = ({ open, onOpenChange, defaultService = "" }: SearchDialogP
 
     // Build search parameters
     const searchParams = new URLSearchParams();
-    if (service) searchParams.set('service', service);
+    if (selectedServices.length > 0) {
+      searchParams.set('services', selectedServices.join(','));
+    }
     if (priceRange) searchParams.set('price', priceRange);
     if (timePreference) searchParams.set('time', timePreference);
     
@@ -49,9 +65,13 @@ const SearchDialog = ({ open, onOpenChange, defaultService = "" }: SearchDialogP
     navigate(`/providers?${searchParams.toString()}`);
     onOpenChange(false);
     
+    const serviceText = selectedServices.length > 0 
+      ? selectedServices.join(', ') 
+      : 'automotive';
+    
     toast({
       title: "Searching providers",
-      description: `Finding ${service || 'automotive'} services near ${location.address}`,
+      description: `Finding providers for ${serviceText} services near ${location.address}`,
     });
   };
 
@@ -61,31 +81,50 @@ const SearchDialog = ({ open, onOpenChange, defaultService = "" }: SearchDialogP
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Search className="w-5 h-5" />
-            Find Auto Services
+            Find Service Providers
           </DialogTitle>
           <DialogDescription>
             {location 
               ? `Searching near ${location.address}`
-              : "Set your location to find nearby services"
+              : "Set your location to find nearby providers"
             }
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="service-select">Service Type</Label>
-            <Select value={service} onValueChange={setService}>
-              <SelectTrigger>
-                <SelectValue placeholder="What service do you need?" />
-              </SelectTrigger>
-              <SelectContent>
-                {serviceOptions.map((option) => (
-                  <SelectItem key={option} value={option}>
-                    {option}
-                  </SelectItem>
+            <Label>Service Types</Label>
+            <div className="max-h-40 overflow-y-auto border rounded-lg p-3 space-y-2">
+              {serviceOptions.map((service) => (
+                <div key={service} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={service}
+                    checked={selectedServices.includes(service)}
+                    onCheckedChange={() => handleServiceToggle(service)}
+                  />
+                  <label 
+                    htmlFor={service} 
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                  >
+                    {service}
+                  </label>
+                </div>
+              ))}
+            </div>
+            
+            {selectedServices.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-2">
+                {selectedServices.map((service) => (
+                  <Badge key={service} variant="secondary" className="flex items-center gap-1">
+                    {service}
+                    <X 
+                      className="w-3 h-3 cursor-pointer hover:text-destructive" 
+                      onClick={() => removeService(service)}
+                    />
+                  </Badge>
                 ))}
-              </SelectContent>
-            </Select>
+              </div>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -136,7 +175,7 @@ const SearchDialog = ({ open, onOpenChange, defaultService = "" }: SearchDialogP
             </Button>
             <Button onClick={handleSearch} disabled={!location} className="flex-1">
               <Search className="w-4 h-4 mr-2" />
-              Search
+              Find Providers
             </Button>
           </div>
         </div>

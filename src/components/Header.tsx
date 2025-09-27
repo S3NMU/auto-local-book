@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { MapPin, User, LogOut } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { MapPin, User, LogOut, ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -79,22 +80,49 @@ const Header = () => {
 
           {/* Actions */}
           <div className="flex items-center space-x-3">
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="hidden sm:flex flex-col items-start"
-              onClick={() => setLocationDialogOpen(true)}
-            >
-              <div className="flex items-center gap-2">
+            {location ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="hidden sm:flex items-center gap-2 max-w-48"
+                  >
+                    <MapPin className="w-4 h-4 flex-shrink-0" />
+                    <div className="flex flex-col items-start min-w-0">
+                      <span className="text-xs text-muted-foreground">Location</span>
+                      <span className="text-sm font-medium truncate max-w-32">
+                        {location.address.split(',')[0]}
+                      </span>
+                    </div>
+                    <ChevronDown className="w-3 h-3 flex-shrink-0" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-64 bg-background border border-border shadow-lg z-50">
+                  <div className="p-3 border-b border-border">
+                    <p className="text-sm font-medium">Current Location</p>
+                    <p className="text-xs text-muted-foreground mt-1">{location.address}</p>
+                  </div>
+                  <DropdownMenuItem 
+                    onClick={() => setLocationDialogOpen(true)}
+                    className="cursor-pointer"
+                  >
+                    <MapPin className="w-4 h-4 mr-2" />
+                    Change Location
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="hidden sm:flex"
+                onClick={() => setLocationDialogOpen(true)}
+              >
                 <MapPin className="w-4 h-4" />
-                <span>{location ? "Change Location" : "Find Location"}</span>
-              </div>
-              {location && (
-                <span className="text-xs text-muted-foreground truncate max-w-32">
-                  {location.address.split(',')[0]}
-                </span>
-              )}
-            </Button>
+                Find Location
+              </Button>
+            )}
             {session ? (
               <Button variant="outline" size="sm" onClick={handleSignOut}>
                 <LogOut className="w-4 h-4" />
