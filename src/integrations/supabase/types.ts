@@ -57,20 +57,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "provider_services_provider_id_fkey"
-            columns: ["provider_id"]
-            isOneToOne: false
-            referencedRelation: "providers_public"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "provider_services_provider_id_fkey"
-            columns: ["provider_id"]
-            isOneToOne: false
-            referencedRelation: "providers_with_contact"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "provider_services_service_id_fkey"
             columns: ["service_id"]
             isOneToOne: false
@@ -187,20 +173,6 @@ export type Database = {
             referencedRelation: "providers"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "reviews_provider_id_fkey"
-            columns: ["provider_id"]
-            isOneToOne: false
-            referencedRelation: "providers_public"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "reviews_provider_id_fkey"
-            columns: ["provider_id"]
-            isOneToOne: false
-            referencedRelation: "providers_with_contact"
-            referencedColumns: ["id"]
-          },
         ]
       }
       services: {
@@ -241,141 +213,7 @@ export type Database = {
       }
     }
     Views: {
-      providers_public: {
-        Row: {
-          address: string | null
-          business_hours: Json | null
-          business_name: string | null
-          city: string | null
-          created_at: string | null
-          description: string | null
-          id: string | null
-          is_mobile: boolean | null
-          is_verified: boolean | null
-          latitude: number | null
-          longitude: number | null
-          rating: number | null
-          review_count: number | null
-          specialties: string[] | null
-          state: string | null
-          updated_at: string | null
-          website_url: string | null
-          zip_code: string | null
-        }
-        Insert: {
-          address?: string | null
-          business_hours?: Json | null
-          business_name?: string | null
-          city?: string | null
-          created_at?: string | null
-          description?: string | null
-          id?: string | null
-          is_mobile?: boolean | null
-          is_verified?: boolean | null
-          latitude?: number | null
-          longitude?: number | null
-          rating?: number | null
-          review_count?: number | null
-          specialties?: string[] | null
-          state?: string | null
-          updated_at?: string | null
-          website_url?: string | null
-          zip_code?: string | null
-        }
-        Update: {
-          address?: string | null
-          business_hours?: Json | null
-          business_name?: string | null
-          city?: string | null
-          created_at?: string | null
-          description?: string | null
-          id?: string | null
-          is_mobile?: boolean | null
-          is_verified?: boolean | null
-          latitude?: number | null
-          longitude?: number | null
-          rating?: number | null
-          review_count?: number | null
-          specialties?: string[] | null
-          state?: string | null
-          updated_at?: string | null
-          website_url?: string | null
-          zip_code?: string | null
-        }
-        Relationships: []
-      }
-      providers_with_contact: {
-        Row: {
-          address: string | null
-          business_hours: Json | null
-          business_name: string | null
-          city: string | null
-          created_at: string | null
-          description: string | null
-          email: string | null
-          id: string | null
-          is_mobile: boolean | null
-          is_verified: boolean | null
-          latitude: number | null
-          longitude: number | null
-          owner_name: string | null
-          phone: string | null
-          rating: number | null
-          review_count: number | null
-          specialties: string[] | null
-          state: string | null
-          updated_at: string | null
-          website_url: string | null
-          zip_code: string | null
-        }
-        Insert: {
-          address?: string | null
-          business_hours?: Json | null
-          business_name?: string | null
-          city?: string | null
-          created_at?: string | null
-          description?: string | null
-          email?: string | null
-          id?: string | null
-          is_mobile?: boolean | null
-          is_verified?: boolean | null
-          latitude?: number | null
-          longitude?: number | null
-          owner_name?: string | null
-          phone?: string | null
-          rating?: number | null
-          review_count?: number | null
-          specialties?: string[] | null
-          state?: string | null
-          updated_at?: string | null
-          website_url?: string | null
-          zip_code?: string | null
-        }
-        Update: {
-          address?: string | null
-          business_hours?: Json | null
-          business_name?: string | null
-          city?: string | null
-          created_at?: string | null
-          description?: string | null
-          email?: string | null
-          id?: string | null
-          is_mobile?: boolean | null
-          is_verified?: boolean | null
-          latitude?: number | null
-          longitude?: number | null
-          owner_name?: string | null
-          phone?: string | null
-          rating?: number | null
-          review_count?: number | null
-          specialties?: string[] | null
-          state?: string | null
-          updated_at?: string | null
-          website_url?: string | null
-          zip_code?: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       [_ in never]: never
