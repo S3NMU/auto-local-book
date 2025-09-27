@@ -8,7 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Settings, Save } from "lucide-react";
+import { Settings, Save, ExternalLink } from "lucide-react";
 
 interface ProviderProfile {
   business_name: string;
@@ -134,10 +134,19 @@ const ProviderProfile = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold">Business Profile</h2>
-        <p className="text-muted-foreground">Manage your business information and service details</p>
-      </div>
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-bold">Business Profile</h2>
+            <p className="text-muted-foreground">Manage your business information and service details</p>
+          </div>
+          <Button 
+            variant="outline" 
+            onClick={() => window.open(`/providers?id=${user?.id}`, '_blank')}
+          >
+            <ExternalLink className="w-4 h-4 mr-2" />
+            View Public Profile
+          </Button>
+        </div>
 
       <Card>
         <CardHeader>

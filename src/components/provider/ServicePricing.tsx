@@ -89,12 +89,12 @@ const ServicePricing = () => {
       if (servicesError) throw servicesError;
       setAvailableServices(servicesData || []);
 
-      // Fetch provider services
+      // Fetch provider services with improved error handling
       const { data: providerData, error: providerError } = await supabase
         .from('provider_services')
         .select(`
           *,
-          service:services(*)
+          services!inner(*)
         `)
         .eq('provider_id', user!.id);
 
