@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,6 +31,7 @@ interface ProviderProfile {
 }
 
 const ProviderProfile = () => {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
@@ -153,7 +155,7 @@ const ProviderProfile = () => {
           </div>
           <Button 
             variant="outline" 
-            onClick={() => window.open(`/providers?id=${user?.id}`, '_blank')}
+            onClick={() => navigate(`/providers?id=${user?.id}`)}
           >
             <ExternalLink className="w-4 h-4 mr-2" />
             View Public Profile
