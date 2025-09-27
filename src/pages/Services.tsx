@@ -97,7 +97,7 @@ const Services = () => {
   ];
 
   return (
-    <div className="bg-background">
+    <div className="bg-background scroll-smooth">
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-foreground mb-4">
@@ -112,8 +112,15 @@ const Services = () => {
           {services.map((service) => {
             const IconComponent = service.icon;
             const expectationsList = service.whatToExpect || [];
+            
+            // Create proper ID for anchor linking
+            let serviceId = service.title.toLowerCase().replace(/[\s&]/g, '-');
+            if (service.title === "Computer Diagnostic") serviceId = "computer-diagnostic";
+            if (service.title === "Battery & Electrical") serviceId = "battery-electrical";
+            if (service.title === "Air Conditioning") serviceId = "air-conditioning";
+            
             return (
-              <Card key={service.id} id={service.title.toLowerCase().replace(/[\s&]/g, '-')} className="hover:shadow-lg transition-shadow">
+              <Card key={service.id} id={serviceId} className="hover:shadow-lg transition-shadow scroll-mt-8">
                 <CardHeader>
                   <div className="flex items-start space-x-4">
                     <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
