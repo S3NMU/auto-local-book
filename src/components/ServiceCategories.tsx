@@ -1,5 +1,10 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useNavigate } from "react-router-dom";
+import { useLocation } from "@/hooks/useLocation";
+import { useToast } from "@/hooks/use-toast";
+import SearchDialog from "./SearchDialog";
 import { 
   Wrench, 
   Car, 
@@ -15,6 +20,30 @@ import brakesImage from "@/assets/service-brakes.jpg";
 import diagnosticsImage from "@/assets/service-diagnostics.jpg";
 
 const ServiceCategories = () => {
+  const [searchDialogOpen, setSearchDialogOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState("");
+  const navigate = useNavigate();
+  const { location } = useLocation();
+  const { toast } = useToast();
+
+  const handleServiceClick = (serviceTitle: string) => {
+    if (!location) {
+      toast({
+        title: "Location required",
+        description: "Please set your location first to find nearby services.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setSelectedService(serviceTitle);
+    setSearchDialogOpen(true);
+  };
+
+  const handleViewAllServices = () => {
+    navigate("/services");
+  };
+
   const categories = [
     {
       icon: Wrench,
@@ -93,6 +122,7 @@ const ServiceCategories = () => {
                 key={category.title}
                 className="bg-card rounded-lg p-6 shadow-card hover:shadow-hover transition-smooth border border-border group cursor-pointer animate-fade-scale"
                 style={{animationDelay: `${index * 0.1}s`}}
+                onClick={() => handleServiceClick(category.title)}
               >
                 <div className="relative mb-4">
                   <div className="w-16 h-16 bg-primary/10 rounded-lg flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-smooth">
@@ -117,7 +147,14 @@ const ServiceCategories = () => {
                   <span className="text-sm text-muted-foreground">{category.timeRange}</span>
                 </div>
                 
-                <Button variant="outline" className="w-full group-hover:bg-primary group-hover:text-primary-foreground">
+                <Button 
+                  variant="outline" 
+                  className="w-full group-hover:bg-primary group-hover:text-primary-foreground"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleServiceClick(category.title);
+                  }}
+                >
                   Find Providers
                 </Button>
               </div>
@@ -126,10 +163,16 @@ const ServiceCategories = () => {
         </div>
 
         <div className="text-center">
-          <Button variant="hero" size="lg">
+          <Button variant="hero" size="lg" onClick={handleViewAllServices}>
             View All Services
           </Button>
         </div>
+
+        <SearchDialog
+          open={searchDialogOpen}
+          onOpenChange={setSearchDialogOpen}
+          defaultService={selectedService}
+        />
       </div>
     </section>
   );

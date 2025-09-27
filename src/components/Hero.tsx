@@ -1,9 +1,26 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MapPin, Search, Star, Users, Wrench } from "lucide-react";
+import { useLocation } from "@/hooks/useLocation";
+import LocationDialog from "./LocationDialog";
+import SearchDialog from "./SearchDialog";
 import heroImage from "@/assets/hero-automotive.jpg";
 
 const Hero = () => {
+  const [searchDialogOpen, setSearchDialogOpen] = useState(false);
+  const [locationDialogOpen, setLocationDialogOpen] = useState(false);
+  const [serviceQuery, setServiceQuery] = useState("");
+  const { location, setLocation } = useLocation();
+
+  const handleLocationClick = () => {
+    setLocationDialogOpen(true);
+  };
+
+  const handleSearchSubmit = () => {
+    setSearchDialogOpen(true);
+  };
+
   return (
     <section className="relative bg-gradient-subtle pt-8 pb-16">
       <div className="container mx-auto px-4">
@@ -28,8 +45,11 @@ const Hero = () => {
                 <div className="relative">
                   <MapPin className="absolute left-3 top-3 w-5 h-5 text-muted-foreground" />
                   <Input 
-                    placeholder="Enter your location or ZIP code"
-                    className="pl-10 py-3 text-base"
+                    placeholder={location ? location.address : "Enter your location or ZIP code"}
+                    className="pl-10 py-3 text-base cursor-pointer"
+                    onClick={handleLocationClick}
+                    readOnly
+                    value={location?.address || ""}
                   />
                 </div>
                 <div className="relative">
@@ -37,9 +57,12 @@ const Hero = () => {
                   <Input 
                     placeholder="What service do you need?"
                     className="pl-10 py-3 text-base"
+                    value={serviceQuery}
+                    onChange={(e) => setServiceQuery(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSearchSubmit()}
                   />
                 </div>
-                <Button variant="hero" size="lg" className="w-full py-3">
+                <Button variant="hero" size="lg" className="w-full py-3" onClick={handleSearchSubmit}>
                   Find Services
                 </Button>
               </div>
@@ -109,6 +132,18 @@ const Hero = () => {
           </div>
         </div>
       </div>
+
+      <LocationDialog
+        open={locationDialogOpen}
+        onOpenChange={setLocationDialogOpen}
+        onLocationSelect={setLocation}
+      />
+
+      <SearchDialog
+        open={searchDialogOpen}
+        onOpenChange={setSearchDialogOpen}
+        defaultService={serviceQuery}
+      />
     </section>
   );
 };
