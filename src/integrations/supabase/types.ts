@@ -16,11 +16,16 @@ export type Database = {
     Tables: {
       bookings: {
         Row: {
+          additional_fees: number | null
           created_at: string
+          currency: string | null
           customer_email: string | null
           customer_id: string | null
           customer_name: string
           customer_phone: string | null
+          dropoff_address: string | null
+          dropoff_fee: number | null
+          dropoff_requested: boolean | null
           duration_minutes: number | null
           id: string
           location_address: string | null
@@ -28,21 +33,31 @@ export type Database = {
           location_state: string | null
           location_zip_code: string | null
           notes: string | null
+          pickup_address: string | null
+          pickup_fee: number | null
+          pickup_requested: boolean | null
           price_final: number | null
           price_quoted: number | null
           provider_id: string
           scheduled_date: string
           service_description: string | null
+          service_ids: string[] | null
           service_type: string
           status: string
+          total_service_cost: number | null
           updated_at: string
         }
         Insert: {
+          additional_fees?: number | null
           created_at?: string
+          currency?: string | null
           customer_email?: string | null
           customer_id?: string | null
           customer_name: string
           customer_phone?: string | null
+          dropoff_address?: string | null
+          dropoff_fee?: number | null
+          dropoff_requested?: boolean | null
           duration_minutes?: number | null
           id?: string
           location_address?: string | null
@@ -50,21 +65,31 @@ export type Database = {
           location_state?: string | null
           location_zip_code?: string | null
           notes?: string | null
+          pickup_address?: string | null
+          pickup_fee?: number | null
+          pickup_requested?: boolean | null
           price_final?: number | null
           price_quoted?: number | null
           provider_id: string
           scheduled_date: string
           service_description?: string | null
+          service_ids?: string[] | null
           service_type: string
           status?: string
+          total_service_cost?: number | null
           updated_at?: string
         }
         Update: {
+          additional_fees?: number | null
           created_at?: string
+          currency?: string | null
           customer_email?: string | null
           customer_id?: string | null
           customer_name?: string
           customer_phone?: string | null
+          dropoff_address?: string | null
+          dropoff_fee?: number | null
+          dropoff_requested?: boolean | null
           duration_minutes?: number | null
           id?: string
           location_address?: string | null
@@ -72,13 +97,18 @@ export type Database = {
           location_state?: string | null
           location_zip_code?: string | null
           notes?: string | null
+          pickup_address?: string | null
+          pickup_fee?: number | null
+          pickup_requested?: boolean | null
           price_final?: number | null
           price_quoted?: number | null
           provider_id?: string
           scheduled_date?: string
           service_description?: string | null
+          service_ids?: string[] | null
           service_type?: string
           status?: string
+          total_service_cost?: number | null
           updated_at?: string
         }
         Relationships: []
@@ -278,10 +308,15 @@ export type Database = {
       provider_services: {
         Row: {
           created_at: string
+          currency: string | null
+          dropoff_available: boolean | null
+          dropoff_fee: number | null
           duration_minutes: number | null
           id: string
           is_available: boolean | null
           notes: string | null
+          pickup_available: boolean | null
+          pickup_fee: number | null
           price_max: number | null
           price_min: number | null
           provider_id: string
@@ -289,10 +324,15 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          currency?: string | null
+          dropoff_available?: boolean | null
+          dropoff_fee?: number | null
           duration_minutes?: number | null
           id?: string
           is_available?: boolean | null
           notes?: string | null
+          pickup_available?: boolean | null
+          pickup_fee?: number | null
           price_max?: number | null
           price_min?: number | null
           provider_id: string
@@ -300,10 +340,15 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          currency?: string | null
+          dropoff_available?: boolean | null
+          dropoff_fee?: number | null
           duration_minutes?: number | null
           id?: string
           is_available?: boolean | null
           notes?: string | null
+          pickup_available?: boolean | null
+          pickup_fee?: number | null
           price_max?: number | null
           price_min?: number | null
           provider_id?: string

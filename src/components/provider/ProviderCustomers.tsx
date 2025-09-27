@@ -9,7 +9,8 @@ import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Users, Plus, Search, Phone, Mail, Calendar, DollarSign, Car, Edit, Trash2 } from "lucide-react";
+import { Users, Plus, Search, Phone, Mail, Calendar, DollarSign, Car, Edit, Trash2, CalendarPlus } from "lucide-react";
+import BookingDialog from "./BookingDialog";
 import { format } from "date-fns";
 
 interface CustomerRecord {
@@ -37,7 +38,9 @@ const ProviderCustomers = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isBookingDialogOpen, setIsBookingDialogOpen] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState<CustomerRecord | null>(null);
+  const [bookingCustomer, setBookingCustomer] = useState<CustomerRecord | null>(null);
   const [newCustomer, setNewCustomer] = useState({
     customer_name: "",
     customer_email: "",
@@ -411,6 +414,17 @@ const ProviderCustomers = () => {
                     <Badge variant="outline">
                       {customer.total_services} service{customer.total_services !== 1 ? 's' : ''}
                     </Badge>
+                    <Button
+                      variant="default"
+                      size="sm"
+                      onClick={() => {
+                        setBookingCustomer(customer);
+                        setIsBookingDialogOpen(true);
+                      }}
+                    >
+                      <CalendarPlus className="w-4 h-4 mr-1" />
+                      Book Service
+                    </Button>
                     <Dialog open={isEditDialogOpen && editingCustomer?.id === customer.id} onOpenChange={setIsEditDialogOpen}>
                       <DialogTrigger asChild>
                         <Button 
@@ -589,6 +603,16 @@ const ProviderCustomers = () => {
             </Card>
           ))}
         </div>
+      )}
+
+      {/* Booking Dialog */}
+      {bookingCustomer && user && (
+        <BookingDialog
+          open={isBookingDialogOpen}
+          onOpenChange={setIsBookingDialogOpen}
+          customer={bookingCustomer}
+          providerId={user.id}
+        />
       )}
     </div>
   );

@@ -23,6 +23,7 @@ import ProviderBookings from "@/components/provider/ProviderBookings";
 import ProviderRevenue from "@/components/provider/ProviderRevenue";
 import ProviderCustomers from "@/components/provider/ProviderCustomers";
 import ProviderProfile from "@/components/provider/ProviderProfile";
+import ServicePricing from "@/components/provider/ServicePricing";
 
 const ProviderDashboard = () => {
   const { user, isProvider, loading } = useAuth();
@@ -173,7 +174,7 @@ const ProviderDashboard = () => {
 
       {/* Main Dashboard */}
       <Tabs defaultValue="analytics" className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="analytics" className="flex items-center gap-2">
             <BarChart3 className="w-4 h-4" />
             Analytics
@@ -189,6 +190,10 @@ const ProviderDashboard = () => {
           <TabsTrigger value="customers" className="flex items-center gap-2">
             <Users className="w-4 h-4" />
             Customers
+          </TabsTrigger>
+          <TabsTrigger value="services" className="flex items-center gap-2">
+            <Plus className="w-4 h-4" />
+            Services
           </TabsTrigger>
           <TabsTrigger value="profile" className="flex items-center gap-2">
             <Settings className="w-4 h-4" />
@@ -210,6 +215,10 @@ const ProviderDashboard = () => {
 
         <TabsContent value="customers" className="space-y-4">
           <ProviderCustomers />
+        </TabsContent>
+
+        <TabsContent value="services" className="space-y-4">
+          <ServicePricing />
         </TabsContent>
 
         <TabsContent value="profile" className="space-y-4">
