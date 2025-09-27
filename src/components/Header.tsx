@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { MapPin, User, LogOut, ChevronDown, Settings, Store, Shield, Home } from "lucide-react";
+import { MapPin, User, LogOut, ChevronDown, Settings, Store, Shield } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -84,7 +84,6 @@ const Header = () => {
           {/* Navigation - Desktop */}
           <nav className="hidden md:flex items-center space-x-6">
             <Link to="/" className={getLinkClassName("/")}>
-              <Home className="w-4 h-4" />
               Home
             </Link>
             <Link to="/services" className={getLinkClassName("/services")}>
