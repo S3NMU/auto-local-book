@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Edit, Trash2, Search, ExternalLink, Users, UserCheck, UserX } from 'lucide-react';
+import { Edit, Trash2, Search, ExternalLink, Users, UserCheck, UserX, UserMinus } from 'lucide-react';
 
 interface Provider {
   id: string;
@@ -103,7 +103,33 @@ export const ProviderManagement = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this provider?')) return;
+    if (!confirm('Are you sure you want to PERMANENTLY DELETE this provider? This action cannot be undone.')) return;
+
+    try {
+      const { error } = await supabase
+        .from('providers')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Provider permanently deleted",
+      });
+
+      fetchProviders();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete provider",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDeactivate = async (id: string) => {
+    if (!confirm('Are you sure you want to deactivate this provider?')) return;
 
     try {
       const { error } = await supabase
@@ -115,14 +141,14 @@ export const ProviderManagement = () => {
 
       toast({
         title: "Success",
-        description: "Provider deleted successfully",
+        description: "Provider deactivated successfully",
       });
 
       fetchProviders();
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to delete provider",
+        description: "Failed to deactivate provider",
         variant: "destructive",
       });
     }
@@ -218,6 +244,16 @@ export const ProviderManagement = () => {
                         onClick={() => window.open(provider.website_url, '_blank')}
                       >
                         <ExternalLink className="h-4 w-4" />
+                      </Button>
+                    )}
+                    {provider.status === 'active' && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleDeactivate(provider.id)}
+                        className="text-orange-600 hover:text-orange-700"
+                      >
+                        <UserMinus className="h-4 w-4" />
                       </Button>
                     )}
                     <Button
