@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { MapPin, Phone, User } from "lucide-react";
+import { MapPin, User } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Header = () => {
   return (
@@ -7,7 +8,7 @@ const Header = () => {
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center space-x-2">
+          <Link to="/" className="flex items-center space-x-2">
             <div className="w-10 h-10 bg-gradient-hero rounded-lg flex items-center justify-center">
               <span className="text-primary-foreground font-bold text-lg">L</span>
             </div>
@@ -15,19 +16,22 @@ const Header = () => {
               <h1 className="text-xl font-bold text-foreground">LocalAuto</h1>
               <p className="text-xs text-muted-foreground">Service Booking</p>
             </div>
-          </div>
+          </Link>
 
           {/* Navigation - Desktop */}
           <nav className="hidden md:flex items-center space-x-6">
-            <a href="#services" className="text-foreground hover:text-primary transition-fast">
+            <Link to="/services" className="text-foreground hover:text-primary transition-fast">
               Services
-            </a>
-            <a href="#providers" className="text-foreground hover:text-primary transition-fast">
+            </Link>
+            <Link to="/providers" className="text-foreground hover:text-primary transition-fast">
               Providers
-            </a>
-            <a href="#how-it-works" className="text-foreground hover:text-primary transition-fast">
-              How it Works
-            </a>
+            </Link>
+            <Link to="/about" className="text-foreground hover:text-primary transition-fast">
+              About
+            </Link>
+            <Link to="/contact" className="text-foreground hover:text-primary transition-fast">
+              Contact
+            </Link>
           </nav>
 
           {/* Actions */}
