@@ -300,19 +300,6 @@ export const RequestReview = () => {
               </Button>
             </div>
           )}
-          
-          {request.status === 'rejected' && (
-            <div className="flex gap-2 pt-4 border-t">
-              <Button
-                variant="outline"
-                onClick={() => handleDelete(request.id)}
-                className="flex items-center gap-2 text-red-600 hover:text-red-700"
-              >
-                <Trash2 className="h-4 w-4" />
-                Delete Permanently
-              </Button>
-            </div>
-          )}
         </CardContent>
       )}
     </Card>
