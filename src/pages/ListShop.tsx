@@ -265,7 +265,7 @@ const ListShop = () => {
           <CardHeader>
             <CardTitle>Shop Information</CardTitle>
             <CardDescription>
-              Provide details about your automotive service business to get listed on LocalAuto
+              Provide details about your automotive service business to get listed on Auto Trails
             </CardDescription>
           </CardHeader>
           <CardContent>

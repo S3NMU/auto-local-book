@@ -21,9 +21,9 @@ const Footer = () => {
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
               <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center">
-                <span className="text-accent-foreground font-bold">L</span>
+                <span className="text-accent-foreground font-bold">AT</span>
               </div>
-              <span className="text-xl font-bold">LocalAuto</span>
+              <span className="text-xl font-bold">Auto Trails</span>
             </div>
             <p className="text-primary-foreground/80 text-sm">
               The trusted platform connecting drivers with verified auto service 
@@ -69,7 +69,7 @@ const Footer = () => {
             <div className="space-y-3 text-sm text-primary-foreground/80">
               <div className="flex items-center space-x-2">
                 <Mail className="w-4 h-4" />
-                <span>support@localauto.com</span>
+                <span>support@autotrails.com</span>
               </div>
               <div className="flex items-center space-x-2">
                 <Phone className="w-4 h-4" />
@@ -100,7 +100,7 @@ const Footer = () => {
         <div className="border-t border-primary-foreground/20 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <p className="text-sm text-primary-foreground/60">
-              © {currentYear} LocalAuto Services Booking Platform. All rights reserved.
+              © {currentYear} Auto Trails Services Booking Platform. All rights reserved.
             </p>
             <div className="flex space-x-6 text-sm text-primary-foreground/60">
               <a href="#" className="hover:text-primary-foreground transition-fast">Privacy Policy</a>
