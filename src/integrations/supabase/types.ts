@@ -646,6 +646,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      log_security_event: {
+        Args: { details?: Json; event_type: string; user_id?: string }
+        Returns: undefined
+      }
       make_me_provider: {
         Args: Record<PropertyKey, never>
         Returns: undefined
