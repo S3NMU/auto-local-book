@@ -2,11 +2,11 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { MapPin, User, LogOut, ChevronDown, Settings, Store, Shield } from "lucide-react";
-import { Link } from "react-router-dom";
+import { MapPin, User, LogOut, ChevronDown, Settings, Store, Shield, Home } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { useLocation } from "@/hooks/useLocation";
+import { useLocation as useGeoLocation } from "@/hooks/useLocation";
 import { useAuth } from "@/hooks/useAuth";
 import LocationDialog from "./LocationDialog";
 import type { Session } from "@supabase/supabase-js";
@@ -16,8 +16,9 @@ const Header = () => {
   const [locationDialogOpen, setLocationDialogOpen] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string>("");
   const { toast } = useToast();
-  const { location, setLocation } = useLocation();
+  const { location, setLocation } = useGeoLocation();
   const { isAdmin } = useAuth();
+  const routerLocation = useLocation();
 
   useEffect(() => {
     // Set up auth state listener
@@ -53,6 +54,18 @@ const Header = () => {
     }
   };
 
+  const isActive = (path: string) => {
+    return routerLocation.pathname === path;
+  };
+
+  const getLinkClassName = (path: string) => {
+    return `flex items-center gap-2 transition-fast ${
+      isActive(path) 
+        ? "text-primary font-medium" 
+        : "text-foreground hover:text-primary"
+    }`;
+  };
+
   return (
     <header className="bg-card border-b border-border shadow-card">
       <div className="container mx-auto px-4 py-4">
@@ -70,16 +83,20 @@ const Header = () => {
 
           {/* Navigation - Desktop */}
           <nav className="hidden md:flex items-center space-x-6">
-            <Link to="/services" className="text-foreground hover:text-primary transition-fast">
+            <Link to="/" className={getLinkClassName("/")}>
+              <Home className="w-4 h-4" />
+              Home
+            </Link>
+            <Link to="/services" className={getLinkClassName("/services")}>
               Services
             </Link>
-            <Link to="/providers" className="text-foreground hover:text-primary transition-fast">
+            <Link to="/providers" className={getLinkClassName("/providers")}>
               Providers
             </Link>
-            <Link to="/about" className="text-foreground hover:text-primary transition-fast">
+            <Link to="/about" className={getLinkClassName("/about")}>
               About
             </Link>
-            <Link to="/contact" className="text-foreground hover:text-primary transition-fast">
+            <Link to="/contact" className={getLinkClassName("/contact")}>
               Contact
             </Link>
           </nav>
