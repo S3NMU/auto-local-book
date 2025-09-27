@@ -177,6 +177,10 @@ const ServicePricing = () => {
           duration_minutes: editingService.duration_minutes,
           currency: editingService.currency,
           is_available: editingService.is_available,
+          pickup_available: editingService.pickup_available,
+          pickup_fee: editingService.pickup_fee,
+          dropoff_available: editingService.dropoff_available,
+          dropoff_fee: editingService.dropoff_fee,
           notes: editingService.notes
         })
         .eq('id', editingService.id);
@@ -480,6 +484,76 @@ const ServicePricing = () => {
                                   is_available: checked 
                                 })}
                               />
+                            </div>
+
+                            {/* Transport Options */}
+                            <div className="space-y-4 border-t pt-4">
+                              <h4 className="font-medium flex items-center gap-2">
+                                <Car className="w-4 h-4" />
+                                Transport Options
+                              </h4>
+                              
+                              <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                  <div className="flex items-center justify-between">
+                                    <div className="space-y-1">
+                                      <Label>Pickup Available</Label>
+                                      <p className="text-xs text-muted-foreground">Offer vehicle pickup</p>
+                                    </div>
+                                    <Switch
+                                      checked={editingService.pickup_available}
+                                      onCheckedChange={(checked) => setEditingService({ 
+                                        ...editingService, 
+                                        pickup_available: checked 
+                                      })}
+                                    />
+                                  </div>
+                                  {editingService.pickup_available && (
+                                    <div>
+                                      <Label>Pickup Fee ({getCurrencySymbol(editingService.currency)})</Label>
+                                      <Input
+                                        type="number"
+                                        step="0.01"
+                                        value={editingService.pickup_fee}
+                                        onChange={(e) => setEditingService({ 
+                                          ...editingService, 
+                                          pickup_fee: parseFloat(e.target.value) || 0 
+                                        })}
+                                      />
+                                    </div>
+                                  )}
+                                </div>
+
+                                <div className="space-y-2">
+                                  <div className="flex items-center justify-between">
+                                    <div className="space-y-1">
+                                      <Label>Dropoff Available</Label>
+                                      <p className="text-xs text-muted-foreground">Offer vehicle dropoff</p>
+                                    </div>
+                                    <Switch
+                                      checked={editingService.dropoff_available}
+                                      onCheckedChange={(checked) => setEditingService({ 
+                                        ...editingService, 
+                                        dropoff_available: checked 
+                                      })}
+                                    />
+                                  </div>
+                                  {editingService.dropoff_available && (
+                                    <div>
+                                      <Label>Dropoff Fee ({getCurrencySymbol(editingService.currency)})</Label>
+                                      <Input
+                                        type="number"
+                                        step="0.01"
+                                        value={editingService.dropoff_fee}
+                                        onChange={(e) => setEditingService({ 
+                                          ...editingService, 
+                                          dropoff_fee: parseFloat(e.target.value) || 0 
+                                        })}
+                                      />
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
                             </div>
 
                             <div className="space-y-4 border-t pt-4">
