@@ -16,7 +16,7 @@ const Index = () => {
     if (!hasVisited) {
       setTimeout(() => {
         toast({
-          title: "Welcome to Auto Trails!",
+          title: "Welcome to H3 Automo!",
           description: "Find trusted automotive services near you. Set your location to get started.",
         });
         localStorage.setItem('has-visited', 'true');

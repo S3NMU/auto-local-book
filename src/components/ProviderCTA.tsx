@@ -37,7 +37,7 @@ const ProviderCTA = () => {
               Grow Your Auto Service Business
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Join hundreds of shops and mobile mechanics already using Auto Trails 
+              Join hundreds of shops and mobile mechanics already using H3 Automo 
               to increase bookings and streamline operations.
             </p>
           </div>
@@ -64,7 +64,7 @@ const ProviderCTA = () => {
             {/* Benefits List */}
             <div className="space-y-6 animate-slide-up">
               <h3 className="text-2xl font-semibold text-foreground">
-                Why Choose Auto Trails?
+                Why Choose H3 Automo?
               </h3>
               
               <div className="space-y-4">

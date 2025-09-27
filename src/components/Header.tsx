@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import logoImage from "@/assets/h3-automo-logo.png";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -82,11 +83,11 @@ const Header = () => {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <div className="w-10 h-10 bg-gradient-hero rounded-lg flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-lg">AT</span>
+            <div className="w-10 h-10 rounded-lg overflow-hidden">
+              <img src={logoImage} alt="H3 Automo Logo" className="w-full h-full object-contain" />
             </div>
             <div className="flex flex-col">
-              <h1 className="text-xl font-bold text-foreground">Auto Trails</h1>
+              <h1 className="text-xl font-bold text-foreground">H3 Automo</h1>
               <p className="text-xs text-muted-foreground">Service Booking</p>
             </div>
           </Link>

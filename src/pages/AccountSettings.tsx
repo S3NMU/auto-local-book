@@ -407,7 +407,7 @@ const AccountSettings = () => {
                     <div>
                       <h4 className="font-medium">Free Plan</h4>
                       <p className="text-sm text-muted-foreground">
-                        Basic access to Auto Trails services
+                        Basic access to H3 Automo services
                       </p>
                     </div>
                     <Badge variant="secondary">Current Plan</Badge>

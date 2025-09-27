@@ -35,7 +35,7 @@ const About = () => {
         {/* Hero Section */}
         <div className="text-center mb-16">
           <h1 className="text-4xl font-bold text-foreground mb-6">
-            About Auto Trails
+            About H3 Automo
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
             We're connecting drivers with trusted local automotive service providers, 
@@ -71,7 +71,7 @@ const About = () => {
             <h2 className="text-3xl font-bold text-center mb-8">Our Mission</h2>
             <div className="bg-card p-8 rounded-lg border">
               <p className="text-lg text-muted-foreground leading-relaxed text-center">
-                Auto Trails was founded to solve the frustration of finding reliable automotive services. 
+                H3 Automo was founded to solve the frustration of finding reliable automotive services. 
                 We believe that getting your car serviced shouldn't involve phone tag, surprise fees, 
                 or uncertainty about quality. Our platform connects you with vetted local professionals 
                 who provide transparent pricing and quality service, while helping local businesses grow 
@@ -104,7 +104,7 @@ const About = () => {
         <div className="text-center bg-card p-12 rounded-lg border">
           <h2 className="text-3xl font-bold mb-4">Ready to Get Started?</h2>
           <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Join thousands of satisfied customers who trust Auto Trails for their automotive needs.
+            Join thousands of satisfied customers who trust H3 Automo for their automotive needs.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg">Find Services</Button>

@@ -214,7 +214,7 @@ const Auth = () => {
 
         <Card>
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl">Welcome to Auto Trails</CardTitle>
+            <CardTitle className="text-2xl">Welcome to H3 Automo</CardTitle>
             <CardDescription>
               Sign in to access provider contact information and book services
             </CardDescription>
