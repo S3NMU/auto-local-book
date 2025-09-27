@@ -63,7 +63,7 @@ const Hero = () => {
                   />
                 </div>
                 <Button variant="hero" size="lg" className="w-full py-3" onClick={handleSearchSubmit}>
-                  Find Providers
+                  Find & Book Providers
                 </Button>
               </div>
             </div>

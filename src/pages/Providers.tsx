@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { MapPin, Star, Phone, Mail, Clock, Navigation, Settings } from "lucide-react";
+import { MapPin, Star, Phone, Mail, Clock, Navigation, Settings, ExternalLink, Globe } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useLocation } from "@/hooks/useLocation";
@@ -26,6 +26,7 @@ interface Provider {
   phone?: string;
   email?: string;
   description?: string;
+  website_url?: string;
   distance?: number;
 }
 
@@ -228,8 +229,18 @@ const Providers = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="mt-4 sm:mt-0">
-                    <Button>Book Service</Button>
+                  <div className="mt-4 sm:mt-0 flex flex-col gap-2">
+                    {provider.website_url ? (
+                      <Button 
+                        onClick={() => window.open(provider.website_url, '_blank', 'noopener,noreferrer')}
+                        className="w-full sm:w-auto"
+                      >
+                        <ExternalLink className="w-4 h-4 mr-2" />
+                        Book Online
+                      </Button>
+                    ) : (
+                      <Button className="w-full sm:w-auto">Book Service</Button>
+                    )}
                   </div>
                 </div>
               </CardHeader>
@@ -278,13 +289,25 @@ const Providers = () => {
                   </div>
                   <div>
                     <h4 className="font-medium mb-2">Specialties</h4>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-2 mb-4">
                       {provider.specialties?.map((specialty: string, index: number) => (
                         <Badge key={index} variant="outline">
                           {specialty}
                         </Badge>
                       ))}
                     </div>
+                    
+                    {provider.website_url && (
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => window.open(provider.website_url, '_blank', 'noopener,noreferrer')}
+                        className="w-full sm:w-auto"
+                      >
+                        <Globe className="w-4 h-4 mr-2" />
+                        Visit Website
+                      </Button>
+                    )}
                   </div>
                 </div>
               </CardContent>

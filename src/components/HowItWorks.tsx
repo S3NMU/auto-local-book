@@ -40,13 +40,13 @@ const HowItWorks = () => {
     {
       icon: Calendar,
       title: "Book Instantly",
-      description: "Select your preferred time slot and book instantly. No phone calls or waiting for callbacks.",
+      description: "Select your preferred time slot and book directly on the provider's official website. No phone calls needed.",
       color: "text-accent"
     },
     {
       icon: CreditCard,
       title: "Secure Payment",
-      description: "Pay securely online with transparent pricing. Hold your spot with a small deposit.",
+      description: "Pay securely through the provider's official website with transparent pricing and trusted payment systems.",
       color: "text-success"
     },
     {
