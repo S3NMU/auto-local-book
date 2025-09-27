@@ -2,39 +2,69 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
+/* LASB Design System - Professional automotive services platform
+All colors MUST be HSL for consistency and theming.
 */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Core automotive-inspired palette */
+    --background: 0 0% 98%;
+    --foreground: 222 84% 9%;
 
+    /* Card and surface colors */
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 222 84% 9%;
+    --card-shadow: 215 25% 27%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 222 84% 9%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Primary - Deep automotive blue for trust and reliability */
+    --primary: 215 89% 24%;
+    --primary-light: 215 89% 35%;
+    --primary-dark: 215 89% 18%;
+    --primary-foreground: 0 0% 98%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Secondary - Clean grays for supporting elements */
+    --secondary: 215 16% 92%;
+    --secondary-foreground: 222 47% 11%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Automotive orange accent for energy and action */
+    --accent: 25 95% 53%;
+    --accent-light: 25 95% 63%;
+    --accent-dark: 25 95% 43%;
+    --accent-foreground: 0 0% 98%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Status colors for booking states */
+    --success: 142 72% 29%;
+    --success-foreground: 0 0% 98%;
+    --warning: 43 100% 50%;
+    --warning-foreground: 0 0% 9%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    /* Neutral tones */
+    --muted: 215 16% 95%;
+    --muted-foreground: 215 13% 45%;
+    --border: 215 27% 87%;
+    --input: 0 0% 100%;
+    --ring: 215 89% 24%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    /* Gradients for hero sections and CTAs */
+    --gradient-hero: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-light)));
+    --gradient-accent: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--accent-light)));
+    --gradient-subtle: linear-gradient(180deg, hsl(var(--background)), hsl(var(--muted)));
+
+    /* Shadows for depth and elevation */
+    --shadow-sm: 0 1px 2px 0 hsl(var(--card-shadow) / 0.05);
+    --shadow-md: 0 4px 6px -1px hsl(var(--card-shadow) / 0.1), 0 2px 4px -1px hsl(var(--card-shadow) / 0.06);
+    --shadow-lg: 0 10px 15px -3px hsl(var(--card-shadow) / 0.1), 0 4px 6px -2px hsl(var(--card-shadow) / 0.05);
+    --shadow-xl: 0 20px 25px -5px hsl(var(--card-shadow) / 0.1), 0 10px 10px -5px hsl(var(--card-shadow) / 0.04);
+
+    /* Animation and transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-fast: all 0.15s ease-out;
 
     --radius: 0.5rem;
 
@@ -56,41 +86,60 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
+    /* Dark mode automotive theme */
+    --background: 222 84% 5%;
     --foreground: 210 40% 98%;
+    --card-shadow: 215 25% 8%;
 
-    --card: 222.2 84% 4.9%;
+    --card: 222 84% 7%;
     --card-foreground: 210 40% 98%;
 
-    --popover: 222.2 84% 4.9%;
+    --popover: 222 84% 7%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 215 89% 45%;
+    --primary-light: 215 89% 55%;
+    --primary-dark: 215 89% 35%;
+    --primary-foreground: 0 0% 98%;
 
-    --secondary: 217.2 32.6% 17.5%;
+    --secondary: 217 32% 18%;
     --secondary-foreground: 210 40% 98%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 25 95% 58%;
+    --accent-light: 25 95% 68%;
+    --accent-dark: 25 95% 48%;
+    --accent-foreground: 0 0% 9%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --success: 142 72% 35%;
+    --warning: 43 100% 55%;
+    --destructive: 0 63% 45%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --muted: 217 32% 15%;
+    --muted-foreground: 215 20% 65%;
+    --border: 217 32% 20%;
+    --input: 217 32% 18%;
+    --ring: 215 89% 45%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    /* Dark mode gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-light)));
+    --gradient-accent: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--accent-light)));
+    --gradient-subtle: linear-gradient(180deg, hsl(var(--background)), hsl(var(--muted)));
+
+    /* Dark mode shadows */
+    --shadow-sm: 0 1px 2px 0 hsl(var(--card-shadow) / 0.2);
+    --shadow-md: 0 4px 6px -1px hsl(var(--card-shadow) / 0.3), 0 2px 4px -1px hsl(var(--card-shadow) / 0.2);
+    --shadow-lg: 0 10px 15px -3px hsl(var(--card-shadow) / 0.3), 0 4px 6px -2px hsl(var(--card-shadow) / 0.2);
+    --shadow-xl: 0 20px 25px -5px hsl(var(--card-shadow) / 0.3), 0 10px 10px -5px hsl(var(--card-shadow) / 0.2);
+
+    /* Sidebar dark theme */
+    --sidebar-background: 222 84% 6%;
+    --sidebar-foreground: 210 40% 95%;
+    --sidebar-primary: 215 89% 45%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 217 32% 12%;
+    --sidebar-accent-foreground: 210 40% 95%;
+    --sidebar-border: 217 32% 15%;
+    --sidebar-ring: 215 89% 45%;
   }
 }
 
@@ -100,6 +149,62 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+
+  /* Custom utility classes for the automotive platform */
+  .gradient-hero {
+    background: var(--gradient-hero);
+  }
+
+  .gradient-accent {
+    background: var(--gradient-accent);
+  }
+
+  .gradient-subtle {
+    background: var(--gradient-subtle);
+  }
+
+  .shadow-elegant {
+    box-shadow: var(--shadow-lg);
+  }
+
+  .transition-smooth {
+    transition: var(--transition-smooth);
+  }
+
+  .transition-fast {
+    transition: var(--transition-fast);
+  }
+
+  /* Automotive-specific animations */
+  @keyframes slideInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeInScale {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .animate-slide-up {
+    animation: slideInUp 0.6s ease-out;
+  }
+
+  .animate-fade-scale {
+    animation: fadeInScale 0.4s ease-out;
   }
 }
