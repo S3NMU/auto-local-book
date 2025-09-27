@@ -37,6 +37,7 @@ interface ProviderService {
   dropoff_fee: number;
   is_available: boolean;
   notes: string;
+  custom_name?: string;
   service?: Service;
 }
 
@@ -181,7 +182,8 @@ const ServicePricing = () => {
           pickup_fee: editingService.pickup_fee,
           dropoff_available: editingService.dropoff_available,
           dropoff_fee: editingService.dropoff_fee,
-          notes: editingService.notes
+          notes: editingService.notes,
+          custom_name: editingService.custom_name || null
         })
         .eq('id', editingService.id);
 
@@ -386,7 +388,7 @@ const ServicePricing = () => {
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div>
-                    <CardTitle className="text-lg">{providerService.service?.name}</CardTitle>
+                    <CardTitle className="text-lg">{providerService.custom_name || providerService.service?.name}</CardTitle>
                     <CardDescription>
                       <Badge variant="outline" className="mt-1">
                         {providerService.service?.category}
@@ -411,11 +413,25 @@ const ServicePricing = () => {
                         <DialogHeader>
                           <DialogTitle>Edit Service Pricing</DialogTitle>
                           <DialogDescription>
-                            Update pricing and options for {providerService.service?.name}
+                            Update pricing and options for {editingService.custom_name || editingService.service?.name}
                           </DialogDescription>
                         </DialogHeader>
                         {editingService && (
                           <div className="space-y-4 max-h-[60vh] overflow-y-auto">
+                            <div>
+                              <Label>Custom Service Name</Label>
+                              <Input
+                                value={editingService.custom_name || ''}
+                                onChange={(e) => setEditingService({ 
+                                  ...editingService, 
+                                  custom_name: e.target.value 
+                                })}
+                                placeholder={editingService.service?.name || 'Service name'}
+                              />
+                              <p className="text-xs text-muted-foreground mt-1">
+                                Leave empty to use default: "{editingService.service?.name}"
+                              </p>
+                            </div>
                             <div className="grid grid-cols-3 gap-4">
                               <div>
                                 <Label>Currency</Label>
