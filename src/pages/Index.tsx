@@ -29,26 +29,26 @@ const Index = () => {
       <Hero />
       
       {/* Map Section */}
-      <div className="py-16 bg-background">
+      <div className="py-8 md:py-16 bg-background">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Find Providers Near You</h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <div className="text-center mb-8 md:mb-12">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-4">Find Providers Near You</h2>
+            <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
               Explore our network of verified automotive service providers across the country
             </p>
           </div>
-          <div className="h-[600px]">
+          <div className="h-[400px] md:h-[500px] lg:h-[600px]">
             <ProvidersMap />
           </div>
         </div>
       </div>
 
       {/* Popular Services Section */}
-      <div className="py-16 bg-muted/30">
+      <div className="py-8 md:py-16 bg-muted/30">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Popular Services</h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <div className="text-center mb-8 md:mb-12">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-4">Popular Services</h2>
+            <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
               Browse our most requested automotive services with detailed information and transparent pricing
             </p>
           </div>

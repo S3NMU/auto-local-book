@@ -246,20 +246,20 @@ const ProvidersMap = () => {
 
   return (
     <div className="h-full">
-      <div className="grid lg:grid-cols-3 gap-6 h-full">
+      <div className="flex flex-col lg:grid lg:grid-cols-3 gap-4 md:gap-6 h-full">
         {/* Map Section */}
-        <div className="lg:col-span-2">
+        <div className="order-2 lg:order-1 lg:col-span-2">
           <Card className="h-full">
-            <CardHeader className="pb-4">
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2">
-                  <MapPin className="w-5 h-5" />
+            <CardHeader className="pb-2 md:pb-4">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <CardTitle className="flex items-center gap-2 text-lg md:text-xl">
+                  <MapPin className="w-4 h-4 md:w-5 md:h-5" />
                   Provider Locations
                 </CardTitle>
                 <div className="flex items-center gap-2">
                   <Filter className="w-4 h-4 text-muted-foreground" />
                   <Select value={selectedState} onValueChange={setSelectedState}>
-                    <SelectTrigger className="w-40">
+                    <SelectTrigger className="w-full sm:w-40">
                       <SelectValue placeholder="All States" />
                     </SelectTrigger>
                     <SelectContent>
@@ -273,35 +273,35 @@ const ProvidersMap = () => {
               </div>
             </CardHeader>
             <CardContent className="p-0 flex-1">
-              <div ref={mapContainer} className="h-full w-full rounded-b-lg min-h-[400px]" />
+              <div ref={mapContainer} className="h-full w-full rounded-b-lg min-h-[300px] md:min-h-[400px]" />
             </CardContent>
           </Card>
         </div>
         
         {/* Providers List */}
-        <div className="lg:col-span-1">
+        <div className="order-1 lg:order-2 lg:col-span-1">
           <Card className="h-full">
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
+            <CardHeader className="pb-2 md:pb-4">
+              <CardTitle className="flex items-center justify-between text-lg md:text-xl">
                 <span>Providers</span>
-                <span className="text-sm font-normal text-muted-foreground">
+                <span className="text-xs md:text-sm font-normal text-muted-foreground">
                   {filteredProviders.length} found
                 </span>
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
-              <div className="max-h-[450px] overflow-y-auto">
+              <div className="max-h-[200px] md:max-h-[300px] lg:max-h-[450px] overflow-y-auto">
                 {filteredProviders.length === 0 ? (
-                  <div className="p-6 text-center text-muted-foreground">
-                    <MapPin className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                    <p>No providers found{selectedState && selectedState !== 'all' ? ` in ${selectedState}` : ''}</p>
+                  <div className="p-4 md:p-6 text-center text-muted-foreground">
+                    <MapPin className="w-8 h-8 md:w-12 md:h-12 mx-auto mb-4 opacity-50" />
+                    <p className="text-sm md:text-base">No providers found{selectedState && selectedState !== 'all' ? ` in ${selectedState}` : ''}</p>
                   </div>
                 ) : (
                   <div className="space-y-1">
                     {filteredProviders.map((provider) => (
                       <div
                         key={provider.id}
-                        className={`p-4 border-b cursor-pointer hover:bg-muted/50 transition-colors ${
+                        className={`p-3 md:p-4 border-b cursor-pointer hover:bg-muted/50 transition-colors ${
                           selectedProvider?.id === provider.id ? 'bg-muted' : ''
                         }`}
                         onClick={() => {
@@ -314,7 +314,7 @@ const ProvidersMap = () => {
                         }}
                       >
                         <div className="space-y-2">
-                          <h3 className="font-medium text-sm leading-tight">{provider.business_name}</h3>
+                          <h3 className="font-medium text-sm md:text-base leading-tight">{provider.business_name}</h3>
                           
                           <div className="flex items-center gap-1 text-xs text-muted-foreground">
                             <MapPin className="w-3 h-3" />
