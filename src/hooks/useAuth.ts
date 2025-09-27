@@ -8,6 +8,27 @@ export const useAuth = () => {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
 
+  // Function to check admin role safely
+  const checkAdminRole = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', userId)
+        .eq('role', 'admin')
+        .single();
+      
+      if (!error) {
+        setIsAdmin(!!data);
+      } else {
+        setIsAdmin(false);
+      }
+    } catch (error) {
+      console.error('Error checking admin role:', error);
+      setIsAdmin(false);
+    }
+  };
+
   useEffect(() => {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -15,7 +36,7 @@ export const useAuth = () => {
         setSession(session);
         setUser(session?.user ?? null);
         
-        // Defer admin role checking to prevent deadlock
+        // Defer admin role checking to prevent deadlocks
         if (session?.user) {
           setTimeout(() => {
             checkAdminRole(session.user.id);
@@ -28,27 +49,6 @@ export const useAuth = () => {
       }
     );
 
-    // Helper function to check admin role
-    const checkAdminRole = async (userId: string) => {
-      try {
-        const { data, error } = await supabase
-          .from('user_roles')
-          .select('role')
-          .eq('user_id', userId)
-          .eq('role', 'admin')
-          .single();
-        
-        if (error && error.code !== 'PGRST116') {
-          console.error('Error checking admin role:', error);
-        }
-        
-        setIsAdmin(!!data);
-      } catch (error) {
-        console.error('Failed to check admin role:', error);
-        setIsAdmin(false);
-      }
-    };
-
     // Check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
@@ -56,9 +56,8 @@ export const useAuth = () => {
       
       if (session?.user) {
         checkAdminRole(session.user.id);
-      } else {
-        setLoading(false);
       }
+      setLoading(false);
     });
 
     return () => subscription.unsubscribe();

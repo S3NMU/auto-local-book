@@ -15,8 +15,9 @@ serve(async (req) => {
   // Verify JWT token for authentication
   const authHeader = req.headers.get('Authorization')
   if (!authHeader) {
+    console.log('Missing authorization header')
     return new Response(
-      JSON.stringify({ error: 'Missing authorization header' }),
+      JSON.stringify({ error: 'Authorization header required' }),
       { 
         status: 401, 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
@@ -24,31 +25,33 @@ serve(async (req) => {
     )
   }
 
-  // Initialize Supabase client for JWT verification
-  const supabaseUrl = Deno.env.get('SUPABASE_URL')!
-  const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')!
-  const supabase = createClient(supabaseUrl, supabaseKey, {
-    global: {
-      headers: { Authorization: authHeader },
-    },
-  })
+  const supabaseClient = createClient(
+    Deno.env.get('SUPABASE_URL') ?? '',
+    Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+    { global: { headers: { Authorization: authHeader } } }
+  )
 
   // Verify the user is authenticated
-  const { data: { user }, error: authError } = await supabase.auth.getUser()
+  const { data: { user }, error: authError } = await supabaseClient.auth.getUser()
+  
   if (authError || !user) {
+    console.log('Authentication failed:', authError?.message)
     return new Response(
-      JSON.stringify({ error: 'Unauthorized' }),
+      JSON.stringify({ error: 'Invalid or expired token' }),
       { 
         status: 401, 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
       }
     )
   }
+
+  console.log('Authenticated user accessing Mapbox token:', user.id)
 
   try {
     const mapboxToken = Deno.env.get('MAPBOX_PUBLIC_TOKEN')
 
     if (!mapboxToken) {
+      console.error('Mapbox token not configured')
       return new Response(
         JSON.stringify({ error: 'Mapbox token not configured' }),
         { 
@@ -67,6 +70,7 @@ serve(async (req) => {
 
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('Error in get-mapbox-token function:', errorMessage)
     return new Response(
       JSON.stringify({ error: errorMessage }),
       { 
