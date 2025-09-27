@@ -68,6 +68,7 @@ interface SelectedService {
 const BookingDialog = ({ open, onOpenChange, customer, providerId }: BookingDialogProps) => {
   const { toast } = useToast();
   const [providerServices, setProviderServices] = useState<ProviderService[]>([]);
+  const [providerProfile, setProviderProfile] = useState<any>(null);
   const [selectedServices, setSelectedServices] = useState<SelectedService[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [selectedTime, setSelectedTime] = useState("");
@@ -81,10 +82,26 @@ const BookingDialog = ({ open, onOpenChange, customer, providerId }: BookingDial
   useEffect(() => {
     if (open) {
       fetchProviderServices();
+      fetchProviderProfile();
       // Pre-fill pickup address with customer address
       setPickupAddress(customer.customer_address || "");
     }
   }, [open, providerId]);
+
+  const fetchProviderProfile = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('provider_profiles')
+        .select('pickup_available, dropoff_available, pickup_fee, dropoff_fee')
+        .eq('user_id', providerId)
+        .single();
+
+      if (error) throw error;
+      setProviderProfile(data);
+    } catch (error) {
+      console.error('Error fetching provider profile:', error);
+    }
+  };
 
   const fetchProviderServices = async () => {
     try {
@@ -161,8 +178,8 @@ const BookingDialog = ({ open, onOpenChange, customer, providerId }: BookingDial
       sum + (service.customPrice * service.quantity), 0
     );
     
-    const pickupFee = pickupRequested ? (selectedServices[0]?.providerService.pickup_fee || 0) : 0;
-    const dropoffFee = dropoffRequested ? (selectedServices[0]?.providerService.dropoff_fee || 0) : 0;
+    const pickupFee = pickupRequested ? (providerProfile?.pickup_fee || 0) : 0;
+    const dropoffFee = dropoffRequested ? (providerProfile?.dropoff_fee || 0) : 0;
     
     return serviceTotal + pickupFee + dropoffFee;
   };
@@ -191,8 +208,8 @@ const BookingDialog = ({ open, onOpenChange, customer, providerId }: BookingDial
         sum + (service.customPrice * service.quantity), 0
       );
       
-      const pickupFee = pickupRequested ? (selectedServices[0]?.providerService.pickup_fee || 0) : 0;
-      const dropoffFee = dropoffRequested ? (selectedServices[0]?.providerService.dropoff_fee || 0) : 0;
+      const pickupFee = pickupRequested ? (providerProfile?.pickup_fee || 0) : 0;
+      const dropoffFee = dropoffRequested ? (providerProfile?.dropoff_fee || 0) : 0;
       const additionalFees = pickupFee + dropoffFee;
 
       const { error } = await supabase
@@ -314,6 +331,57 @@ const BookingDialog = ({ open, onOpenChange, customer, providerId }: BookingDial
                 ))}
               </CardContent>
             </Card>
+
+            {/* Vehicle Transportation Options */}
+            {(providerProfile?.pickup_available || providerProfile?.dropoff_available) && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Car className="w-5 h-5" />
+                    Vehicle Transportation Services
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {providerProfile?.pickup_available && (
+                    <div className="flex items-center justify-between p-3 border rounded-lg">
+                      <div className="flex items-center gap-2">
+                        <Checkbox
+                          id="pickup_requested"
+                          checked={pickupRequested}
+                          onCheckedChange={(checked) => setPickupRequested(checked as boolean)}
+                        />
+                        <Label htmlFor="pickup_requested" className="font-medium">
+                          Vehicle Pickup Service
+                        </Label>
+                      </div>
+                      <div className="text-right">
+                        <div className="font-medium">${providerProfile?.pickup_fee || 0}</div>
+                        <div className="text-sm text-muted-foreground">Additional fee</div>
+                      </div>
+                    </div>
+                  )}
+
+                  {providerProfile?.dropoff_available && (
+                    <div className="flex items-center justify-between p-3 border rounded-lg">
+                      <div className="flex items-center gap-2">
+                        <Checkbox
+                          id="dropoff_requested"
+                          checked={dropoffRequested}
+                          onCheckedChange={(checked) => setDropoffRequested(checked as boolean)}
+                        />
+                        <Label htmlFor="dropoff_requested" className="font-medium">
+                          Vehicle Dropoff Service
+                        </Label>
+                      </div>
+                      <div className="text-right">
+                        <div className="font-medium">${providerProfile?.dropoff_fee || 0}</div>
+                        <div className="text-sm text-muted-foreground">Additional fee</div>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
 
             {/* Pickup & Dropoff Options */}
             <Card>

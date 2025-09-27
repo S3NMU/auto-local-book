@@ -187,9 +187,13 @@ export type Database = {
           business_state: string | null
           business_zip_code: string | null
           created_at: string
+          dropoff_available: boolean | null
+          dropoff_fee: number | null
           id: string
           is_mobile_service: boolean | null
           license_number: string | null
+          pickup_available: boolean | null
+          pickup_fee: number | null
           service_radius_miles: number | null
           specialties: string[] | null
           updated_at: string
@@ -206,9 +210,13 @@ export type Database = {
           business_state?: string | null
           business_zip_code?: string | null
           created_at?: string
+          dropoff_available?: boolean | null
+          dropoff_fee?: number | null
           id?: string
           is_mobile_service?: boolean | null
           license_number?: string | null
+          pickup_available?: boolean | null
+          pickup_fee?: number | null
           service_radius_miles?: number | null
           specialties?: string[] | null
           updated_at?: string
@@ -225,9 +233,13 @@ export type Database = {
           business_state?: string | null
           business_zip_code?: string | null
           created_at?: string
+          dropoff_available?: boolean | null
+          dropoff_fee?: number | null
           id?: string
           is_mobile_service?: boolean | null
           license_number?: string | null
+          pickup_available?: boolean | null
+          pickup_fee?: number | null
           service_radius_miles?: number | null
           specialties?: string[] | null
           updated_at?: string

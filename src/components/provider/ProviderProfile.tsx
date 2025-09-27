@@ -85,10 +85,10 @@ const ProviderProfile = () => {
           license_number: data.license_number || "",
           is_mobile_service: data.is_mobile_service || false,
           service_radius_miles: data.service_radius_miles || 25,
-          pickup_available: data.pickup_available || false,
-          dropoff_available: data.dropoff_available || false,
-          pickup_fee: data.pickup_fee || 0,
-          dropoff_fee: data.dropoff_fee || 0
+          pickup_available: (data as any).pickup_available || false,
+          dropoff_available: (data as any).dropoff_available || false,
+          pickup_fee: (data as any).pickup_fee || 0,
+          dropoff_fee: (data as any).dropoff_fee || 0
         });
       }
     } catch (error) {
