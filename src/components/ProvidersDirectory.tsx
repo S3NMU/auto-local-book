@@ -23,11 +23,14 @@ interface Provider {
 const ProvidersDirectory = () => {
   const [providers, setProviders] = useState<Provider[]>([]);
   const [filteredProviders, setFilteredProviders] = useState<Provider[]>([]);
+  const [displayedProviders, setDisplayedProviders] = useState<Provider[]>([]);
   const [selectedState, setSelectedState] = useState<string>('');
   const [selectedCity, setSelectedCity] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [availableStates, setAvailableStates] = useState<string[]>([]);
   const [availableCities, setAvailableCities] = useState<string[]>([]);
+  const [showingCount, setShowingCount] = useState<number>(6);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const { toast } = useToast();
 
   // Fetch providers
@@ -88,7 +91,13 @@ const ProvidersDirectory = () => {
     }
 
     setFilteredProviders(filtered);
+    setShowingCount(6); // Reset to show first 6 when filters change
   }, [providers, selectedState, selectedCity, searchTerm]);
+
+  // Update displayed providers based on showing count
+  useEffect(() => {
+    setDisplayedProviders(filteredProviders.slice(0, showingCount));
+  }, [filteredProviders, showingCount]);
 
   // Update available cities when state changes
   useEffect(() => {
@@ -110,6 +119,16 @@ const ProvidersDirectory = () => {
     setSelectedState('');
     setSelectedCity('');
     setSearchTerm('');
+    setShowingCount(6);
+  };
+
+  const loadMoreProviders = () => {
+    setIsLoading(true);
+    // Simulate loading delay for better UX
+    setTimeout(() => {
+      setShowingCount(prev => prev + 6);
+      setIsLoading(false);
+    }, 500);
   };
 
   const totalProviders = providers.length;
@@ -163,8 +182,8 @@ const ProvidersDirectory = () => {
             <div className="flex items-center space-x-2">
               <Users className="w-4 h-4 md:w-5 md:h-5 text-primary" />
               <div>
-                <p className="text-xs md:text-sm text-muted-foreground">Filtered Results</p>
-                <p className="text-lg md:text-2xl font-bold">{filteredProviders.length}</p>
+                <p className="text-xs md:text-sm text-muted-foreground">Showing Results</p>
+                <p className="text-lg md:text-2xl font-bold">{displayedProviders.length}</p>
               </div>
             </div>
           </CardContent>
@@ -228,7 +247,7 @@ const ProvidersDirectory = () => {
 
       {/* Providers Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-        {filteredProviders.length === 0 ? (
+        {displayedProviders.length === 0 ? (
           <div className="col-span-full">
             <Card>
               <CardContent className="p-8 text-center">
@@ -244,7 +263,7 @@ const ProvidersDirectory = () => {
             </Card>
           </div>
         ) : (
-          filteredProviders.map((provider) => (
+          displayedProviders.map((provider) => (
             <Card key={provider.id} className="hover:shadow-lg transition-shadow">
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg leading-tight">{provider.business_name}</CardTitle>
@@ -300,10 +319,32 @@ const ProvidersDirectory = () => {
         )}
       </div>
 
+      {/* Load More Section */}
+      {filteredProviders.length > showingCount && (
+        <div className="text-center mt-8">
+          <Button 
+            onClick={loadMoreProviders} 
+            variant="outline" 
+            size="lg" 
+            disabled={isLoading}
+            className="animate-fade-in"
+          >
+            {isLoading ? (
+              <>
+                <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin mr-2" />
+                Loading...
+              </>
+            ) : (
+              `Load More Providers (${filteredProviders.length - showingCount} remaining)`
+            )}
+          </Button>
+        </div>
+      )}
+
       {/* Results Summary */}
-      {filteredProviders.length > 0 && (
-        <div className="text-center text-sm text-muted-foreground">
-          Showing {filteredProviders.length} of {totalProviders} providers
+      {displayedProviders.length > 0 && (
+        <div className="text-center text-sm text-muted-foreground mt-6">
+          Showing {displayedProviders.length} of {filteredProviders.length} providers
           {(selectedState || selectedCity || searchTerm) && (
             <span> with current filters</span>
           )}

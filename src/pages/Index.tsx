@@ -28,7 +28,13 @@ const Index = () => {
     <div>
       <Hero />
       
-      {/* Map Section */}
+      {/* How It Works Section */}
+      <HowItWorks />
+      
+      {/* Grow Your Auto Service Business Section */}
+      <ProviderCTA />
+      
+      {/* Providers Directory Section */}
       <div className="py-8 md:py-16 bg-background">
         <div className="container mx-auto px-4">
           <div className="text-center mb-8 md:mb-12">
@@ -41,10 +47,7 @@ const Index = () => {
         </div>
       </div>
 
-
       <FeaturedProviders />
-      <HowItWorks />
-      <ProviderCTA />
     </div>
   );
 };
