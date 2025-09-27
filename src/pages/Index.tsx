@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import Hero from "@/components/Hero";
 import ServiceCategories from "@/components/ServiceCategories";
 import FeaturedProviders from "@/components/FeaturedProviders";
-import StaticProvidersMap from "@/components/StaticProvidersMap";
+import WorldProvidersMap from "@/components/WorldProvidersMap";
 import HowItWorks from "@/components/HowItWorks";
 import ProviderCTA from "@/components/ProviderCTA";
 import { useToast } from "@/hooks/use-toast";
@@ -38,7 +38,7 @@ const Index = () => {
             </p>
           </div>
           <div className="h-[400px] md:h-[500px] lg:h-[600px]">
-            <StaticProvidersMap />
+            <WorldProvidersMap />
           </div>
         </div>
       </div>
