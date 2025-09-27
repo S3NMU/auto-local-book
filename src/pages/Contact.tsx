@@ -1,11 +1,82 @@
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
 import { Mail, Phone, MapPin, Clock } from "lucide-react";
 
+// Contact form validation schema
+const contactSchema = z.object({
+  firstName: z.string()
+    .trim()
+    .min(1, "First name is required")
+    .max(50, "First name must be less than 50 characters")
+    .regex(/^[a-zA-Z\s'-]+$/, "First name can only contain letters, spaces, hyphens, and apostrophes"),
+  lastName: z.string()
+    .trim()
+    .min(1, "Last name is required")
+    .max(50, "Last name must be less than 50 characters")
+    .regex(/^[a-zA-Z\s'-]+$/, "Last name can only contain letters, spaces, hyphens, and apostrophes"),
+  email: z.string()
+    .trim()
+    .email("Please enter a valid email address")
+    .max(255, "Email must be less than 255 characters"),
+  subject: z.string()
+    .trim()
+    .min(1, "Subject is required")
+    .max(100, "Subject must be less than 100 characters"),
+  message: z.string()
+    .trim()
+    .min(10, "Message must be at least 10 characters")
+    .max(1000, "Message must be less than 1000 characters"),
+});
+
+type ContactForm = z.infer<typeof contactSchema>;
+
 const Contact = () => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
+
+  const form = useForm<ContactForm>({
+    resolver: zodResolver(contactSchema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      subject: "",
+      message: "",
+    },
+  });
+
+  const onSubmit = async (data: ContactForm) => {
+    setIsSubmitting(true);
+    
+    try {
+      // Simulate form submission - in a real app, this would send to a backend
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      toast({
+        title: "Message sent!",
+        description: "Thank you for your message. We'll get back to you within 24 hours.",
+      });
+      
+      form.reset();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to send message. Please try again later.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const contactInfo = [
     {
       icon: Mail,
@@ -55,33 +126,85 @@ const Contact = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="firstName">First Name</Label>
-                  <Input id="firstName" placeholder="John" />
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="firstName">First Name</Label>
+                    <Input 
+                      id="firstName" 
+                      placeholder="John"
+                      {...form.register("firstName")}
+                      disabled={isSubmitting}
+                    />
+                    {form.formState.errors.firstName && (
+                      <p className="text-sm text-destructive">
+                        {form.formState.errors.firstName.message}
+                      </p>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="lastName">Last Name</Label>
+                    <Input 
+                      id="lastName" 
+                      placeholder="Doe"
+                      {...form.register("lastName")}
+                      disabled={isSubmitting}
+                    />
+                    {form.formState.errors.lastName && (
+                      <p className="text-sm text-destructive">
+                        {form.formState.errors.lastName.message}
+                      </p>
+                    )}
+                  </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="lastName">Last Name</Label>
-                  <Input id="lastName" placeholder="Doe" />
+                  <Label htmlFor="email">Email</Label>
+                  <Input 
+                    id="email" 
+                    type="email" 
+                    placeholder="john@example.com"
+                    {...form.register("email")}
+                    disabled={isSubmitting}
+                  />
+                  {form.formState.errors.email && (
+                    <p className="text-sm text-destructive">
+                      {form.formState.errors.email.message}
+                    </p>
+                  )}
                 </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="john@example.com" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="subject">Subject</Label>
-                <Input id="subject" placeholder="How can we help?" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="message">Message</Label>
-                <Textarea 
-                  id="message" 
-                  placeholder="Tell us more about your question or concern..."
-                  rows={5}
-                />
-              </div>
-              <Button className="w-full">Send Message</Button>
+                <div className="space-y-2">
+                  <Label htmlFor="subject">Subject</Label>
+                  <Input 
+                    id="subject" 
+                    placeholder="How can we help?"
+                    {...form.register("subject")}
+                    disabled={isSubmitting}
+                  />
+                  {form.formState.errors.subject && (
+                    <p className="text-sm text-destructive">
+                      {form.formState.errors.subject.message}
+                    </p>
+                  )}
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="message">Message</Label>
+                  <Textarea 
+                    id="message" 
+                    placeholder="Tell us more about your question or concern..."
+                    rows={5}
+                    {...form.register("message")}
+                    disabled={isSubmitting}
+                  />
+                  {form.formState.errors.message && (
+                    <p className="text-sm text-destructive">
+                      {form.formState.errors.message.message}
+                    </p>
+                  )}
+                </div>
+                <Button type="submit" className="w-full" disabled={isSubmitting}>
+                  {isSubmitting ? "Sending..." : "Send Message"}
+                </Button>
+              </form>
             </CardContent>
           </Card>
 
