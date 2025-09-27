@@ -556,67 +556,6 @@ const ServicePricing = () => {
                               </div>
                             </div>
 
-                            <div className="space-y-4 border-t pt-4">
-                              <h4 className="font-medium">Transport Options</h4>
-                              
-                              <div className="flex items-center justify-between">
-                                <div className="space-y-1">
-                                  <Label>Pickup Service</Label>
-                                  <p className="text-sm text-muted-foreground">Offer vehicle pickup</p>
-                                </div>
-                                <Switch
-                                  checked={editingService.pickup_available}
-                                  onCheckedChange={(checked) => setEditingService({ 
-                                    ...editingService, 
-                                    pickup_available: checked 
-                                  })}
-                                />
-                              </div>
-
-                              {editingService.pickup_available && (
-                                <div>
-                                  <Label>Pickup Fee</Label>
-                                  <Input
-                                    type="number"
-                                    step="0.01"
-                                    value={editingService.pickup_fee}
-                                    onChange={(e) => setEditingService({ 
-                                      ...editingService, 
-                                      pickup_fee: parseFloat(e.target.value) || 0 
-                                    })}
-                                  />
-                                </div>
-                              )}
-
-                              <div className="flex items-center justify-between">
-                                <div className="space-y-1">
-                                  <Label>Dropoff Service</Label>
-                                  <p className="text-sm text-muted-foreground">Offer vehicle dropoff</p>
-                                </div>
-                                <Switch
-                                  checked={editingService.dropoff_available}
-                                  onCheckedChange={(checked) => setEditingService({ 
-                                    ...editingService, 
-                                    dropoff_available: checked 
-                                  })}
-                                />
-                              </div>
-
-                              {editingService.dropoff_available && (
-                                <div>
-                                  <Label>Dropoff Fee</Label>
-                                  <Input
-                                    type="number"
-                                    step="0.01"
-                                    value={editingService.dropoff_fee}
-                                    onChange={(e) => setEditingService({ 
-                                      ...editingService, 
-                                      dropoff_fee: parseFloat(e.target.value) || 0 
-                                    })}
-                                  />
-                                </div>
-                              )}
-                            </div>
 
                             <div>
                               <Label>Notes</Label>
