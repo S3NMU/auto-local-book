@@ -172,7 +172,7 @@ const ListShop = () => {
     
     try {
       const { error } = await supabase
-        .from('providers')
+        .from('provider_requests')
         .insert({
           business_name: data.business_name,
           description: data.description,
@@ -185,19 +185,18 @@ const ListShop = () => {
           website_url: data.website_url || null,
           specialties: data.specialties,
           is_mobile: data.is_mobile,
-          business_hours: data.business_hours,
+          business_hours: JSON.stringify({ hours: data.business_hours }),
           latitude: location.lat,
           longitude: location.lng,
-          rating: 0,
-          review_count: 0,
-          is_verified: false,
+          status: 'pending',
+          submitted_by: session.user.id,
         });
 
       if (error) throw error;
 
       toast({
         title: "Shop listing submitted!",
-        description: "Your shop has been submitted for review. We'll notify you once it's approved.",
+        description: "Your shop request has been submitted for admin review. We'll notify you once it's approved.",
       });
 
       // Redirect to success page or home
