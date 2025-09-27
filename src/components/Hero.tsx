@@ -1,16 +1,15 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { MapPin, Search, Star, Users, Wrench } from "lucide-react";
+import { MapPin, Star, Users, Wrench } from "lucide-react";
 import { useLocation } from "@/hooks/useLocation";
 import LocationDialog from "./LocationDialog";
 import SearchDialog from "./SearchDialog";
-import heroImage from "@/assets/hero-automotive.jpg";
+import ProvidersMap from "./ProvidersMap";
 
 const Hero = () => {
   const [searchDialogOpen, setSearchDialogOpen] = useState(false);
   const [locationDialogOpen, setLocationDialogOpen] = useState(false);
-  const [serviceQuery, setServiceQuery] = useState("");
   const { location, setLocation } = useLocation();
 
   const handleLocationClick = () => {
@@ -39,7 +38,7 @@ const Hero = () => {
               </p>
             </div>
 
-            {/* Search Bar */}
+            {/* Location and Search */}
             <div className="bg-card rounded-lg p-4 shadow-elegant max-w-lg">
               <div className="space-y-4">
                 <div className="relative">
@@ -52,18 +51,8 @@ const Hero = () => {
                     value={location?.address || ""}
                   />
                 </div>
-                <div className="relative">
-                  <Search className="absolute left-3 top-3 w-5 h-5 text-muted-foreground" />
-                  <Input 
-                    placeholder="What service do you need?"
-                    className="pl-10 py-3 text-base"
-                    value={serviceQuery}
-                    onChange={(e) => setServiceQuery(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleSearchSubmit()}
-                  />
-                </div>
                 <Button variant="hero" size="lg" className="w-full py-3" onClick={handleSearchSubmit}>
-                  Find & Book Providers
+                  Find Providers Near You
                 </Button>
               </div>
             </div>
@@ -94,15 +83,13 @@ const Hero = () => {
             </div>
           </div>
 
-          {/* Hero Image */}
+          {/* Interactive Map */}
           <div className="relative lg:order-first animate-fade-scale">
-            <div className="relative rounded-2xl overflow-hidden shadow-hover">
-              <img 
-                src={heroImage} 
-                alt="Professional automotive service - trusted mechanics working on vehicles"
-                className="w-full h-[500px] object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent" />
+            <div className="bg-card rounded-2xl p-4 shadow-hover">
+              <h3 className="text-lg font-semibold text-foreground mb-4">Find Providers Near You</h3>
+              <div className="h-[400px] rounded-lg overflow-hidden">
+                <ProvidersMap />
+              </div>
             </div>
             
             {/* Floating Cards */}
@@ -142,7 +129,7 @@ const Hero = () => {
       <SearchDialog
         open={searchDialogOpen}
         onOpenChange={setSearchDialogOpen}
-        defaultServices={serviceQuery ? [serviceQuery] : []}
+        defaultServices={[]}
       />
     </section>
   );
