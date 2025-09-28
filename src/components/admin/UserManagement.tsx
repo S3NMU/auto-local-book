@@ -20,6 +20,10 @@ interface User {
   roles: Array<{
     role: string;
   }>;
+  user_metadata?: {
+    full_name?: string;
+    phone?: string;
+  };
 }
 
 export const UserManagement = () => {
@@ -27,9 +31,15 @@ export const UserManagement = () => {
   const [loading, setLoading] = useState(true);
   const [createUserOpen, setCreateUserOpen] = useState(false);
   const [editRolesOpen, setEditRolesOpen] = useState(false);
+  const [editProfileOpen, setEditProfileOpen] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
+  const [profileData, setProfileData] = useState({
+    full_name: '',
+    email: '',
+    phone: ''
+  });
   const [newUser, setNewUser] = useState({
     email: '',
     password: '',
@@ -161,6 +171,49 @@ export const UserManagement = () => {
     }
   };
 
+  const updateUserProfile = async () => {
+    try {
+      if (!selectedUser) return;
+
+      const { data: session } = await supabase.auth.getSession();
+      if (!session.session) {
+        throw new Error('Not authenticated');
+      }
+
+      const { data, error } = await supabase.functions.invoke('admin-user-management', {
+        body: {
+          action: 'update-profile',
+          userId: selectedUser.id,
+          email: profileData.email,
+          full_name: profileData.full_name,
+          phone: profileData.phone
+        },
+        headers: {
+          Authorization: `Bearer ${session.session.access_token}`,
+        },
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "User profile updated successfully"
+      });
+
+      setEditProfileOpen(false);
+      setSelectedUser(null);
+      setProfileData({ full_name: '', email: '', phone: '' });
+      fetchUsers();
+    } catch (error: any) {
+      console.error('Error updating user profile:', error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "Failed to update user profile"
+      });
+    }
+  };
+
   const confirmDeleteUser = (user: User) => {
     setUserToDelete(user);
     setDeleteConfirmOpen(true);
@@ -223,6 +276,16 @@ export const UserManagement = () => {
     setEditRolesOpen(true);
   };
 
+  const openEditProfile = (user: User) => {
+    setSelectedUser(user);
+    setProfileData({
+      full_name: user.user_metadata?.full_name || '',
+      email: user.email,
+      phone: user.user_metadata?.phone || ''
+    });
+    setEditProfileOpen(true);
+  };
+
   const handleRoleToggle = (role: string, checked: boolean) => {
     if (!selectedUser) return;
     
@@ -279,6 +342,8 @@ export const UserManagement = () => {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Email</TableHead>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Phone</TableHead>
                     <TableHead>Roles</TableHead>
                     <TableHead>Created</TableHead>
                     <TableHead>Actions</TableHead>
@@ -288,6 +353,8 @@ export const UserManagement = () => {
                   {users.map((user) => (
                     <TableRow key={user.id}>
                       <TableCell className="font-medium">{user.email}</TableCell>
+                      <TableCell>{user.user_metadata?.full_name || '-'}</TableCell>
+                      <TableCell>{user.user_metadata?.phone || '-'}</TableCell>
                       <TableCell>
                         <div className="flex gap-1">
                           {user.roles.length > 0 ? (
@@ -306,6 +373,14 @@ export const UserManagement = () => {
                       </TableCell>
                       <TableCell>
                         <div className="flex gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => openEditProfile(user)}
+                          >
+                            <Edit className="h-4 w-4 mr-1" />
+                            Edit Profile
+                          </Button>
                           <Button
                             variant="outline"
                             size="sm"
@@ -388,6 +463,62 @@ export const UserManagement = () => {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Edit Profile Dialog */}
+      <Dialog open={editProfileOpen} onOpenChange={setEditProfileOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit User Profile</DialogTitle>
+            <DialogDescription>
+              Update profile information for {selectedUser?.email}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div>
+              <Label htmlFor="edit-email">Email</Label>
+              <Input
+                id="edit-email"
+                type="email"
+                value={profileData.email}
+                onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
+                placeholder="user@example.com"
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-name">Full Name</Label>
+              <Input
+                id="edit-name"
+                value={profileData.full_name}
+                onChange={(e) => setProfileData({ ...profileData, full_name: e.target.value })}
+                placeholder="John Doe"
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-phone">Phone Number</Label>
+              <Input
+                id="edit-phone"
+                value={profileData.phone}
+                onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
+                placeholder="+1 (555) 123-4567"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setEditProfileOpen(false);
+                setProfileData({ full_name: '', email: '', phone: '' });
+              }}
+            >
+              Cancel
+            </Button>
+            <Button onClick={updateUserProfile}>
+              Update Profile
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Edit Roles Dialog */}
       <Dialog open={editRolesOpen} onOpenChange={setEditRolesOpen}>

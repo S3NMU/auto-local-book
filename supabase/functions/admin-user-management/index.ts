@@ -77,6 +77,7 @@ const handler = async (req: Request): Promise<Response> => {
               id: user.id,
               email: user.email || '',
               created_at: user.created_at,
+              user_metadata: user.user_metadata,
               roles: roles || []
             };
           })
@@ -144,6 +145,31 @@ const handler = async (req: Request): Promise<Response> => {
         }
 
         return new Response(JSON.stringify({ success: true }), {
+          status: 200,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      case "update-profile": {
+        const { userId, email, full_name, phone } = body;
+
+        // Update user email and metadata
+        const updateData: any = {};
+        
+        if (email) {
+          updateData.email = email;
+        }
+        
+        updateData.user_metadata = {
+          full_name: full_name || '',
+          phone: phone || ''
+        };
+
+        const { data, error } = await supabase.auth.admin.updateUserById(userId, updateData);
+
+        if (error) throw error;
+
+        return new Response(JSON.stringify({ success: true, user: data.user }), {
           status: 200,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
