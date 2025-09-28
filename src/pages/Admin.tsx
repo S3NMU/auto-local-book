@@ -6,7 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { ProviderManagement } from '@/components/admin/ProviderManagement';
 import { AddProvider } from '@/components/admin/AddProvider';
 import { RequestReview } from '@/components/admin/RequestReview';
-import { Shield, Users, Plus, FileText } from 'lucide-react';
+import { UserManagement } from '@/components/admin/UserManagement';
+import { Shield, Users, Plus, FileText, UserCog } from 'lucide-react';
 
 const Admin = () => {
   const { user, loading, isAdmin } = useAuth();
@@ -49,10 +50,14 @@ const Admin = () => {
       </div>
 
       <Tabs defaultValue="providers" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="providers" className="flex items-center gap-2">
             <Users className="h-4 w-4" />
             Manage Providers
+          </TabsTrigger>
+          <TabsTrigger value="users" className="flex items-center gap-2">
+            <UserCog className="h-4 w-4" />
+            Manage Users
           </TabsTrigger>
           <TabsTrigger value="add" className="flex items-center gap-2">
             <Plus className="h-4 w-4" />
@@ -74,6 +79,20 @@ const Admin = () => {
             </CardHeader>
             <CardContent>
               <ProviderManagement />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="users">
+          <Card>
+            <CardHeader>
+              <CardTitle>User Management</CardTitle>
+              <CardDescription>
+                Create employee accounts and manage user privileges
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <UserManagement />
             </CardContent>
           </Card>
         </TabsContent>
