@@ -57,7 +57,8 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     const url = new URL(req.url);
-    const action = url.searchParams.get("action");
+    const body = await req.json();
+    const action = body.action || url.searchParams.get("action");
 
     switch (action) {
       case "list-users": {
@@ -88,7 +89,7 @@ const handler = async (req: Request): Promise<Response> => {
       }
 
       case "create-user": {
-        const { email, password, role }: CreateUserRequest = await req.json();
+        const { email, password, role } = body;
 
         // Create user
         const { data, error } = await supabase.auth.admin.createUser({
@@ -118,7 +119,7 @@ const handler = async (req: Request): Promise<Response> => {
       }
 
       case "delete-user": {
-        const { userId } = await req.json();
+        const { userId } = body;
 
         const { error } = await supabase.auth.admin.deleteUser(userId);
         if (error) throw error;

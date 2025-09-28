@@ -39,21 +39,16 @@ export const UserManagement = () => {
         throw new Error('Not authenticated');
       }
 
-      const response = await fetch('/functions/v1/admin-user-management?action=list-users', {
-        method: 'GET',
+      const { data, error } = await supabase.functions.invoke('admin-user-management', {
+        body: { action: 'list-users' },
         headers: {
-          'Authorization': `Bearer ${session.session.access_token}`,
-          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.session.access_token}`,
         },
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to fetch users');
-      }
+      if (error) throw error;
 
-      const { users } = await response.json();
-      setUsers(users);
+      setUsers(data.users);
     } catch (error) {
       console.error('Error fetching users:', error);
       toast({
@@ -82,23 +77,19 @@ export const UserManagement = () => {
         throw new Error('Not authenticated');
       }
 
-      const response = await fetch('/functions/v1/admin-user-management?action=create-user', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${session.session.access_token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      const { data, error } = await supabase.functions.invoke('admin-user-management', {
+        body: {
+          action: 'create-user',
           email: newUser.email,
           password: newUser.password,
           role: newUser.role
-        }),
+        },
+        headers: {
+          Authorization: `Bearer ${session.session.access_token}`,
+        },
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to create user');
-      }
+      if (error) throw error;
 
       toast({
         title: "Success",
@@ -159,19 +150,17 @@ export const UserManagement = () => {
         throw new Error('Not authenticated');
       }
 
-      const response = await fetch('/functions/v1/admin-user-management?action=delete-user', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${session.session.access_token}`,
-          'Content-Type': 'application/json',
+      const { data, error } = await supabase.functions.invoke('admin-user-management', {
+        body: {
+          action: 'delete-user',
+          userId
         },
-        body: JSON.stringify({ userId }),
+        headers: {
+          Authorization: `Bearer ${session.session.access_token}`,
+        },
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to delete user');
-      }
+      if (error) throw error;
 
       toast({
         title: "Success",
