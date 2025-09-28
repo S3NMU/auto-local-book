@@ -41,11 +41,13 @@ const ProviderAnalytics = () => {
           .select('amount, entry_date')
           .eq('provider_id', user.id)
           .eq('is_paid', true)
+          .is('deleted_at', null)
           .gte('entry_date', startDate.toISOString().split('T')[0]),
         supabase
           .from('bookings')
           .select('id, created_at')
           .eq('provider_id', user.id)
+          .is('deleted_at', null)
           .gte('created_at', startDate.toISOString())
       ]);
 
