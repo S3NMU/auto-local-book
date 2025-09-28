@@ -46,15 +46,22 @@ export const UserManagement = () => {
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Function invoke error:', error);
+        throw error;
+      }
 
-      setUsers(data.users);
+      if (data?.users) {
+        setUsers(data.users);
+      } else {
+        throw new Error('No users data returned');
+      }
     } catch (error) {
       console.error('Error fetching users:', error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to fetch users"
+        description: `Failed to fetch users: ${error instanceof Error ? error.message : 'Unknown error'}`
       });
     } finally {
       setLoading(false);
