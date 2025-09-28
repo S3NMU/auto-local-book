@@ -56,21 +56,25 @@ const ProviderDashboard = () => {
           .from('revenue_entries')
           .select('amount')
           .eq('provider_id', user.id)
-          .eq('is_paid', true),
+          .eq('is_paid', true)
+          .is('deleted_at', null),
         supabase
           .from('bookings')
           .select('id')
           .eq('provider_id', user.id)
-          .gte('created_at', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()),
+          .gte('created_at', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString())
+          .is('deleted_at', null),
         supabase
           .from('customer_records')
           .select('id')
-          .eq('provider_id', user.id),
+          .eq('provider_id', user.id)
+          .is('deleted_at', null),
         supabase
           .from('bookings')
           .select('id')
           .eq('provider_id', user.id)
           .eq('status', 'pending')
+          .is('deleted_at', null)
       ]);
 
       const totalRevenue = revenueData.data?.reduce((sum, entry) => sum + Number(entry.amount), 0) || 0;

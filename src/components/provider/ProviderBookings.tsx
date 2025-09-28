@@ -175,16 +175,30 @@ const ProviderBookings = ({ onBookingUpdate }: ProviderBookingsProps) => {
 
   const deleteBooking = async (bookingId: string) => {
     try {
-      const { error } = await supabase
+      const deleteTimestamp = new Date().toISOString();
+      
+      // Delete the booking
+      const { error: bookingError } = await supabase
         .from('bookings')
-        .update({ deleted_at: new Date().toISOString() })
+        .update({ deleted_at: deleteTimestamp })
         .eq('id', bookingId);
 
-      if (error) throw error;
+      if (bookingError) throw bookingError;
+
+      // Also soft delete associated revenue entries
+      const { error: revenueError } = await supabase
+        .from('revenue_entries')
+        .update({ deleted_at: deleteTimestamp })
+        .eq('booking_id', bookingId)
+        .is('deleted_at', null);
+
+      if (revenueError) {
+        console.warn('Warning: Failed to delete associated revenue entries:', revenueError);
+      }
 
       toast({
         title: "Booking Deleted",
-        description: "Booking has been moved to archive",
+        description: "Booking and associated revenue entries have been moved to archive",
       });
 
       fetchBookings();
