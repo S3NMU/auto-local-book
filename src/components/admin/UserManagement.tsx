@@ -34,29 +34,26 @@ export const UserManagement = () => {
 
   const fetchUsers = async () => {
     try {
-      // Fetch users from auth and their roles
-      const { data: authUsers, error: authError } = await supabase.auth.admin.listUsers();
-      
-      if (authError) throw authError;
+      const { data: session } = await supabase.auth.getSession();
+      if (!session.session) {
+        throw new Error('Not authenticated');
+      }
 
-      // Fetch roles for each user
-      const usersWithRoles = await Promise.all(
-        authUsers.users.map(async (user) => {
-          const { data: roles } = await supabase
-            .from('user_roles')
-            .select('role')
-            .eq('user_id', user.id);
+      const response = await fetch('/functions/v1/admin-user-management?action=list-users', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${session.session.access_token}`,
+          'Content-Type': 'application/json',
+        },
+      });
 
-          return {
-            id: user.id,
-            email: user.email || '',
-            created_at: user.created_at,
-            roles: roles || []
-          };
-        })
-      );
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to fetch users');
+      }
 
-      setUsers(usersWithRoles);
+      const { users } = await response.json();
+      setUsers(users);
     } catch (error) {
       console.error('Error fetching users:', error);
       toast({
@@ -80,25 +77,27 @@ export const UserManagement = () => {
         return;
       }
 
-      // Create user in auth
-      const { data, error } = await supabase.auth.admin.createUser({
-        email: newUser.email,
-        password: newUser.password,
-        email_confirm: true
+      const { data: session } = await supabase.auth.getSession();
+      if (!session.session) {
+        throw new Error('Not authenticated');
+      }
+
+      const response = await fetch('/functions/v1/admin-user-management?action=create-user', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${session.session.access_token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: newUser.email,
+          password: newUser.password,
+          role: newUser.role
+        }),
       });
 
-      if (error) throw error;
-
-      // Assign role
-      if (data.user) {
-        const { error: roleError } = await supabase
-          .from('user_roles')
-          .insert([{
-            user_id: data.user.id,
-            role: newUser.role as any
-          }]);
-
-        if (roleError) throw roleError;
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to create user');
       }
 
       toast({
@@ -155,9 +154,24 @@ export const UserManagement = () => {
 
   const deleteUser = async (userId: string) => {
     try {
-      const { error } = await supabase.auth.admin.deleteUser(userId);
-      
-      if (error) throw error;
+      const { data: session } = await supabase.auth.getSession();
+      if (!session.session) {
+        throw new Error('Not authenticated');
+      }
+
+      const response = await fetch('/functions/v1/admin-user-management?action=delete-user', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${session.session.access_token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to delete user');
+      }
 
       toast({
         title: "Success",
