@@ -27,7 +27,9 @@ export const UserManagement = () => {
   const [loading, setLoading] = useState(true);
   const [createUserOpen, setCreateUserOpen] = useState(false);
   const [editRolesOpen, setEditRolesOpen] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [userToDelete, setUserToDelete] = useState<User | null>(null);
   const [newUser, setNewUser] = useState({
     email: '',
     password: '',
@@ -159,7 +161,14 @@ export const UserManagement = () => {
     }
   };
 
-  const deleteUser = async (userId: string) => {
+  const confirmDeleteUser = (user: User) => {
+    setUserToDelete(user);
+    setDeleteConfirmOpen(true);
+  };
+
+  const deleteUser = async () => {
+    if (!userToDelete) return;
+
     try {
       const { data: session } = await supabase.auth.getSession();
       if (!session.session) {
@@ -169,7 +178,7 @@ export const UserManagement = () => {
       const { data, error } = await supabase.functions.invoke('admin-user-management', {
         body: {
           action: 'delete-user',
-          userId
+          userId: userToDelete.id
         },
         headers: {
           Authorization: `Bearer ${session.session.access_token}`,
@@ -183,6 +192,8 @@ export const UserManagement = () => {
         description: "User deleted successfully"
       });
 
+      setDeleteConfirmOpen(false);
+      setUserToDelete(null);
       fetchUsers();
     } catch (error: any) {
       console.error('Error deleting user:', error);
@@ -306,7 +317,7 @@ export const UserManagement = () => {
                           <Button
                             variant="destructive"
                             size="sm"
-                            onClick={() => deleteUser(user.id)}
+                            onClick={() => confirmDeleteUser(user)}
                           >
                             Delete
                           </Button>
@@ -421,6 +432,36 @@ export const UserManagement = () => {
               }}
             >
               Update Roles
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirm Delete User</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete the user <strong>{userToDelete?.email}</strong>? 
+              This action cannot be undone and will permanently remove the user and all their data.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setDeleteConfirmOpen(false);
+                setUserToDelete(null);
+              }}
+            >
+              Cancel
+            </Button>
+            <Button 
+              variant="destructive"
+              onClick={deleteUser}
+            >
+              Delete User
             </Button>
           </DialogFooter>
         </DialogContent>
