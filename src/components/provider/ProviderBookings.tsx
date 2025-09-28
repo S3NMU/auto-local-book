@@ -213,6 +213,43 @@ const ProviderBookings = ({ onBookingUpdate }: ProviderBookingsProps) => {
     }
   };
 
+  const permanentDeleteBooking = async (bookingId: string) => {
+    try {
+      // Permanently delete associated revenue entries first
+      const { error: revenueError } = await supabase
+        .from('revenue_entries')
+        .delete()
+        .eq('booking_id', bookingId);
+
+      if (revenueError) {
+        console.warn('Warning: Failed to permanently delete associated revenue entries:', revenueError);
+      }
+
+      // Permanently delete the booking
+      const { error: bookingError } = await supabase
+        .from('bookings')
+        .delete()
+        .eq('id', bookingId);
+
+      if (bookingError) throw bookingError;
+
+      toast({
+        title: "Booking Permanently Deleted",
+        description: "Booking and associated revenue entries have been permanently removed",
+      });
+
+      fetchBookings();
+      onBookingUpdate();
+    } catch (error) {
+      console.error('Error permanently deleting booking:', error);
+      toast({
+        title: "Error",
+        description: "Failed to permanently delete booking",
+        variant: "destructive",
+      });
+    }
+  };
+
   const restoreBooking = async (bookingId: string) => {
     try {
       const { error } = await supabase
@@ -425,27 +462,64 @@ const ProviderBookings = ({ onBookingUpdate }: ProviderBookingsProps) => {
                           <AlertDialogHeader>
                             <AlertDialogTitle>Delete Booking</AlertDialogTitle>
                             <AlertDialogDescription>
-                              Are you sure you want to delete this booking for {booking.customer_name}? This action will move the booking to the archive. You can restore it later.
+                              Choose how you want to delete this booking for {booking.customer_name}:
                             </AlertDialogDescription>
                           </AlertDialogHeader>
-                          <AlertDialogFooter>
+                          <AlertDialogFooter className="flex flex-col gap-2 sm:flex-row">
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => deleteBooking(booking.id)}>
-                              Delete
+                            <Button 
+                              variant="outline" 
+                              onClick={() => deleteBooking(booking.id)}
+                            >
+                              <Archive className="w-4 h-4 mr-1" />
+                              Archive (Soft Delete)
+                            </Button>
+                            <AlertDialogAction 
+                              onClick={() => permanentDeleteBooking(booking.id)}
+                              className="bg-red-600 hover:bg-red-700"
+                            >
+                              <Trash2 className="w-4 h-4 mr-1" />
+                              Delete Permanently
                             </AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>
                       </AlertDialog>
                     </>
                     ) : (
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        onClick={() => restoreBooking(booking.id)}
-                      >
-                        <RotateCcw className="w-4 h-4 mr-1" />
-                        Restore
-                      </Button>
+                      <>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={() => restoreBooking(booking.id)}
+                        >
+                          <RotateCcw className="w-4 h-4 mr-1" />
+                          Restore
+                        </Button>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="destructive" size="sm">
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Permanently Delete Booking</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Are you sure you want to permanently delete this archived booking for {booking.customer_name}? This action cannot be undone and will not affect your revenue or booking totals.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction 
+                                onClick={() => permanentDeleteBooking(booking.id)}
+                                className="bg-red-600 hover:bg-red-700"
+                              >
+                                Delete Permanently
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </>
                     )}
                   </div>
                 </div>
