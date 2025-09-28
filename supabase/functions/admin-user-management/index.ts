@@ -89,7 +89,7 @@ const handler = async (req: Request): Promise<Response> => {
       }
 
       case "create-user": {
-        const { email, password, role } = body;
+        const { email, password, roles } = body;
 
         // Create user
         const { data, error } = await supabase.auth.admin.createUser({
@@ -100,19 +100,50 @@ const handler = async (req: Request): Promise<Response> => {
 
         if (error) throw error;
 
-        // Assign role
-        if (data.user) {
+        // Assign roles
+        if (data.user && roles && roles.length > 0) {
+          const roleInserts = roles.map((role: string) => ({
+            user_id: data.user!.id,
+            role: role
+          }));
+
           const { error: roleError } = await supabase
             .from('user_roles')
-            .insert([{
-              user_id: data.user.id,
-              role: role
-            }]);
+            .insert(roleInserts);
 
           if (roleError) throw roleError;
         }
 
         return new Response(JSON.stringify({ success: true, user: data.user }), {
+          status: 200,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      case "update-roles": {
+        const { userId, roles } = body;
+
+        // Delete existing roles
+        await supabase
+          .from('user_roles')
+          .delete()
+          .eq('user_id', userId);
+
+        // Insert new roles
+        if (roles && roles.length > 0) {
+          const roleInserts = roles.map((role: string) => ({
+            user_id: userId,
+            role: role
+          }));
+
+          const { error: roleError } = await supabase
+            .from('user_roles')
+            .insert(roleInserts);
+
+          if (roleError) throw roleError;
+        }
+
+        return new Response(JSON.stringify({ success: true }), {
           status: 200,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });

@@ -9,7 +9,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { UserPlus, Users, Shield } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { UserPlus, Users, Shield, Edit } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface User {
@@ -25,12 +26,16 @@ export const UserManagement = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [createUserOpen, setCreateUserOpen] = useState(false);
+  const [editRolesOpen, setEditRolesOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [newUser, setNewUser] = useState({
     email: '',
     password: '',
-    role: 'user' as 'user' | 'employee' | 'provider' | 'admin'
+    roles: ['user'] as string[]
   });
   const { toast } = useToast();
+
+  const availableRoles = ['user', 'employee', 'provider', 'admin'];
 
   const fetchUsers = async () => {
     try {
@@ -89,7 +94,7 @@ export const UserManagement = () => {
           action: 'create-user',
           email: newUser.email,
           password: newUser.password,
-          role: newUser.role
+          roles: newUser.roles
         },
         headers: {
           Authorization: `Bearer ${session.session.access_token}`,
@@ -104,7 +109,7 @@ export const UserManagement = () => {
       });
 
       setCreateUserOpen(false);
-      setNewUser({ email: '', password: '', role: 'user' });
+      setNewUser({ email: '', password: '', roles: ['user'] });
       fetchUsers();
     } catch (error: any) {
       console.error('Error creating user:', error);
@@ -116,36 +121,40 @@ export const UserManagement = () => {
     }
   };
 
-  const updateUserRole = async (userId: string, newRole: string) => {
+  const updateUserRoles = async (userId: string, newRoles: string[]) => {
     try {
-      // Delete existing roles
-      await supabase
-        .from('user_roles')
-        .delete()
-        .eq('user_id', userId);
+      const { data: session } = await supabase.auth.getSession();
+      if (!session.session) {
+        throw new Error('Not authenticated');
+      }
 
-      // Insert new role
-      const { error } = await supabase
-        .from('user_roles')
-        .insert([{
-          user_id: userId,
-          role: newRole as any
-        }]);
+      const { data, error } = await supabase.functions.invoke('admin-user-management', {
+        body: {
+          action: 'update-roles',
+          userId,
+          roles: newRoles
+        },
+        headers: {
+          Authorization: `Bearer ${session.session.access_token}`,
+        },
+      });
 
       if (error) throw error;
 
       toast({
         title: "Success",
-        description: "User role updated successfully"
+        description: "User roles updated successfully"
       });
 
+      setEditRolesOpen(false);
+      setSelectedUser(null);
       fetchUsers();
     } catch (error: any) {
-      console.error('Error updating user role:', error);
+      console.error('Error updating user roles:', error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: error.message || "Failed to update user role"
+        description: error.message || "Failed to update user roles"
       });
     }
   };
@@ -196,6 +205,33 @@ export const UserManagement = () => {
       case 'employee': return 'secondary';
       default: return 'outline';
     }
+  };
+
+  const openEditRoles = (user: User) => {
+    setSelectedUser(user);
+    setEditRolesOpen(true);
+  };
+
+  const handleRoleToggle = (role: string, checked: boolean) => {
+    if (!selectedUser) return;
+    
+    const currentRoles = selectedUser.roles.map(r => r.role);
+    const newRoles = checked 
+      ? [...currentRoles, role]
+      : currentRoles.filter(r => r !== role);
+    
+    setSelectedUser({
+      ...selectedUser,
+      roles: newRoles.map(role => ({ role }))
+    });
+  };
+
+  const handleNewUserRoleToggle = (role: string, checked: boolean) => {
+    const newRoles = checked 
+      ? [...newUser.roles, role]
+      : newUser.roles.filter(r => r !== role);
+    
+    setNewUser({ ...newUser, roles: newRoles });
   };
 
   if (loading) {
@@ -259,20 +295,14 @@ export const UserManagement = () => {
                       </TableCell>
                       <TableCell>
                         <div className="flex gap-2">
-                          <Select
-                            onValueChange={(value) => updateUserRole(user.id, value)}
-                            defaultValue={user.roles[0]?.role || 'user'}
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => openEditRoles(user)}
                           >
-                            <SelectTrigger className="w-32">
-                              <SelectValue placeholder="Role" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="user">User</SelectItem>
-                              <SelectItem value="employee">Employee</SelectItem>
-                              <SelectItem value="provider">Provider</SelectItem>
-                              <SelectItem value="admin">Admin</SelectItem>
-                            </SelectContent>
-                          </Select>
+                            <Edit className="h-4 w-4 mr-1" />
+                            Edit Roles
+                          </Button>
                           <Button
                             variant="destructive"
                             size="sm"
@@ -322,21 +352,23 @@ export const UserManagement = () => {
                 </div>
               </div>
               <div>
-                <Label htmlFor="role">Role</Label>
-                <Select
-                  value={newUser.role}
-                  onValueChange={(value: any) => setNewUser({ ...newUser, role: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select role" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="user">User</SelectItem>
-                    <SelectItem value="employee">Employee</SelectItem>
-                    <SelectItem value="provider">Provider</SelectItem>
-                    <SelectItem value="admin">Admin</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Label htmlFor="roles">Roles</Label>
+                <div className="grid grid-cols-2 gap-2 mt-2">
+                  {availableRoles.map((role) => (
+                    <div key={role} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`new-user-${role}`}
+                        checked={newUser.roles.includes(role)}
+                        onCheckedChange={(checked) => 
+                          handleNewUserRoleToggle(role, checked as boolean)
+                        }
+                      />
+                      <Label htmlFor={`new-user-${role}`} className="capitalize">
+                        {role}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
               </div>
               <Button onClick={createUser} className="w-full">
                 Create User
@@ -345,6 +377,54 @@ export const UserManagement = () => {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Edit Roles Dialog */}
+      <Dialog open={editRolesOpen} onOpenChange={setEditRolesOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit User Roles</DialogTitle>
+            <DialogDescription>
+              Update roles for {selectedUser?.email}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid grid-cols-2 gap-4 py-4">
+            {availableRoles.map((role) => (
+              <div key={role} className="flex items-center space-x-2">
+                <Checkbox
+                  id={`edit-${role}`}
+                  checked={selectedUser?.roles.some(r => r.role === role) || false}
+                  onCheckedChange={(checked) => 
+                    handleRoleToggle(role, checked as boolean)
+                  }
+                />
+                <Label htmlFor={`edit-${role}`} className="capitalize">
+                  {role}
+                </Label>
+              </div>
+            ))}
+          </div>
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => setEditRolesOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={() => {
+                if (selectedUser) {
+                  updateUserRoles(
+                    selectedUser.id, 
+                    selectedUser.roles.map(r => r.role)
+                  );
+                }
+              }}
+            >
+              Update Roles
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
