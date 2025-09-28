@@ -236,6 +236,32 @@ const ProviderRevenue = ({ onRevenueUpdate }: ProviderRevenueProps) => {
     }
   };
 
+  const permanentDeleteRevenue = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('revenue_entries')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Revenue Permanently Deleted",
+        description: "Revenue entry has been permanently removed",
+      });
+
+      fetchRevenues();
+      onRevenueUpdate();
+    } catch (error) {
+      console.error('Error permanently deleting revenue:', error);
+      toast({
+        title: "Error",
+        description: "Failed to permanently delete revenue entry",
+        variant: "destructive",
+      });
+    }
+  };
+
   const totalRevenue = revenues.reduce((sum, revenue) => sum + revenue.amount, 0);
   const paidRevenue = revenues.filter(r => r.is_paid).reduce((sum, revenue) => sum + revenue.amount, 0);
   const unpaidRevenue = revenues.filter(r => !r.is_paid).reduce((sum, revenue) => sum + revenue.amount, 0);
@@ -531,27 +557,64 @@ const ProviderRevenue = ({ onRevenueUpdate }: ProviderRevenueProps) => {
                           <AlertDialogHeader>
                             <AlertDialogTitle>Delete Revenue Entry</AlertDialogTitle>
                             <AlertDialogDescription>
-                              Are you sure you want to delete this revenue entry of ${revenue.amount.toFixed(2)}? This action will move it to the archive. You can restore it later.
+                              Choose how you want to delete this revenue entry of ${revenue.amount.toFixed(2)}:
                             </AlertDialogDescription>
                           </AlertDialogHeader>
-                          <AlertDialogFooter>
+                          <AlertDialogFooter className="flex flex-col gap-2 sm:flex-row">
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => deleteRevenue(revenue.id)}>
-                              Delete
+                            <Button 
+                              variant="outline" 
+                              onClick={() => deleteRevenue(revenue.id)}
+                            >
+                              <Archive className="w-4 h-4 mr-1" />
+                              Archive (Soft Delete)
+                            </Button>
+                            <AlertDialogAction 
+                              onClick={() => permanentDeleteRevenue(revenue.id)}
+                              className="bg-red-600 hover:bg-red-700"
+                            >
+                              <Trash2 className="w-4 h-4 mr-1" />
+                              Delete Permanently
                             </AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>
                       </AlertDialog>
                     </>
                     ) : (
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        onClick={() => restoreRevenue(revenue.id)}
-                      >
-                        <RotateCcw className="w-4 h-4 mr-1" />
-                        Restore
-                      </Button>
+                      <>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={() => restoreRevenue(revenue.id)}
+                        >
+                          <RotateCcw className="w-4 h-4 mr-1" />
+                          Restore
+                        </Button>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="destructive" size="sm">
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Permanently Delete Revenue Entry</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Are you sure you want to permanently delete this archived revenue entry of ${revenue.amount.toFixed(2)}? This action cannot be undone and will not affect your revenue totals.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction 
+                                onClick={() => permanentDeleteRevenue(revenue.id)}
+                                className="bg-red-600 hover:bg-red-700"
+                              >
+                                Delete Permanently
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </>
                     )}
                   </div>
                 </div>
