@@ -50,7 +50,7 @@ const Providers = () => {
   const [selectedCity, setSelectedCity] = useState<string>('all');
   const [zipCodeFilter, setZipCodeFilter] = useState<string>('');
   const [showFilters, setShowFilters] = useState(false);
-  const { location: storedLocation, setLocation } = useLocation();
+  const { location: storedLocation, setLocation, clearLocation } = useLocation();
   const location = navigationLocation || storedLocation;
   const { toast } = useToast();
 
@@ -60,6 +60,13 @@ const Providers = () => {
       setLocation(navigationLocation);
     }
   }, [navigationLocation, setLocation]);
+
+  // Auto reset global location when leaving this page
+  useEffect(() => {
+    return () => {
+      clearLocation();
+    };
+  }, [clearLocation]);
 
   const radiusOptions = [
     { value: 25, label: "25 miles" },

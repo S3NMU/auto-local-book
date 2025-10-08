@@ -129,6 +129,7 @@ const Hero = () => {
     } else {
       setSearchResults([]);
       setShowDropdown(false);
+      setLocation(null); // Clear stored location when input is cleared
     }
   };
 
