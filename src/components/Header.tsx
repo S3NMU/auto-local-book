@@ -106,14 +106,11 @@ const Header = () => {
             <Link to="/how-it-works" className={getLinkClassName("/how-it-works")}>
               How It Works
             </Link>
+            <Link to="/for-providers" className={getLinkClassName("/for-providers")}>
+              For Providers
+            </Link>
             <Link to="/about" className={getLinkClassName("/about")}>
               About
-            </Link>
-            <Link to="/careers" className={getLinkClassName("/careers")}>
-              Careers
-            </Link>
-            <Link to="/blog" className={getLinkClassName("/blog")}>
-              Blog
             </Link>
             <Link to="/contact" className={getLinkClassName("/contact")}>
               Contact

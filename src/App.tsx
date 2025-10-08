@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import Services from "./pages/Services";
 import Providers from "./pages/Providers";
 import About from "./pages/About";
+import ForProviders from "./pages/ForProviders";
 import Contact from "./pages/Contact";
 import Auth from "./pages/Auth";
 import AccountSettings from "./pages/AccountSettings";
@@ -33,6 +34,7 @@ const App = () => (
             <Route path="/services" element={<Services />} />
             <Route path="/providers" element={<Providers />} />
             <Route path="/about" element={<About />} />
+            <Route path="/for-providers" element={<ForProviders />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/how-it-works" element={<HowItWorks />} />
             <Route path="/careers" element={<Careers />} />
