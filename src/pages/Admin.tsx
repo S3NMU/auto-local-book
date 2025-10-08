@@ -16,10 +16,11 @@ import { ProviderManagement } from '@/components/admin/ProviderManagement';
 import { AddProvider } from '@/components/admin/AddProvider';
 import { RequestReview } from '@/components/admin/RequestReview';
 import { UserManagement } from '@/components/admin/UserManagement';
+import { FeaturedProvidersManagement } from '@/components/admin/FeaturedProvidersManagement';
 import AnalyticsDashboard from '@/components/admin/AnalyticsDashboard';
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Shield, Users, Plus, FileText, UserCog, BarChart3, ArrowLeft, ChevronDown, LogOut, Settings, Store } from 'lucide-react';
+import { Shield, Users, Plus, FileText, UserCog, BarChart3, ArrowLeft, ChevronDown, LogOut, Settings, Store, Star } from 'lucide-react';
 
 const Admin = () => {
   const { user, loading, isAdmin, isProvider } = useAuth();
@@ -148,7 +149,7 @@ const Admin = () => {
         </div>
 
       <Tabs defaultValue="analytics" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="analytics" className="flex items-center gap-2">
             <BarChart3 className="h-4 w-4" />
             Analytics
@@ -156,6 +157,10 @@ const Admin = () => {
           <TabsTrigger value="providers" className="flex items-center gap-2">
             <Users className="h-4 w-4" />
             Providers
+          </TabsTrigger>
+          <TabsTrigger value="featured" className="flex items-center gap-2">
+            <Star className="h-4 w-4" />
+            Featured
           </TabsTrigger>
           <TabsTrigger value="users" className="flex items-center gap-2">
             <UserCog className="h-4 w-4" />
@@ -185,6 +190,20 @@ const Admin = () => {
             </CardHeader>
             <CardContent>
               <ProviderManagement />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="featured">
+          <Card>
+            <CardHeader>
+              <CardTitle>Featured Providers</CardTitle>
+              <CardDescription>
+                Select which providers appear on the homepage as featured
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <FeaturedProvidersManagement />
             </CardContent>
           </Card>
         </TabsContent>

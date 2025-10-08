@@ -402,6 +402,7 @@ export type Database = {
           description: string | null
           email: string | null
           id: string
+          is_featured: boolean | null
           is_mobile: boolean | null
           is_verified: boolean | null
           latitude: number
@@ -426,6 +427,7 @@ export type Database = {
           description?: string | null
           email?: string | null
           id?: string
+          is_featured?: boolean | null
           is_mobile?: boolean | null
           is_verified?: boolean | null
           latitude: number
@@ -450,6 +452,7 @@ export type Database = {
           description?: string | null
           email?: string | null
           id?: string
+          is_featured?: boolean | null
           is_mobile?: boolean | null
           is_verified?: boolean | null
           latitude?: number

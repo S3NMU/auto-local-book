@@ -32,6 +32,7 @@ const FeaturedProviders = () => {
           .from('providers')
           .select('*')
           .eq('status', 'active')
+          .eq('is_featured', true)
           .order('rating', { ascending: false })
           .order('review_count', { ascending: false })
           .limit(6);
