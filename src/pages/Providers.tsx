@@ -212,7 +212,8 @@ const Providers = () => {
     setSelectedState('all');
     setSelectedCity('all');
     setZipCodeFilter('');
-    setSearchRadius(50);
+    setSearchRadius(1000); // Show all providers
+    setLocation(null); // Clear location
   };
 
   const removeFilter = (filterType: string) => {
@@ -324,12 +325,6 @@ const Providers = () => {
           <h1 className="text-4xl md:text-5xl font-bold text-primary-foreground mb-6">
             Service Providers
           </h1>
-          <p className="text-xl text-primary-foreground/90 max-w-3xl mx-auto leading-relaxed">
-            {location 
-              ? `Find trusted automotive service providers ${searchRadius >= 1000 ? 'anywhere' : `within ${searchRadius} miles of ${location.address}`}. All providers are verified and rated by real customers.`
-              : "Find trusted automotive service providers in your area. All providers are verified and rated by real customers for your peace of mind."
-            }
-          </p>
         </div>
       </section>
 

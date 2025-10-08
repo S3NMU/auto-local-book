@@ -147,6 +147,9 @@ const Hero = () => {
   const handleFindProviders = () => {
     if (location) {
       navigate('/providers', { state: { location } });
+      // Clear search query after navigation
+      setSearchQuery("");
+      setShowDropdown(false);
     }
   };
 
