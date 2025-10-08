@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -17,7 +17,8 @@ import {
   BarChart3,
   Clock,
   MapPin,
-  Star
+  Star,
+  ArrowLeft
 } from "lucide-react";
 import ProviderAnalytics from "@/components/provider/ProviderAnalytics";
 import ProviderBookings from "@/components/provider/ProviderBookings";
@@ -117,6 +118,14 @@ const ProviderDashboard = () => {
 
   return (
     <div className="container mx-auto p-6 space-y-6">
+      <Link 
+        to="/" 
+        className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Back to main website
+      </Link>
+      
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>

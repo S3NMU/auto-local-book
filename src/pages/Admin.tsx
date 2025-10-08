@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,7 +8,7 @@ import { AddProvider } from '@/components/admin/AddProvider';
 import { RequestReview } from '@/components/admin/RequestReview';
 import { UserManagement } from '@/components/admin/UserManagement';
 import AnalyticsDashboard from '@/components/admin/AnalyticsDashboard';
-import { Shield, Users, Plus, FileText, UserCog, BarChart3 } from 'lucide-react';
+import { Shield, Users, Plus, FileText, UserCog, BarChart3, ArrowLeft } from 'lucide-react';
 
 const Admin = () => {
   const { user, loading, isAdmin } = useAuth();
@@ -42,6 +42,14 @@ const Admin = () => {
 
   return (
     <div className="container mx-auto py-8 px-4">
+      <Link 
+        to="/" 
+        className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Back to main website
+      </Link>
+      
       <div className="flex items-center gap-3 mb-8">
         <Shield className="h-8 w-8 text-primary" />
         <div>
