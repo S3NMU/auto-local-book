@@ -54,21 +54,21 @@ const ForProviders = () => {
       title: "Quick Setup",
       description: "Get started in minutes with our simple onboarding process. No technical skills required.",
       linkText: "Learn more",
-      linkTo: "#how-we-help"
+      linkTo: "/for-providers"
     },
     {
       icon: CreditCard,
       title: "Low Fees",
       description: "Competitive 10% platform fee only when you get paid. No monthly subscriptions.",
       linkText: "View pricing",
-      linkTo: "#pricing"
+      linkTo: "/for-providers"
     },
     {
       icon: MessageCircle,
       title: "Expert Support",
       description: "Dedicated support team to help you maximize your bookings and grow your business.",
       linkText: "Contact support",
-      linkTo: "/contact"
+      linkTo: "/for-providers"
     },
     {
       icon: Users,
