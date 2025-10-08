@@ -4,6 +4,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -18,7 +26,11 @@ import {
   Clock,
   MapPin,
   Star,
-  ArrowLeft
+  ArrowLeft,
+  ChevronDown,
+  LogOut,
+  Shield,
+  Store
 } from "lucide-react";
 import ProviderAnalytics from "@/components/provider/ProviderAnalytics";
 import ProviderBookings from "@/components/provider/ProviderBookings";
@@ -29,15 +41,22 @@ import ServicePricing from "@/components/provider/ServicePricing";
 import ProviderReviews from "@/components/provider/ProviderReviews";
 
 const ProviderDashboard = () => {
-  const { user, isProvider, loading } = useAuth();
+  const { user, isProvider, isAdmin, loading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [avatarUrl, setAvatarUrl] = useState<string>("");
   const [dashboardStats, setDashboardStats] = useState({
     totalRevenue: 0,
     monthlyBookings: 0,
     totalCustomers: 0,
     pendingBookings: 0
   });
+
+  useEffect(() => {
+    if (user) {
+      setAvatarUrl(user.user_metadata?.avatar_url || "");
+    }
+  }, [user]);
 
   useEffect(() => {
     if (!loading && !isProvider) {
@@ -101,6 +120,23 @@ const ProviderDashboard = () => {
     }
   };
 
+  const handleSignOut = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to sign out. Please try again.",
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Signed out",
+        description: "You have been successfully signed out.",
+      });
+      navigate("/");
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -117,26 +153,77 @@ const ProviderDashboard = () => {
   }
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      <Link 
-        to="/" 
-        className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Back to main website
-      </Link>
-      
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Provider Dashboard</h1>
-          <p className="text-muted-foreground">Manage your automotive services business</p>
+    <div className="min-h-screen flex flex-col">
+      {/* Top Bar with Profile */}
+      <div className="bg-card border-b border-border shadow-card sticky top-0 z-10">
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex items-center justify-between">
+            <Link 
+              to="/" 
+              className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back to main website
+            </Link>
+            
+            {user && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="flex items-center gap-2">
+                    <Avatar className="w-6 h-6">
+                      <AvatarImage src={avatarUrl} />
+                      <AvatarFallback className="text-xs">{user.email?.charAt(0).toUpperCase()}</AvatarFallback>
+                    </Avatar>
+                    <span className="hidden sm:inline">
+                      {user.user_metadata?.display_name || user.email?.split("@")[0]}
+                    </span>
+                    <ChevronDown className="w-3 h-3" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56 bg-background border border-border shadow-lg z-50">
+                  <div className="p-3 border-b border-border">
+                    <p className="text-sm font-medium">{user.user_metadata?.display_name || "User"}</p>
+                    <p className="text-xs text-muted-foreground">{user.email}</p>
+                  </div>
+                  <DropdownMenuItem asChild>
+                    <Link to="/account" className="cursor-pointer">
+                      <Settings className="w-4 h-4 mr-2" />
+                      Account Settings
+                    </Link>
+                  </DropdownMenuItem>
+                  {isAdmin && (
+                    <DropdownMenuItem asChild>
+                      <Link to="/admin" className="cursor-pointer">
+                        <Shield className="w-4 h-4 mr-2" />
+                        Admin Dashboard
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-destructive">
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+          </div>
         </div>
-        <Button onClick={() => navigate("/providers")} variant="outline">
-          <MapPin className="w-4 h-4 mr-2" />
-          View Public Profile
-        </Button>
       </div>
+
+      {/* Main Dashboard Content */}
+      <div className="container mx-auto p-6 space-y-6 flex-1">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold">Provider Dashboard</h1>
+            <p className="text-muted-foreground">Manage your automotive services business</p>
+          </div>
+          <Button onClick={() => navigate("/providers")} variant="outline">
+            <MapPin className="w-4 h-4 mr-2" />
+            View Public Profile
+          </Button>
+        </div>
 
       {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -249,6 +336,7 @@ const ProviderDashboard = () => {
         </TabsContent>
       </Tabs>
     </div>
+  </div>
   );
 };
 
