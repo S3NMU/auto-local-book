@@ -184,9 +184,9 @@ const HowItWorks = () => {
             Join thousands of satisfied customers who trust H3 Automo for their auto service needs.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/services">
+            <Link to="/providers">
               <Button size="lg" className="min-w-40">
-                Find Services
+                Find Providers
               </Button>
             </Link>
             <Link to="/list-shop">
