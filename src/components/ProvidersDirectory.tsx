@@ -5,7 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
-import { MapPin, Phone, Mail, Star, Users, Building2, Search, Filter } from 'lucide-react';
+import { MapPin, Phone, Mail, Star, Users, Building2, Search, Filter, Wrench } from 'lucide-react';
+import ProviderRating from './ProviderRating';
+import { useAuth } from '@/hooks/useAuth';
 
 interface Provider {
   id: string;
@@ -31,12 +33,15 @@ const ProvidersDirectory = () => {
   const [availableCities, setAvailableCities] = useState<string[]>([]);
   const [showingCount, setShowingCount] = useState<number>(6);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [serviceTypesCount, setServiceTypesCount] = useState<number>(0);
   const { toast } = useToast();
+  const { user } = useAuth();
 
-  // Fetch providers
+  // Fetch providers and service types count
   useEffect(() => {
-    const fetchProviders = async () => {
+    const fetchData = async () => {
       try {
+        // Fetch providers
         const { data, error } = await supabase
           .from('providers')
           .select('*')
@@ -52,17 +57,25 @@ const ProvidersDirectory = () => {
         const cities = [...new Set(providerData.map(p => p.city))].filter(Boolean).sort();
         setAvailableStates(states);
         setAvailableCities(cities);
+
+        // Fetch service types count
+        const { data: servicesData, error: servicesError } = await supabase
+          .from('services')
+          .select('id');
+        
+        if (servicesError) throw servicesError;
+        setServiceTypesCount(servicesData?.length || 0);
       } catch (error) {
-        console.error('Error fetching providers:', error);
+        console.error('Error fetching data:', error);
         toast({
           title: "Error",
-          description: "Failed to load providers data",
+          description: "Failed to load data",
           variant: "destructive",
         });
       }
     };
 
-    fetchProviders();
+    fetchData();
   }, [toast]);
 
   // Filter providers based on search and location filters
@@ -131,59 +144,53 @@ const ProvidersDirectory = () => {
     }, 500);
   };
 
+  // Calculate live stats
   const totalProviders = providers.length;
-  const statesWithProviders = availableStates.length;
   const averageRating = providers.length > 0 
-    ? providers.reduce((sum, p) => sum + p.rating, 0) / providers.length 
+    ? providers.reduce((sum, p) => sum + (p.rating || 0), 0) / providers.length 
     : 0;
 
   return (
     <div className="space-y-4 md:space-y-6">
       {/* Stats Section */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <Card>
-          <CardContent className="p-3 md:p-4">
-            <div className="flex items-center space-x-2">
-              <Building2 className="w-4 h-4 md:w-5 md:h-5 text-primary" />
+          <CardContent className="p-6">
+            <div className="flex items-center gap-4">
+              <div className="p-3 rounded-lg bg-primary/10">
+                <Users className="w-6 h-6 text-primary" />
+              </div>
               <div>
-                <p className="text-xs md:text-sm text-muted-foreground">Total Providers</p>
-                <p className="text-lg md:text-2xl font-bold">{totalProviders}</p>
+                <p className="text-sm text-muted-foreground">Verified Providers</p>
+                <p className="text-3xl font-bold">{totalProviders}+</p>
               </div>
             </div>
           </CardContent>
         </Card>
         
         <Card>
-          <CardContent className="p-3 md:p-4">
-            <div className="flex items-center space-x-2">
-              <MapPin className="w-4 h-4 md:w-5 md:h-5 text-primary" />
+          <CardContent className="p-6">
+            <div className="flex items-center gap-4">
+              <div className="p-3 rounded-lg bg-primary/10">
+                <Wrench className="w-6 h-6 text-primary" />
+              </div>
               <div>
-                <p className="text-xs md:text-sm text-muted-foreground">States Covered</p>
-                <p className="text-lg md:text-2xl font-bold">{statesWithProviders}</p>
+                <p className="text-sm text-muted-foreground">Service Types</p>
+                <p className="text-3xl font-bold">{serviceTypesCount}+</p>
               </div>
             </div>
           </CardContent>
         </Card>
         
         <Card>
-          <CardContent className="p-3 md:p-4">
-            <div className="flex items-center space-x-2">
-              <Star className="w-4 h-4 md:w-5 md:h-5 text-primary" />
-              <div>
-                <p className="text-xs md:text-sm text-muted-foreground">Avg Rating</p>
-                <p className="text-lg md:text-2xl font-bold">{averageRating.toFixed(1)}</p>
+          <CardContent className="p-6">
+            <div className="flex items-center gap-4">
+              <div className="p-3 rounded-lg bg-primary/10">
+                <Star className="w-6 h-6 text-yellow-500" />
               </div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="p-3 md:p-4">
-            <div className="flex items-center space-x-2">
-              <Users className="w-4 h-4 md:w-5 md:h-5 text-primary" />
               <div>
-                <p className="text-xs md:text-sm text-muted-foreground">Showing Results</p>
-                <p className="text-lg md:text-2xl font-bold">{displayedProviders.length}</p>
+                <p className="text-sm text-muted-foreground">Average Rating</p>
+                <p className="text-3xl font-bold">{averageRating.toFixed(1)}</p>
               </div>
             </div>
           </CardContent>
@@ -311,6 +318,13 @@ const ProvidersDirectory = () => {
                         +{provider.specialties.length - 3} more
                       </span>
                     )}
+                  </div>
+                )}
+
+                {/* Rating Button - Only show for authenticated users */}
+                {user && (
+                  <div className="pt-3">
+                    <ProviderRating providerId={provider.id} providerName={provider.business_name} />
                   </div>
                 )}
               </CardContent>
