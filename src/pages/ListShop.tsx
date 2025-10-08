@@ -235,9 +235,10 @@ const ListShop = () => {
           <p className="text-muted-foreground mb-6">
             Join our network of trusted automotive service providers
           </p>
-          <Link to="/auth">
-            <Button>Sign In</Button>
-          </Link>
+          <Button onClick={() => {
+            localStorage.setItem('redirectAfterLogin', '/list-shop');
+            navigate('/auth', { state: { from: { pathname: '/list-shop' } } });
+          }}>Sign In</Button>
         </div>
       </div>
     );
