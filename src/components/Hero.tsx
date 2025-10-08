@@ -161,10 +161,6 @@ const Hero = () => {
               <span className="block text-primary">Auto Services</span>
               Near You
             </h1>
-            <p className="text-xl md:text-2xl text-muted-foreground max-w-4xl mx-auto">
-              Book instantly with transparent pricing. Connect with verified mechanics, 
-              auto shops, and mobile services in your area.
-            </p>
           </div>
 
           {/* Location and Search */}

@@ -212,6 +212,49 @@ const Providers = () => {
     setSelectedState('all');
     setSelectedCity('all');
     setZipCodeFilter('');
+    setSearchRadius(50);
+  };
+
+  const removeFilter = (filterType: string) => {
+    switch (filterType) {
+      case 'searchTerm':
+        setSearchTerm('');
+        break;
+      case 'specialty':
+        setSelectedSpecialty('all');
+        break;
+      case 'mobile':
+        setMobileServiceFilter(null);
+        break;
+      case 'rating':
+        setMinRating(0);
+        break;
+      case 'state':
+        setSelectedState('all');
+        break;
+      case 'city':
+        setSelectedCity('all');
+        break;
+      case 'zipCode':
+        setZipCodeFilter('');
+        break;
+      case 'radius':
+        setSearchRadius(50);
+        break;
+    }
+  };
+
+  const getActiveFilters = () => {
+    const filters = [];
+    if (searchTerm) filters.push({ type: 'searchTerm', label: `Search: ${searchTerm}` });
+    if (selectedSpecialty !== 'all') filters.push({ type: 'specialty', label: `Service: ${selectedSpecialty}` });
+    if (mobileServiceFilter !== null) filters.push({ type: 'mobile', label: 'Mobile Service' });
+    if (minRating > 0) filters.push({ type: 'rating', label: `${minRating}+ Stars` });
+    if (selectedState !== 'all') filters.push({ type: 'state', label: `State: ${selectedState}` });
+    if (selectedCity !== 'all') filters.push({ type: 'city', label: `City: ${selectedCity}` });
+    if (zipCodeFilter) filters.push({ type: 'zipCode', label: `ZIP: ${zipCodeFilter}` });
+    if (location && searchRadius !== 50) filters.push({ type: 'radius', label: `${searchRadius >= 1000 ? 'All areas' : `${searchRadius} mi`}` });
+    return filters;
   };
 
   useEffect(() => {
@@ -306,33 +349,45 @@ const Providers = () => {
           </div>
 
           {/* Filter Toggle Button */}
-          <div className="flex items-center justify-between">
-            <Button
-              variant="outline"
-              onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center gap-2"
-            >
-              <Filter className="h-4 w-4" />
-              Filters
-              {(selectedSpecialty !== 'all' || mobileServiceFilter !== null || minRating > 0 || selectedState !== 'all' || selectedCity !== 'all' || zipCodeFilter) && (
-                <Badge variant="secondary" className="ml-1">
-                  {[
-                    selectedSpecialty !== 'all' ? 1 : 0,
-                    mobileServiceFilter !== null ? 1 : 0,
-                    minRating > 0 ? 1 : 0,
-                    selectedState !== 'all' ? 1 : 0,
-                    selectedCity !== 'all' ? 1 : 0,
-                    zipCodeFilter ? 1 : 0
-                  ].reduce((a, b) => a + b, 0)}
-                </Badge>
-              )}
-            </Button>
-            
-            {(searchTerm || selectedSpecialty !== 'all' || mobileServiceFilter !== null || minRating > 0 || selectedState !== 'all' || selectedCity !== 'all' || zipCodeFilter) && (
-              <Button variant="ghost" onClick={clearFilters} className="flex items-center gap-1">
-                <X className="h-4 w-4" />
-                Clear all
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Button
+                variant="outline"
+                onClick={() => setShowFilters(!showFilters)}
+                className="flex items-center gap-2"
+              >
+                <Filter className="h-4 w-4" />
+                Filters
+                {getActiveFilters().length > 0 && (
+                  <Badge variant="secondary" className="ml-1">
+                    {getActiveFilters().length}
+                  </Badge>
+                )}
               </Button>
+              
+              {getActiveFilters().length > 0 && (
+                <Button variant="ghost" onClick={clearFilters} className="flex items-center gap-1">
+                  <X className="h-4 w-4" />
+                  Reset all
+                </Button>
+              )}
+            </div>
+
+            {/* Active Filters Badges */}
+            {getActiveFilters().length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {getActiveFilters().map((filter) => (
+                  <Badge
+                    key={filter.type}
+                    variant="secondary"
+                    className="flex items-center gap-1 px-3 py-1 cursor-pointer hover:bg-secondary/80"
+                    onClick={() => removeFilter(filter.type)}
+                  >
+                    {filter.label}
+                    <X className="h-3 w-3" />
+                  </Badge>
+                ))}
+              </div>
             )}
           </div>
 
