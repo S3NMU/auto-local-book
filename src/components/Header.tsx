@@ -1,7 +1,13 @@
 import { useState, useEffect } from "react";
 import logoImage from "@/assets/crossed-wrenches-logo.jpg";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { MapPin, User, LogOut, ChevronDown, Settings, Store, Shield, X } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
@@ -23,12 +29,12 @@ const Header = () => {
 
   useEffect(() => {
     // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        setAvatarUrl(session?.user?.user_metadata?.avatar_url || "");
-      }
-    );
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      setSession(session);
+      setAvatarUrl(session?.user?.user_metadata?.avatar_url || "");
+    });
 
     // Check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -71,9 +77,7 @@ const Header = () => {
 
   const getLinkClassName = (path: string) => {
     return `flex items-center gap-2 transition-fast ${
-      isActive(path) 
-        ? "text-primary font-medium" 
-        : "text-foreground hover:text-primary"
+      isActive(path) ? "text-primary font-medium" : "text-foreground hover:text-primary"
     }`;
   };
 
@@ -98,10 +102,10 @@ const Header = () => {
               Home
             </Link>
             <Link to="/services" className={getLinkClassName("/services")}>
-              Services
+              Auto Services
             </Link>
             <Link to="/providers" className={getLinkClassName("/providers")}>
-              Providers
+              Service Providers
             </Link>
             <Link to="/how-it-works" className={getLinkClassName("/how-it-works")}>
               How It Works
@@ -125,17 +129,11 @@ const Header = () => {
             {location ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="hidden sm:flex items-center gap-2 max-w-48"
-                  >
+                  <Button variant="ghost" size="sm" className="hidden sm:flex items-center gap-2 max-w-48">
                     <MapPin className="w-4 h-4 flex-shrink-0" />
                     <div className="flex flex-col items-start min-w-0">
                       <span className="text-xs text-muted-foreground">Location</span>
-                      <span className="text-sm font-medium truncate max-w-32">
-                        {location.address.split(',')[0]}
-                      </span>
+                      <span className="text-sm font-medium truncate max-w-32">{location.address.split(",")[0]}</span>
                     </div>
                     <ChevronDown className="w-3 h-3 flex-shrink-0" />
                   </Button>
@@ -158,22 +156,14 @@ const Header = () => {
                       </Button>
                     </div>
                   </div>
-                  <DropdownMenuItem 
-                    onClick={() => setLocationDialogOpen(true)}
-                    className="cursor-pointer"
-                  >
+                  <DropdownMenuItem onClick={() => setLocationDialogOpen(true)} className="cursor-pointer">
                     <MapPin className="w-4 h-4 mr-2" />
                     Change Location
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="hidden sm:flex"
-                onClick={() => setLocationDialogOpen(true)}
-              >
+              <Button variant="ghost" size="sm" className="hidden sm:flex" onClick={() => setLocationDialogOpen(true)}>
                 <MapPin className="w-4 h-4" />
                 Find Location
               </Button>
@@ -184,12 +174,10 @@ const Header = () => {
                   <Button variant="ghost" size="sm" className="flex items-center gap-2">
                     <Avatar className="w-6 h-6">
                       <AvatarImage src={avatarUrl} />
-                      <AvatarFallback className="text-xs">
-                        {session.user.email?.charAt(0).toUpperCase()}
-                      </AvatarFallback>
+                      <AvatarFallback className="text-xs">{session.user.email?.charAt(0).toUpperCase()}</AvatarFallback>
                     </Avatar>
                     <span className="hidden sm:inline">
-                      {session.user.user_metadata?.display_name || session.user.email?.split('@')[0]}
+                      {session.user.user_metadata?.display_name || session.user.email?.split("@")[0]}
                     </span>
                     <ChevronDown className="w-3 h-3" />
                   </Button>
@@ -246,11 +234,7 @@ const Header = () => {
         </div>
       </div>
 
-      <LocationDialog
-        open={locationDialogOpen}
-        onOpenChange={setLocationDialogOpen}
-        onLocationSelect={setLocation}
-      />
+      <LocationDialog open={locationDialogOpen} onOpenChange={setLocationDialogOpen} onLocationSelect={setLocation} />
     </header>
   );
 };
