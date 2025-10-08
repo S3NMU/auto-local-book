@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { MapPin, User, LogOut, ChevronDown, Settings, Store, Shield, X } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation as useGeoLocation } from "@/hooks/useLocation";
@@ -19,6 +19,7 @@ import LocationDialog from "./LocationDialog";
 import type { Session } from "@supabase/supabase-js";
 
 const Header = () => {
+  const navigate = useNavigate();
   const [session, setSession] = useState<Session | null>(null);
   const [locationDialogOpen, setLocationDialogOpen] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string>("");
@@ -217,12 +218,20 @@ const Header = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Link to="/auth">
-                <Button variant="outline" size="sm">
-                  <User className="w-4 h-4" />
-                  Sign In
-                </Button>
-              </Link>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => {
+                  const currentPath = routerLocation.pathname;
+                  if (currentPath !== '/auth') {
+                    localStorage.setItem('redirectAfterLogin', currentPath);
+                  }
+                  navigate('/auth', { state: { from: { pathname: currentPath } } });
+                }}
+              >
+                <User className="w-4 h-4" />
+                Sign In
+              </Button>
             )}
             <Link to="/list-shop">
               <Button variant="hero" size="sm">

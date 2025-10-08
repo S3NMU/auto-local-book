@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { MapPin, Star, Phone, Mail, Clock, Navigation, Settings, ExternalLink, Globe, Search, Filter, X } from "lucide-react";
-import { Link, useLocation as useRouterLocation } from "react-router-dom";
+import { Link, useLocation as useRouterLocation, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useLocation } from "@/hooks/useLocation";
 import { useToast } from "@/hooks/use-toast";
@@ -34,6 +34,7 @@ interface Provider {
 }
 
 const Providers = () => {
+  const navigate = useNavigate();
   const routerLocation = useRouterLocation();
   const navigationLocation = routerLocation.state?.location;
   
@@ -617,11 +618,16 @@ const Providers = () => {
                       <div className="space-y-2">
                         <div className="flex items-center space-x-2">
                           <Phone className="w-4 h-4 text-muted-foreground" />
-                          <Link to="/auth">
-                            <Button variant="link" className="p-0 h-auto font-normal text-primary">
-                              Sign in to view contact info
-                            </Button>
-                          </Link>
+                          <Button 
+                            variant="link" 
+                            className="p-0 h-auto font-normal text-primary"
+                            onClick={() => {
+                              localStorage.setItem('redirectAfterLogin', '/providers');
+                              navigate('/auth', { state: { from: { pathname: '/providers' } } });
+                            }}
+                          >
+                            Sign in to view contact info
+                          </Button>
                         </div>
                       </div>
                     )}
