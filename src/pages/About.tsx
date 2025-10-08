@@ -61,22 +61,26 @@ const About = () => {
     {
       icon: Target,
       title: "Trust & Safety",
-      description: "All service providers are verified and background-checked for your peace of mind."
+      description: "All service providers are verified and background-checked for your peace of mind.",
+      linkTo: "/for-providers#how-we-help"
     },
     {
       icon: Shield,
       title: "Transparent Pricing",
-      description: "No hidden fees. See exact pricing upfront before booking any service."
+      description: "No hidden fees. See exact pricing upfront before booking any service.",
+      linkTo: "/for-providers#pricing"
     },
     {
       icon: Award,
       title: "Quality Guarantee",
-      description: "We stand behind every service with our satisfaction guarantee and dispute resolution."
+      description: "We stand behind every service with our satisfaction guarantee and dispute resolution.",
+      linkTo: "/for-providers#how-we-help"
     },
     {
       icon: Handshake,
       title: "Local Focus",
-      description: "Supporting local businesses while providing convenient service to our community."
+      description: "Supporting local businesses while providing convenient service to our community.",
+      linkTo: "/for-providers#get-started"
     }
   ];
 
@@ -226,21 +230,23 @@ const About = () => {
             {values.map((value, index) => {
               const IconComponent = value.icon;
               return (
-                <Card key={index}>
-                  <CardHeader>
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                        <IconComponent className="w-5 h-5 text-primary" />
+                <Link key={index} to={value.linkTo}>
+                  <Card className="h-full hover:shadow-lg transition-shadow cursor-pointer">
+                    <CardHeader>
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                          <IconComponent className="w-5 h-5 text-primary" />
+                        </div>
+                        <CardTitle className="text-xl">{value.title}</CardTitle>
                       </div>
-                      <CardTitle className="text-xl">{value.title}</CardTitle>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <CardDescription className="text-base">
-                      {value.description}
-                    </CardDescription>
-                  </CardContent>
-                </Card>
+                    </CardHeader>
+                    <CardContent>
+                      <CardDescription className="text-base">
+                        {value.description}
+                      </CardDescription>
+                    </CardContent>
+                  </Card>
+                </Link>
               );
             })}
           </div>
