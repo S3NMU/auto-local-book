@@ -1,9 +1,5 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { useLocation } from "@/hooks/useLocation";
-import { useToast } from "@/hooks/use-toast";
-import SearchDialog from "./SearchDialog";
 import { 
   Search, 
   Calendar, 
@@ -13,21 +9,10 @@ import {
 } from "lucide-react";
 
 const HowItWorks = () => {
-  const [searchDialogOpen, setSearchDialogOpen] = useState(false);
   const navigate = useNavigate();
-  const { location } = useLocation();
-  const { toast } = useToast();
 
-  const handleStartBooking = () => {
-    if (!location) {
-      toast({
-        title: "Location required",
-        description: "Please set your location first to start booking services.",
-        variant: "destructive",
-      });
-      return;
-    }
-    setSearchDialogOpen(true);
+  const handleFindServices = () => {
+    navigate('/providers');
   };
 
   const steps = [
@@ -103,18 +88,13 @@ const HowItWorks = () => {
         </div>
 
         <div className="text-center space-y-4">
-          <Button variant="hero" size="lg" onClick={handleStartBooking}>
-            Start Booking Now
+          <Button variant="hero" size="lg" onClick={handleFindServices}>
+            Find Services
           </Button>
           <p className="text-sm text-muted-foreground">
             Join thousands of satisfied customers • No setup fees
           </p>
         </div>
-
-        <SearchDialog
-          open={searchDialogOpen}
-          onOpenChange={setSearchDialogOpen}
-        />
       </div>
     </section>
   );
