@@ -17,8 +17,6 @@ import Admin from "./pages/Admin";
 import ProviderDashboard from "./pages/ProviderDashboard";
 import HowItWorks from "./pages/HowItWorks";
 import Careers from "./pages/Careers";
-import Press from "./pages/Press";
-import Blog from "./pages/Blog";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import CookiePolicy from "./pages/CookiePolicy";
@@ -42,8 +40,6 @@ const AppContent = () => {
           <Route path="/contact" element={<Contact />} />
           <Route path="/how-it-works" element={<HowItWorks />} />
           <Route path="/careers" element={<Careers />} />
-          <Route path="/press" element={<Press />} />
-          <Route path="/blog" element={<Blog />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms-of-service" element={<TermsOfService />} />
           <Route path="/cookie-policy" element={<CookiePolicy />} />
