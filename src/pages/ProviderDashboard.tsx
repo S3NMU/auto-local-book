@@ -274,6 +274,43 @@ const ProviderDashboard = () => {
         </Card>
       </div>
 
+
+      {/* Feature Highlights - What You Get */}
+      <Card className="bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20">
+        <CardContent className="pt-6">
+          <h3 className="font-semibold mb-4 flex items-center gap-2">
+            <Star className="w-5 h-5 text-primary" />
+            Your H3 Automo Benefits
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+            <div>
+              <h4 className="font-medium text-foreground mb-2">Digital Presence</h4>
+              <ul className="space-y-1 text-muted-foreground">
+                <li>✓ Professional searchable profile</li>
+                <li>✓ Customer reviews & ratings</li>
+                <li>✓ SEO-optimized local listings</li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-medium text-foreground mb-2">Operational Tools</h4>
+              <ul className="space-y-1 text-muted-foreground">
+                <li>✓ Automated booking management</li>
+                <li>✓ Integrated payment processing</li>
+                <li>✓ Customer history tracking</li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-medium text-foreground mb-2">Growth Support</h4>
+              <ul className="space-y-1 text-muted-foreground">
+                <li>✓ Featured listing opportunities</li>
+                <li>✓ Analytics & insights</li>
+                <li>✓ Marketing support</li>
+              </ul>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Main Dashboard */}
       <Tabs defaultValue="analytics" className="w-full">
         <TabsList className="grid w-full grid-cols-7">
