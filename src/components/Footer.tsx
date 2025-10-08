@@ -105,9 +105,9 @@ const Footer = () => {
               © {currentYear} H3 Automo Services Booking Platform. All rights reserved.
             </p>
             <div className="flex space-x-6 text-sm text-primary-foreground/60">
-              <a href="#" className="hover:text-primary-foreground transition-fast">Privacy Policy</a>
-              <a href="#" className="hover:text-primary-foreground transition-fast">Terms of Service</a>
-              <a href="#" className="hover:text-primary-foreground transition-fast">Cookie Policy</a>
+              <Link to="/privacy-policy" className="hover:text-primary-foreground transition-fast">Privacy Policy</Link>
+              <Link to="/terms-of-service" className="hover:text-primary-foreground transition-fast">Terms of Service</Link>
+              <Link to="/cookie-policy" className="hover:text-primary-foreground transition-fast">Cookie Policy</Link>
             </div>
           </div>
         </div>
