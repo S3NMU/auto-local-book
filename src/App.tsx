@@ -22,6 +22,7 @@ import Blog from "./pages/Blog";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import CookiePolicy from "./pages/CookiePolicy";
+import ProviderBenefits from "./pages/ProviderBenefits";
 import NotFound from "./pages/NotFound";
 
 const AppContent = () => {
@@ -46,6 +47,7 @@ const AppContent = () => {
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms-of-service" element={<TermsOfService />} />
           <Route path="/cookie-policy" element={<CookiePolicy />} />
+          <Route path="/provider-benefits" element={<ProviderBenefits />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/account" element={<AccountSettings />} />
           <Route path="/list-shop" element={<ListShop />} />

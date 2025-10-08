@@ -30,7 +30,8 @@ import {
   ChevronDown,
   LogOut,
   Shield,
-  Store
+  Store,
+  X
 } from "lucide-react";
 import ProviderAnalytics from "@/components/provider/ProviderAnalytics";
 import ProviderBookings from "@/components/provider/ProviderBookings";
@@ -51,10 +52,19 @@ const ProviderDashboard = () => {
     totalCustomers: 0,
     pendingBookings: 0
   });
+  const [showBenefits, setShowBenefits] = useState(false);
 
   useEffect(() => {
     if (user) {
       setAvatarUrl(user.user_metadata?.avatar_url || "");
+      
+      // Check if user is new provider (less than 7 days old)
+      const benefitsDismissed = localStorage.getItem(`benefits-dismissed-${user.id}`);
+      if (!benefitsDismissed) {
+        const userCreatedAt = new Date(user.created_at);
+        const daysSinceCreation = (Date.now() - userCreatedAt.getTime()) / (1000 * 60 * 60 * 24);
+        setShowBenefits(daysSinceCreation <= 7);
+      }
     }
   }, [user]);
 
@@ -134,6 +144,13 @@ const ProviderDashboard = () => {
         description: "You have been successfully signed out.",
       });
       navigate("/");
+    }
+  };
+
+  const handleDismissBenefits = () => {
+    if (user) {
+      localStorage.setItem(`benefits-dismissed-${user.id}`, 'true');
+      setShowBenefits(false);
     }
   };
 
@@ -275,41 +292,56 @@ const ProviderDashboard = () => {
       </div>
 
 
-      {/* Feature Highlights - What You Get */}
-      <Card className="bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20">
-        <CardContent className="pt-6">
-          <h3 className="font-semibold mb-4 flex items-center gap-2">
-            <Star className="w-5 h-5 text-primary" />
-            Your H3 Automo Benefits
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-            <div>
-              <h4 className="font-medium text-foreground mb-2">Digital Presence</h4>
-              <ul className="space-y-1 text-muted-foreground">
-                <li>✓ Professional searchable profile</li>
-                <li>✓ Customer reviews & ratings</li>
-                <li>✓ SEO-optimized local listings</li>
-              </ul>
+      {/* Feature Highlights - What You Get (Only for new providers) */}
+      {showBenefits && (
+        <Card className="bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20 relative">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="absolute top-2 right-2 h-8 w-8 p-0"
+            onClick={handleDismissBenefits}
+          >
+            <X className="h-4 w-4" />
+          </Button>
+          <CardContent className="pt-6">
+            <h3 className="font-semibold mb-4 flex items-center gap-2">
+              <Star className="w-5 h-5 text-primary" />
+              Your H3 Automo Benefits
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+              <div>
+                <h4 className="font-medium text-foreground mb-2">Digital Presence</h4>
+                <ul className="space-y-1 text-muted-foreground">
+                  <li>✓ Professional searchable profile</li>
+                  <li>✓ Customer reviews & ratings</li>
+                  <li>✓ SEO-optimized local listings</li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="font-medium text-foreground mb-2">Operational Tools</h4>
+                <ul className="space-y-1 text-muted-foreground">
+                  <li>✓ Automated booking management</li>
+                  <li>✓ Integrated payment processing</li>
+                  <li>✓ Customer history tracking</li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="font-medium text-foreground mb-2">Growth Support</h4>
+                <ul className="space-y-1 text-muted-foreground">
+                  <li>✓ Featured listing opportunities</li>
+                  <li>✓ Analytics & insights</li>
+                  <li>✓ Marketing support</li>
+                </ul>
+              </div>
             </div>
-            <div>
-              <h4 className="font-medium text-foreground mb-2">Operational Tools</h4>
-              <ul className="space-y-1 text-muted-foreground">
-                <li>✓ Automated booking management</li>
-                <li>✓ Integrated payment processing</li>
-                <li>✓ Customer history tracking</li>
-              </ul>
+            <div className="mt-4 pt-4 border-t border-primary/20">
+              <Link to="/provider-benefits" className="text-sm text-primary hover:underline">
+                View all benefits →
+              </Link>
             </div>
-            <div>
-              <h4 className="font-medium text-foreground mb-2">Growth Support</h4>
-              <ul className="space-y-1 text-muted-foreground">
-                <li>✓ Featured listing opportunities</li>
-                <li>✓ Analytics & insights</li>
-                <li>✓ Marketing support</li>
-              </ul>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Main Dashboard */}
       <Tabs defaultValue="analytics" className="w-full">
