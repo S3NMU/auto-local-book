@@ -11,7 +11,10 @@ import {
   CheckCircle,
   Target,
   ArrowRight,
-  Star
+  Star,
+  ExternalLink,
+  DollarSign,
+  MessageCircle
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -48,23 +51,31 @@ const ForProviders = () => {
   const businessBenefits = [
     {
       icon: TrendingUp,
-      title: "Increase Revenue",
-      description: "Providers see an average 30% increase in monthly revenue within their first quarter on our platform."
-    },
-    {
-      icon: Calendar,
-      title: "Streamlined Booking",
-      description: "Automated scheduling eliminates phone tag and reduces administrative overhead by up to 60%."
+      title: "Quick Setup",
+      description: "Get started in minutes with our simple onboarding process. No technical skills required.",
+      linkText: "Learn more",
+      linkTo: "/how-it-works"
     },
     {
       icon: CreditCard,
-      title: "Fast Payments",
-      description: "Get paid faster with automated payment processing and 2-day direct deposit transfers."
+      title: "Low Fees",
+      description: "Competitive 10% platform fee only when you get paid. No monthly subscriptions.",
+      linkText: "View pricing",
+      linkTo: "#pricing"
+    },
+    {
+      icon: MessageCircle,
+      title: "Expert Support",
+      description: "Dedicated support team to help you maximize your bookings and grow your business.",
+      linkText: "Contact support",
+      linkTo: "/contact"
     },
     {
       icon: Users,
       title: "Customer Base Growth",
-      description: "Access thousands of potential customers actively searching for automotive services in your area."
+      description: "Access thousands of potential customers actively searching for automotive services in your area.",
+      linkText: "Get Started",
+      linkTo: "/list-shop"
     }
   ];
 
@@ -219,16 +230,39 @@ const ForProviders = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {businessBenefits.map((benefit, index) => {
               const IconComponent = benefit.icon;
+              const isHashLink = benefit.linkTo.startsWith('#');
+              
               return (
                 <Card key={index} className="p-6">
-                  <div className="flex items-start space-x-4">
-                    <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <IconComponent className="w-6 h-6 text-primary" />
+                  <div className="flex flex-col space-y-4">
+                    <div className="flex items-start space-x-4">
+                      <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <IconComponent className="w-6 h-6 text-primary" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-xl font-semibold mb-2">{benefit.title}</h3>
+                        <p className="text-muted-foreground mb-3">{benefit.description}</p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="text-xl font-semibold mb-2">{benefit.title}</h3>
-                      <p className="text-muted-foreground">{benefit.description}</p>
-                    </div>
+                    {isHashLink ? (
+                      <a 
+                        href={benefit.linkTo}
+                        className="text-primary hover:underline inline-flex items-center text-sm font-medium"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          document.querySelector(benefit.linkTo)?.scrollIntoView({ behavior: 'smooth' });
+                        }}
+                      >
+                        {benefit.linkText} <ArrowRight className="w-4 h-4 ml-1" />
+                      </a>
+                    ) : (
+                      <Link 
+                        to={benefit.linkTo}
+                        className="text-primary hover:underline inline-flex items-center text-sm font-medium"
+                      >
+                        {benefit.linkText} <ArrowRight className="w-4 h-4 ml-1" />
+                      </Link>
+                    )}
                   </div>
                 </Card>
               );
@@ -266,7 +300,7 @@ const ForProviders = () => {
         </div>
 
         {/* Pricing Section */}
-        <div className="mb-16">
+        <div id="pricing" className="mb-16 scroll-mt-20">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4">Simple, Transparent Pricing</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
