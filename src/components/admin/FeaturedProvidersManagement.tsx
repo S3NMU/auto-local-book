@@ -4,9 +4,10 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { Star, MapPin, Loader2 } from 'lucide-react';
+import { Star, MapPin, Loader2, Search, X } from 'lucide-react';
 
 interface Provider {
   id: string;
@@ -23,6 +24,7 @@ export const FeaturedProvidersManagement = () => {
   const [providers, setProviders] = useState<Provider[]>([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
   const { toast } = useToast();
 
   const fetchProviders = async () => {
@@ -91,16 +93,46 @@ export const FeaturedProvidersManagement = () => {
     );
   }
 
-  const featuredProviders = providers.filter(p => p.is_featured);
-  const nonFeaturedProviders = providers.filter(p => !p.is_featured);
+  // Filter providers based on search term
+  const filteredProviders = providers.filter(provider =>
+    provider.business_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    provider.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    provider.state.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const featuredProviders = filteredProviders.filter(p => p.is_featured);
+  const nonFeaturedProviders = filteredProviders.filter(p => !p.is_featured);
 
   return (
     <div className="space-y-6">
+      {/* Search Bar */}
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+        <Input
+          type="text"
+          placeholder="Search providers by name, city, or state..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="pl-10 pr-10"
+        />
+        {searchTerm && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 p-0"
+            onClick={() => setSearchTerm('')}
+          >
+            <X className="w-4 h-4" />
+          </Button>
+        )}
+      </div>
+
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-lg font-semibold">Featured Providers</h3>
           <p className="text-sm text-muted-foreground">
             {featuredProviders.length} provider{featuredProviders.length !== 1 ? 's' : ''} featured
+            {searchTerm && ` (${filteredProviders.length} of ${providers.length} shown)`}
           </p>
         </div>
       </div>
@@ -153,7 +185,9 @@ export const FeaturedProvidersManagement = () => {
         <h4 className="text-sm font-medium text-muted-foreground">Other Providers</h4>
         {nonFeaturedProviders.length === 0 ? (
           <p className="text-sm text-muted-foreground text-center py-8">
-            All providers are currently featured
+            {searchTerm 
+              ? 'No providers found matching your search' 
+              : 'All providers are currently featured'}
           </p>
         ) : (
           nonFeaturedProviders.map((provider) => (
