@@ -174,9 +174,13 @@ const Hero = () => {
                 <Input 
                   placeholder="Enter your location or ZIP code"
                   className="pl-10 py-3 text-base"
-                  value={searchQuery || location?.address || ""}
+                  value={searchQuery}
                   onChange={(e) => handleSearchChange(e.target.value)}
                   onFocus={() => {
+                    // Populate with current location if searchQuery is empty
+                    if (!searchQuery && location?.address) {
+                      setSearchQuery(location.address);
+                    }
                     if (searchResults.length > 0) setShowDropdown(true);
                   }}
                 />
