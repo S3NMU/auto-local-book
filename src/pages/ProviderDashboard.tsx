@@ -16,7 +16,8 @@ import {
   Plus,
   BarChart3,
   Clock,
-  MapPin
+  MapPin,
+  Star
 } from "lucide-react";
 import ProviderAnalytics from "@/components/provider/ProviderAnalytics";
 import ProviderBookings from "@/components/provider/ProviderBookings";
@@ -24,6 +25,7 @@ import ProviderRevenue from "@/components/provider/ProviderRevenue";
 import ProviderCustomers from "@/components/provider/ProviderCustomers";
 import ProviderProfile from "@/components/provider/ProviderProfile";
 import ServicePricing from "@/components/provider/ServicePricing";
+import ProviderReviews from "@/components/provider/ProviderReviews";
 
 const ProviderDashboard = () => {
   const { user, isProvider, loading } = useAuth();
@@ -178,7 +180,7 @@ const ProviderDashboard = () => {
 
       {/* Main Dashboard */}
       <Tabs defaultValue="analytics" className="w-full">
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-7">
           <TabsTrigger value="analytics" className="flex items-center gap-2">
             <BarChart3 className="w-4 h-4" />
             Analytics
@@ -194,6 +196,10 @@ const ProviderDashboard = () => {
           <TabsTrigger value="customers" className="flex items-center gap-2">
             <Users className="w-4 h-4" />
             Customers
+          </TabsTrigger>
+          <TabsTrigger value="reviews" className="flex items-center gap-2">
+            <Star className="w-4 h-4" />
+            Reviews
           </TabsTrigger>
           <TabsTrigger value="services" className="flex items-center gap-2">
             <Plus className="w-4 h-4" />
@@ -219,6 +225,10 @@ const ProviderDashboard = () => {
 
         <TabsContent value="customers" className="space-y-4">
           <ProviderCustomers />
+        </TabsContent>
+
+        <TabsContent value="reviews" className="space-y-4">
+          <ProviderReviews />
         </TabsContent>
 
         <TabsContent value="services" className="space-y-4">
