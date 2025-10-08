@@ -132,7 +132,7 @@ const ProviderCTA = () => {
                   Get started in minutes with our simple onboarding process. 
                   No technical skills required.
                 </p>
-                <Link to="/about" className="flex items-center text-sm text-primary hover:text-primary/80 transition-colors">
+                <Link to="/for-providers" className="flex items-center text-sm text-primary hover:text-primary/80 transition-colors">
                   <span>Learn more</span>
                   <ArrowRight className="w-4 h-4 ml-1" />
                 </Link>
@@ -144,7 +144,7 @@ const ProviderCTA = () => {
                   Competitive 10% platform fee only when you get paid. 
                   No monthly subscriptions.
                 </p>
-                <Link to="/about" className="flex items-center text-sm text-primary hover:text-primary/80 transition-colors">
+                <Link to="/for-providers" className="flex items-center text-sm text-primary hover:text-primary/80 transition-colors">
                   <span>View pricing</span>
                   <ArrowRight className="w-4 h-4 ml-1" />
                 </Link>
@@ -156,7 +156,7 @@ const ProviderCTA = () => {
                   Dedicated support team to help you maximize your bookings 
                   and grow your business.
                 </p>
-                <Link to="/about" className="flex items-center text-sm text-primary hover:text-primary/80 transition-colors">
+                <Link to="/for-providers" className="flex items-center text-sm text-primary hover:text-primary/80 transition-colors">
                   <span>Contact support</span>
                   <ArrowRight className="w-4 h-4 ml-1" />
                 </Link>
