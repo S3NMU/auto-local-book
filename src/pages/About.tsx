@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -17,13 +18,48 @@ import {
   Star,
   ArrowRight
 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const About = () => {
+  const [liveStats, setLiveStats] = useState({
+    activeProviders: 0,
+    avgRating: 0
+  });
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const { count: providerCount } = await supabase
+          .from('providers')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'active');
+
+        const { data: providersData } = await supabase
+          .from('providers')
+          .select('rating')
+          .eq('status', 'active');
+
+        const avgRating = providersData && providersData.length > 0
+          ? providersData.reduce((sum, p) => sum + (p.rating || 0), 0) / providersData.length
+          : 0;
+
+        setLiveStats({
+          activeProviders: providerCount || 0,
+          avgRating: avgRating
+        });
+      } catch (error) {
+        console.error('Error fetching stats:', error);
+      }
+    };
+
+    fetchStats();
+  }, []);
+
   const stats = [
-    { icon: Users, label: "Active Providers", value: "500+" },
+    { icon: Users, label: "Active Providers", value: `${liveStats.activeProviders}+` },
     { icon: Shield, label: "Verified Services", value: "100%" },
     { icon: Clock, label: "Average Response", value: "< 2hrs" },
-    { icon: Award, label: "Customer Rating", value: "4.8/5" }
+    { icon: Award, label: "Customer Rating", value: liveStats.avgRating > 0 ? liveStats.avgRating.toFixed(1) : "0.0" }
   ];
 
   const values = [

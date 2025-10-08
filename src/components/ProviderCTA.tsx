@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
@@ -9,8 +10,40 @@ import {
   ArrowRight,
   CheckCircle
 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const ProviderCTA = () => {
+  const [stats, setStats] = useState({
+    activeProviders: 0,
+    totalBookings: 0
+  });
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        // Get active provider count
+        const { count: providerCount } = await supabase
+          .from('providers')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'active');
+
+        // Get total bookings count
+        const { count: bookingCount } = await supabase
+          .from('bookings')
+          .select('*', { count: 'exact', head: true });
+
+        setStats({
+          activeProviders: providerCount || 0,
+          totalBookings: bookingCount || 0
+        });
+      } catch (error) {
+        console.error('Error fetching stats:', error);
+      }
+    };
+
+    fetchStats();
+  }, []);
+
   const benefits = [
     "Get more bookings without phone tag",
     "Lightweight CRM and calendar management",
@@ -19,10 +52,10 @@ const ProviderCTA = () => {
     "Mobile-friendly provider dashboard"
   ];
 
-  const stats = [
-    { icon: Users, value: "500+", label: "Active Providers" },
+  const displayStats = [
+    { icon: Users, value: `${stats.activeProviders}+`, label: "Active Providers" },
     { icon: TrendingUp, value: "30%", label: "Avg. Revenue Increase" },
-    { icon: Calendar, value: "10k+", label: "Bookings Monthly" },
+    { icon: Calendar, value: `${stats.totalBookings > 1000 ? Math.floor(stats.totalBookings / 1000) + 'k' : stats.totalBookings}+`, label: "Bookings Total" },
     { icon: CreditCard, value: "2-day", label: "Fast Payouts" }
   ];
 
@@ -45,7 +78,7 @@ const ProviderCTA = () => {
 
           {/* Stats Grid */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-            {stats.map((stat, index) => {
+            {displayStats.map((stat, index) => {
               const IconComponent = stat.icon;
               return (
                 <div 
