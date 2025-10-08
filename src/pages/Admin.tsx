@@ -7,7 +7,8 @@ import { ProviderManagement } from '@/components/admin/ProviderManagement';
 import { AddProvider } from '@/components/admin/AddProvider';
 import { RequestReview } from '@/components/admin/RequestReview';
 import { UserManagement } from '@/components/admin/UserManagement';
-import { Shield, Users, Plus, FileText, UserCog } from 'lucide-react';
+import AnalyticsDashboard from '@/components/admin/AnalyticsDashboard';
+import { Shield, Users, Plus, FileText, UserCog, BarChart3 } from 'lucide-react';
 
 const Admin = () => {
   const { user, loading, isAdmin } = useAuth();
@@ -49,15 +50,19 @@ const Admin = () => {
         </div>
       </div>
 
-      <Tabs defaultValue="providers" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
+      <Tabs defaultValue="analytics" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-5">
+          <TabsTrigger value="analytics" className="flex items-center gap-2">
+            <BarChart3 className="h-4 w-4" />
+            Analytics
+          </TabsTrigger>
           <TabsTrigger value="providers" className="flex items-center gap-2">
             <Users className="h-4 w-4" />
-            Manage Providers
+            Providers
           </TabsTrigger>
           <TabsTrigger value="users" className="flex items-center gap-2">
             <UserCog className="h-4 w-4" />
-            Manage Users
+            Users
           </TabsTrigger>
           <TabsTrigger value="add" className="flex items-center gap-2">
             <Plus className="h-4 w-4" />
@@ -65,9 +70,13 @@ const Admin = () => {
           </TabsTrigger>
           <TabsTrigger value="requests" className="flex items-center gap-2">
             <FileText className="h-4 w-4" />
-            Review Requests
+            Requests
           </TabsTrigger>
         </TabsList>
+
+        <TabsContent value="analytics">
+          <AnalyticsDashboard />
+        </TabsContent>
 
         <TabsContent value="providers">
           <Card>
