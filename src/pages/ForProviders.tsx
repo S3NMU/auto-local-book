@@ -54,7 +54,7 @@ const ForProviders = () => {
       title: "Quick Setup",
       description: "Get started in minutes with our simple onboarding process. No technical skills required.",
       linkText: "Learn more",
-      linkTo: "/how-it-works"
+      linkTo: "#how-we-help"
     },
     {
       icon: CreditCard,
@@ -75,7 +75,7 @@ const ForProviders = () => {
       title: "Customer Base Growth",
       description: "Access thousands of potential customers actively searching for automotive services in your area.",
       linkText: "Get Started",
-      linkTo: "/list-shop"
+      linkTo: "#get-started"
     }
   ];
 
@@ -271,7 +271,7 @@ const ForProviders = () => {
         </div>
 
         {/* Growth Strategies Section */}
-        <div className="mb-16">
+        <div id="how-we-help" className="mb-16 scroll-mt-20">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4">How We Help You Grow</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -387,7 +387,7 @@ const ForProviders = () => {
         </div>
 
         {/* CTA Section */}
-        <div className="text-center bg-card p-12 rounded-lg border">
+        <div id="get-started" className="text-center bg-card p-12 rounded-lg border scroll-mt-20">
           <h2 className="text-3xl font-bold mb-4">Ready to Grow Your Business?</h2>
           <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
             Join successful auto service providers already growing with H3 Automo. 

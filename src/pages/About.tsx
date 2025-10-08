@@ -264,7 +264,7 @@ const About = () => {
               Join our platform and start getting more customers today.
             </p>
             <Button size="lg" asChild>
-              <Link to="/for-providers">Learn More</Link>
+              <Link to="/for-providers">Join as Provider</Link>
             </Button>
           </div>
         </div>
