@@ -22,6 +22,7 @@ import TermsOfService from "./pages/TermsOfService";
 import CookiePolicy from "./pages/CookiePolicy";
 import ProviderBenefits from "./pages/ProviderBenefits";
 import NotFound from "./pages/NotFound";
+import Blog from "./pages/Blog";
 
 const AppContent = () => {
   const location = useLocation();
@@ -49,6 +50,7 @@ const AppContent = () => {
           <Route path="/list-shop" element={<ListShop />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/provider-dashboard" element={<ProviderDashboard />} />
+          <Route path="/blog" element={<Blog />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
