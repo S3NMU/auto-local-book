@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -42,7 +42,15 @@ const Auth = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
+
+  // Get the redirect path from location state or localStorage
+  const getRedirectPath = () => {
+    const fromState = (location.state as any)?.from?.pathname;
+    const fromStorage = localStorage.getItem('redirectAfterLogin');
+    return fromState || fromStorage || '/';
+  };
 
   const signInForm = useForm<SignInForm>({
     resolver: zodResolver(signInSchema),
@@ -67,7 +75,9 @@ const Auth = () => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        navigate("/");
+        const redirectPath = getRedirectPath();
+        localStorage.removeItem('redirectAfterLogin');
+        navigate(redirectPath);
       }
     };
     checkAuth();
@@ -108,7 +118,10 @@ const Auth = () => {
         title: "Welcome back!",
         description: "You've been successfully signed in.",
       });
-      navigate("/");
+      
+      const redirectPath = getRedirectPath();
+      localStorage.removeItem('redirectAfterLogin');
+      navigate(redirectPath);
     } catch (error) {
       toast({
         title: "Error",

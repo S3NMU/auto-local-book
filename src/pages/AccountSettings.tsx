@@ -175,7 +175,10 @@ const AccountSettings = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-2xl font-bold mb-4">Please sign in to access account settings</h1>
-          <Button onClick={() => navigate('/auth')}>Sign In</Button>
+          <Button onClick={() => {
+            localStorage.setItem('redirectAfterLogin', '/account-settings');
+            navigate('/auth', { state: { from: { pathname: '/account-settings' } } });
+          }}>Sign In</Button>
         </div>
       </div>
     );

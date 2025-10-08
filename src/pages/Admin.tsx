@@ -40,7 +40,8 @@ const Admin = () => {
     }
     // If no user and not loading, redirect to auth
     if (!loading && !user) {
-      navigate('/auth');
+      localStorage.setItem('redirectAfterLogin', '/admin');
+      navigate('/auth', { state: { from: { pathname: '/admin' } } });
     }
   }, [user, loading, isAdmin, navigate]);
 
