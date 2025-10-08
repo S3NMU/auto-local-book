@@ -1,18 +1,18 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import PolicyLayout from "@/components/PolicyLayout";
 
 const TermsOfService = () => {
   return (
-    <div className="bg-background">
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-foreground mb-4">
-              Terms of Service
-            </h1>
-            <p className="text-muted-foreground">
-              Last updated: {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-            </p>
-          </div>
+    <PolicyLayout>
+      <div className="max-w-4xl">
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold text-foreground mb-4">
+            Terms of Service
+          </h1>
+          <p className="text-muted-foreground">
+            Last updated: {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+          </p>
+        </div>
 
           <div className="space-y-6">
             <Card>
@@ -276,9 +276,8 @@ const TermsOfService = () => {
             </Card>
           </div>
         </div>
-      </div>
-    </div>
-  );
-};
-
-export default TermsOfService;
+      </PolicyLayout>
+    );
+  };
+  
+  export default TermsOfService;
