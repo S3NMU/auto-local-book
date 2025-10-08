@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { MapPin, Star, Phone, Mail, Clock, Navigation, Settings, ExternalLink, Globe, Search, Filter, X } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useLocation as useRouterLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useLocation } from "@/hooks/useLocation";
 import { useToast } from "@/hooks/use-toast";
@@ -34,6 +34,9 @@ interface Provider {
 }
 
 const Providers = () => {
+  const routerLocation = useRouterLocation();
+  const navigationLocation = routerLocation.state?.location;
+  
   const [providers, setProviders] = useState<Provider[]>([]);
   const [filteredProviders, setFilteredProviders] = useState<Provider[]>([]);
   const [session, setSession] = useState<Session | null>(null);
@@ -47,8 +50,16 @@ const Providers = () => {
   const [selectedCity, setSelectedCity] = useState<string>('all');
   const [zipCodeFilter, setZipCodeFilter] = useState<string>('');
   const [showFilters, setShowFilters] = useState(false);
-  const { location } = useLocation();
+  const { location: storedLocation, setLocation } = useLocation();
+  const location = navigationLocation || storedLocation;
   const { toast } = useToast();
+
+  // Update stored location if coming from navigation
+  useEffect(() => {
+    if (navigationLocation) {
+      setLocation(navigationLocation);
+    }
+  }, [navigationLocation, setLocation]);
 
   const radiusOptions = [
     { value: 25, label: "25 miles" },
