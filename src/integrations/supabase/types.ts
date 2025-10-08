@@ -178,72 +178,273 @@ export type Database = {
       }
       provider_profiles: {
         Row: {
+          buffer_minutes: number | null
           business_address: string | null
           business_city: string | null
           business_description: string | null
+          business_email: string | null
           business_hours: Json | null
           business_name: string | null
           business_phone: string | null
           business_state: string | null
+          business_type: string | null
           business_zip_code: string | null
+          cancellation_fee: number | null
+          cancellation_fee_type: string | null
+          cancellation_window_hours: number | null
+          certifications: Json | null
+          cover_photo_url: string | null
           created_at: string
+          customer_parts_allowed: boolean | null
+          customer_parts_policy: string | null
+          dba_name: string | null
+          deposit_percent: number | null
+          deposit_required: boolean | null
+          diagnostic_fee: number | null
           dropoff_available: boolean | null
           dropoff_fee: number | null
+          emergency_contact: string | null
+          emergency_phone: string | null
+          ev_equipment: boolean | null
+          facebook_url: string | null
+          gallery_photos: string[] | null
+          google_maps_url: string | null
+          holiday_exceptions: Json | null
           id: string
+          instagram_url: string | null
+          insurance_carrier: string | null
+          insurance_coverage_type: string | null
+          insurance_expiry: string | null
+          insurance_proof_url: string | null
+          is_mobile_only: boolean | null
           is_mobile_service: boolean | null
+          labor_rate_per_hour: number | null
+          languages_spoken: string[] | null
+          latitude: number | null
+          lead_time_days: number | null
+          legal_business_name: string | null
+          license_expiry: string | null
+          license_file_url: string | null
+          license_issuer: string | null
           license_number: string | null
+          lift_types: string[] | null
+          logo_url: string | null
+          longitude: number | null
+          max_vehicle_class: string | null
+          max_vehicle_weight: number | null
+          number_of_bays: number | null
+          number_of_lifts: number | null
+          owner_full_name: string | null
+          owner_photo_id_url: string | null
+          parking_notes: string | null
+          parts_markup_percent: number | null
+          parts_policy: string | null
+          payout_status: string | null
           pickup_available: boolean | null
           pickup_fee: number | null
+          preferred_contact_method: string | null
+          primary_category: string | null
+          same_day_bookings: boolean | null
+          scan_tools: string[] | null
+          secondary_categories: string[] | null
           service_radius_miles: number | null
+          shop_supplies_fee: number | null
+          shop_supplies_fee_type: string | null
+          short_description: string | null
+          sms_enabled: boolean | null
           specialties: string[] | null
+          stripe_account_id: string | null
+          tagline: string | null
+          towing_available: boolean | null
+          towing_fee: number | null
+          twitter_url: string | null
           updated_at: string
           user_id: string
+          warranty_miles: number | null
+          warranty_months: number | null
+          warranty_terms: string | null
+          website_url: string | null
+          year_founded: number | null
           years_experience: number | null
         }
         Insert: {
+          buffer_minutes?: number | null
           business_address?: string | null
           business_city?: string | null
           business_description?: string | null
+          business_email?: string | null
           business_hours?: Json | null
           business_name?: string | null
           business_phone?: string | null
           business_state?: string | null
+          business_type?: string | null
           business_zip_code?: string | null
+          cancellation_fee?: number | null
+          cancellation_fee_type?: string | null
+          cancellation_window_hours?: number | null
+          certifications?: Json | null
+          cover_photo_url?: string | null
           created_at?: string
+          customer_parts_allowed?: boolean | null
+          customer_parts_policy?: string | null
+          dba_name?: string | null
+          deposit_percent?: number | null
+          deposit_required?: boolean | null
+          diagnostic_fee?: number | null
           dropoff_available?: boolean | null
           dropoff_fee?: number | null
+          emergency_contact?: string | null
+          emergency_phone?: string | null
+          ev_equipment?: boolean | null
+          facebook_url?: string | null
+          gallery_photos?: string[] | null
+          google_maps_url?: string | null
+          holiday_exceptions?: Json | null
           id?: string
+          instagram_url?: string | null
+          insurance_carrier?: string | null
+          insurance_coverage_type?: string | null
+          insurance_expiry?: string | null
+          insurance_proof_url?: string | null
+          is_mobile_only?: boolean | null
           is_mobile_service?: boolean | null
+          labor_rate_per_hour?: number | null
+          languages_spoken?: string[] | null
+          latitude?: number | null
+          lead_time_days?: number | null
+          legal_business_name?: string | null
+          license_expiry?: string | null
+          license_file_url?: string | null
+          license_issuer?: string | null
           license_number?: string | null
+          lift_types?: string[] | null
+          logo_url?: string | null
+          longitude?: number | null
+          max_vehicle_class?: string | null
+          max_vehicle_weight?: number | null
+          number_of_bays?: number | null
+          number_of_lifts?: number | null
+          owner_full_name?: string | null
+          owner_photo_id_url?: string | null
+          parking_notes?: string | null
+          parts_markup_percent?: number | null
+          parts_policy?: string | null
+          payout_status?: string | null
           pickup_available?: boolean | null
           pickup_fee?: number | null
+          preferred_contact_method?: string | null
+          primary_category?: string | null
+          same_day_bookings?: boolean | null
+          scan_tools?: string[] | null
+          secondary_categories?: string[] | null
           service_radius_miles?: number | null
+          shop_supplies_fee?: number | null
+          shop_supplies_fee_type?: string | null
+          short_description?: string | null
+          sms_enabled?: boolean | null
           specialties?: string[] | null
+          stripe_account_id?: string | null
+          tagline?: string | null
+          towing_available?: boolean | null
+          towing_fee?: number | null
+          twitter_url?: string | null
           updated_at?: string
           user_id: string
+          warranty_miles?: number | null
+          warranty_months?: number | null
+          warranty_terms?: string | null
+          website_url?: string | null
+          year_founded?: number | null
           years_experience?: number | null
         }
         Update: {
+          buffer_minutes?: number | null
           business_address?: string | null
           business_city?: string | null
           business_description?: string | null
+          business_email?: string | null
           business_hours?: Json | null
           business_name?: string | null
           business_phone?: string | null
           business_state?: string | null
+          business_type?: string | null
           business_zip_code?: string | null
+          cancellation_fee?: number | null
+          cancellation_fee_type?: string | null
+          cancellation_window_hours?: number | null
+          certifications?: Json | null
+          cover_photo_url?: string | null
           created_at?: string
+          customer_parts_allowed?: boolean | null
+          customer_parts_policy?: string | null
+          dba_name?: string | null
+          deposit_percent?: number | null
+          deposit_required?: boolean | null
+          diagnostic_fee?: number | null
           dropoff_available?: boolean | null
           dropoff_fee?: number | null
+          emergency_contact?: string | null
+          emergency_phone?: string | null
+          ev_equipment?: boolean | null
+          facebook_url?: string | null
+          gallery_photos?: string[] | null
+          google_maps_url?: string | null
+          holiday_exceptions?: Json | null
           id?: string
+          instagram_url?: string | null
+          insurance_carrier?: string | null
+          insurance_coverage_type?: string | null
+          insurance_expiry?: string | null
+          insurance_proof_url?: string | null
+          is_mobile_only?: boolean | null
           is_mobile_service?: boolean | null
+          labor_rate_per_hour?: number | null
+          languages_spoken?: string[] | null
+          latitude?: number | null
+          lead_time_days?: number | null
+          legal_business_name?: string | null
+          license_expiry?: string | null
+          license_file_url?: string | null
+          license_issuer?: string | null
           license_number?: string | null
+          lift_types?: string[] | null
+          logo_url?: string | null
+          longitude?: number | null
+          max_vehicle_class?: string | null
+          max_vehicle_weight?: number | null
+          number_of_bays?: number | null
+          number_of_lifts?: number | null
+          owner_full_name?: string | null
+          owner_photo_id_url?: string | null
+          parking_notes?: string | null
+          parts_markup_percent?: number | null
+          parts_policy?: string | null
+          payout_status?: string | null
           pickup_available?: boolean | null
           pickup_fee?: number | null
+          preferred_contact_method?: string | null
+          primary_category?: string | null
+          same_day_bookings?: boolean | null
+          scan_tools?: string[] | null
+          secondary_categories?: string[] | null
           service_radius_miles?: number | null
+          shop_supplies_fee?: number | null
+          shop_supplies_fee_type?: string | null
+          short_description?: string | null
+          sms_enabled?: boolean | null
           specialties?: string[] | null
+          stripe_account_id?: string | null
+          tagline?: string | null
+          towing_available?: boolean | null
+          towing_fee?: number | null
+          twitter_url?: string | null
           updated_at?: string
           user_id?: string
+          warranty_miles?: number | null
+          warranty_months?: number | null
+          warranty_terms?: string | null
+          website_url?: string | null
+          year_founded?: number | null
           years_experience?: number | null
         }
         Relationships: []
