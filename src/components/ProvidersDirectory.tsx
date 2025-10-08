@@ -5,8 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
-import { MapPin, Phone, Mail, Star, Users, Building2, Search, Filter, Wrench } from 'lucide-react';
-import ProviderRating from './ProviderRating';
+import { MapPin, Phone, Mail, Star, Building2, Search, Filter, Wrench } from 'lucide-react';
+import RatingDialog from './RatingDialog';
 import { useAuth } from '@/hooks/useAuth';
 
 interface Provider {
@@ -33,38 +33,41 @@ const ProvidersDirectory = () => {
   const [availableCities, setAvailableCities] = useState<string[]>([]);
   const [showingCount, setShowingCount] = useState<number>(6);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [serviceTypesCount, setServiceTypesCount] = useState<number>(0);
+  const [totalServices, setTotalServices] = useState<number>(0);
   const { toast } = useToast();
   const { user } = useAuth();
 
-  // Fetch providers and service types count
+  // Fetch providers and service count
   useEffect(() => {
     const fetchData = async () => {
       try {
         // Fetch providers
-        const { data, error } = await supabase
+        const { data: providerData, error: providerError } = await supabase
           .from('providers')
           .select('*')
           .eq('status', 'active');
 
-        if (error) throw error;
-        const providerData = data || [];
-        setProviders(providerData);
-        setFilteredProviders(providerData);
+        if (providerError) throw providerError;
+        
+        const providers = providerData || [];
+        setProviders(providers);
+        setFilteredProviders(providers);
         
         // Extract unique states and cities
-        const states = [...new Set(providerData.map(p => p.state))].filter(Boolean).sort();
-        const cities = [...new Set(providerData.map(p => p.city))].filter(Boolean).sort();
+        const states = [...new Set(providers.map(p => p.state))].filter(Boolean).sort();
+        const cities = [...new Set(providers.map(p => p.city))].filter(Boolean).sort();
         setAvailableStates(states);
         setAvailableCities(cities);
 
-        // Fetch service types count
+        // Fetch total unique service types
         const { data: servicesData, error: servicesError } = await supabase
           .from('services')
-          .select('id');
-        
+          .select('category');
+
         if (servicesError) throw servicesError;
-        setServiceTypesCount(servicesData?.length || 0);
+        
+        const uniqueCategories = [...new Set(servicesData?.map(s => s.category))].filter(Boolean);
+        setTotalServices(uniqueCategories.length);
       } catch (error) {
         console.error('Error fetching data:', error);
         toast({
@@ -82,17 +85,14 @@ const ProvidersDirectory = () => {
   useEffect(() => {
     let filtered = providers;
 
-    // Filter by state
     if (selectedState && selectedState !== 'all') {
       filtered = filtered.filter(p => p.state === selectedState);
     }
 
-    // Filter by city
     if (selectedCity && selectedCity !== 'all') {
       filtered = filtered.filter(p => p.city === selectedCity);
     }
 
-    // Filter by search term
     if (searchTerm) {
       const searchLower = searchTerm.toLowerCase();
       filtered = filtered.filter(p => 
@@ -104,7 +104,7 @@ const ProvidersDirectory = () => {
     }
 
     setFilteredProviders(filtered);
-    setShowingCount(6); // Reset to show first 6 when filters change
+    setShowingCount(6);
   }, [providers, selectedState, selectedCity, searchTerm]);
 
   // Update displayed providers based on showing count
@@ -121,7 +121,7 @@ const ProvidersDirectory = () => {
           .map(p => p.city)
       )].filter(Boolean).sort();
       setAvailableCities(citiesInState);
-      setSelectedCity(''); // Reset city selection when state changes
+      setSelectedCity('');
     } else {
       const allCities = [...new Set(providers.map(p => p.city))].filter(Boolean).sort();
       setAvailableCities(allCities);
@@ -137,60 +137,52 @@ const ProvidersDirectory = () => {
 
   const loadMoreProviders = () => {
     setIsLoading(true);
-    // Simulate loading delay for better UX
     setTimeout(() => {
       setShowingCount(prev => prev + 6);
       setIsLoading(false);
     }, 500);
   };
 
-  // Calculate live stats
   const totalProviders = providers.length;
   const averageRating = providers.length > 0 
-    ? providers.reduce((sum, p) => sum + (p.rating || 0), 0) / providers.length 
+    ? providers.reduce((sum, p) => sum + p.rating, 0) / providers.length 
     : 0;
 
   return (
     <div className="space-y-4 md:space-y-6">
       {/* Stats Section */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center gap-4">
-              <div className="p-3 rounded-lg bg-primary/10">
-                <Users className="w-6 h-6 text-primary" />
-              </div>
+          <CardContent className="p-3 md:p-4">
+            <div className="flex items-center space-x-2">
+              <Building2 className="w-4 h-4 md:w-5 md:h-5 text-primary" />
               <div>
-                <p className="text-sm text-muted-foreground">Verified Providers</p>
-                <p className="text-3xl font-bold">{totalProviders}+</p>
+                <p className="text-xs md:text-sm text-muted-foreground">Verified Providers</p>
+                <p className="text-lg md:text-2xl font-bold">{totalProviders}+</p>
               </div>
             </div>
           </CardContent>
         </Card>
         
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center gap-4">
-              <div className="p-3 rounded-lg bg-primary/10">
-                <Wrench className="w-6 h-6 text-primary" />
-              </div>
+          <CardContent className="p-3 md:p-4">
+            <div className="flex items-center space-x-2">
+              <Wrench className="w-4 h-4 md:w-5 md:h-5 text-primary" />
               <div>
-                <p className="text-sm text-muted-foreground">Service Types</p>
-                <p className="text-3xl font-bold">{serviceTypesCount}+</p>
+                <p className="text-xs md:text-sm text-muted-foreground">Service Types</p>
+                <p className="text-lg md:text-2xl font-bold">{totalServices}+</p>
               </div>
             </div>
           </CardContent>
         </Card>
         
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center gap-4">
-              <div className="p-3 rounded-lg bg-primary/10">
-                <Star className="w-6 h-6 text-yellow-500" />
-              </div>
+          <CardContent className="p-3 md:p-4">
+            <div className="flex items-center space-x-2">
+              <Star className="w-4 h-4 md:w-5 md:h-5 text-primary" />
               <div>
-                <p className="text-sm text-muted-foreground">Average Rating</p>
-                <p className="text-3xl font-bold">{averageRating.toFixed(1)}</p>
+                <p className="text-xs md:text-sm text-muted-foreground">Average Rating</p>
+                <p className="text-lg md:text-2xl font-bold">{averageRating.toFixed(1)}</p>
               </div>
             </div>
           </CardContent>
@@ -207,7 +199,6 @@ const ProvidersDirectory = () => {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            {/* Search Input */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
@@ -218,7 +209,6 @@ const ProvidersDirectory = () => {
               />
             </div>
 
-            {/* State Filter */}
             <Select value={selectedState} onValueChange={setSelectedState}>
               <SelectTrigger>
                 <SelectValue placeholder="All States" />
@@ -231,7 +221,6 @@ const ProvidersDirectory = () => {
               </SelectContent>
             </Select>
 
-            {/* City Filter */}
             <Select value={selectedCity} onValueChange={setSelectedCity}>
               <SelectTrigger>
                 <SelectValue placeholder="All Cities" />
@@ -244,7 +233,6 @@ const ProvidersDirectory = () => {
               </SelectContent>
             </Select>
 
-            {/* Clear Filters Button */}
             <Button variant="outline" onClick={clearFilters}>
               Clear Filters
             </Button>
@@ -321,12 +309,13 @@ const ProvidersDirectory = () => {
                   </div>
                 )}
 
-                {/* Rating Button - Only show for authenticated users */}
-                {user && (
-                  <div className="pt-3">
-                    <ProviderRating providerId={provider.id} providerName={provider.business_name} />
-                  </div>
-                )}
+                <div className="pt-3">
+                  <RatingDialog 
+                    providerId={provider.id}
+                    providerName={provider.business_name}
+                    isAuthenticated={!!user}
+                  />
+                </div>
               </CardContent>
             </Card>
           ))
