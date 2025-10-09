@@ -430,40 +430,48 @@ const ProviderRevenue = ({ onRevenueUpdate }: ProviderRevenueProps) => {
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
-              {/* Booking Selection */}
-              {completedBookings.length > 0 && (
-                <div>
-                  <Label>Select Completed Booking (Optional)</Label>
-                  <Select 
-                    value={newRevenue.booking_id} 
-                    onValueChange={(value) => {
-                      const booking = completedBookings.find(b => b.id === value);
-                      if (booking) {
-                        const amount = booking.total_service_cost || booking.price_final || booking.price_quoted || 0;
-                        setNewRevenue({
-                          ...newRevenue,
-                          booking_id: value,
-                          amount: amount.toString(),
-                          description: `${booking.service_type} - ${booking.customer_name}`,
-                          notes: booking.service_description || ''
-                        });
-                      } else {
-                        setNewRevenue({
-                          ...newRevenue,
-                          booking_id: "",
-                          amount: "",
-                          description: "",
-                          notes: ""
-                        });
-                      }
-                    }}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Choose from completed bookings" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-background border shadow-lg z-50">
-                      <SelectItem value="">Manual Entry (No Booking)</SelectItem>
-                      {completedBookings.map((booking) => {
+              {/* Booking Selection - Always show */}
+              <div>
+                <Label>Completed Booking</Label>
+                <Select 
+                  value={newRevenue.booking_id} 
+                  onValueChange={(value) => {
+                    const booking = completedBookings.find(b => b.id === value);
+                    if (booking) {
+                      const amount = booking.total_service_cost || booking.price_final || booking.price_quoted || 0;
+                      setNewRevenue({
+                        ...newRevenue,
+                        booking_id: value,
+                        amount: amount.toString(),
+                        description: `${booking.service_type} - ${booking.customer_name}`,
+                        notes: booking.service_description || ''
+                      });
+                    } else {
+                      setNewRevenue({
+                        ...newRevenue,
+                        booking_id: "",
+                        amount: "",
+                        description: "",
+                        notes: ""
+                      });
+                    }
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={
+                      completedBookings.length > 0 
+                        ? "Select from completed bookings" 
+                        : "No completed bookings available"
+                    } />
+                  </SelectTrigger>
+                  <SelectContent className="bg-background border shadow-lg z-50">
+                    <SelectItem value="">Manual Entry (No Booking)</SelectItem>
+                    {completedBookings.length === 0 ? (
+                      <SelectItem value="" disabled>
+                        No completed bookings found
+                      </SelectItem>
+                    ) : (
+                      completedBookings.map((booking) => {
                         const amount = booking.total_service_cost || booking.price_final || booking.price_quoted || 0;
                         return (
                           <SelectItem key={booking.id} value={booking.id}>
@@ -475,14 +483,16 @@ const ProviderRevenue = ({ onRevenueUpdate }: ProviderRevenueProps) => {
                             </div>
                           </SelectItem>
                         );
-                      })}
-                    </SelectContent>
-                  </Select>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Select a completed booking or leave blank for manual entry
-                  </p>
-                </div>
-              )}
+                      })
+                    )}
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {completedBookings.length > 0 
+                    ? `${completedBookings.length} completed booking(s) awaiting payment` 
+                    : "Complete and finish a booking in the Bookings tab first"}
+                </p>
+              </div>
 
               <div>
                 <Label>Amount *</Label>
