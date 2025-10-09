@@ -7,12 +7,6 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
-interface CreateUserRequest {
-  email: string;
-  password: string;
-  role: string;
-}
-
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -22,9 +16,10 @@ const handler = async (req: Request): Promise<Response> => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    // Service-role client for privileged operations
+    const adminClient = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Verify the caller is an admin
+    // Verify the caller is authenticated and capture their user id
     const authHeader = req.headers.get("authorization");
     if (!authHeader) {
       return new Response(JSON.stringify({ error: "No authorization header" }), {
@@ -34,7 +29,13 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     const token = authHeader.replace("Bearer ", "");
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+
+    // Use a client that forwards the caller token in headers to get the user reliably
+    const userClient = createClient(supabaseUrl, supabaseServiceKey, {
+      global: { headers: { Authorization: `Bearer ${token}` } },
+    });
+
+    const { data: { user }, error: authError } = await userClient.auth.getUser();
 
     if (authError || !user) {
       return new Response(JSON.stringify({ error: "Invalid token" }), {
@@ -44,7 +45,7 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     // Check if user is admin
-    const { data: adminCheck } = await supabase.rpc('has_role', {
+    const { data: adminCheck } = await adminClient.rpc('has_role', {
       _user_id: user.id,
       _role: 'admin'
     });
@@ -57,27 +58,27 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     const url = new URL(req.url);
-    const body = await req.json();
-    const action = body.action || url.searchParams.get("action");
+    const body = await req.json().catch(() => ({}));
+    const action = (body?.action as string) || url.searchParams.get("action");
 
     switch (action) {
       case "list-users": {
-        const { data: users, error } = await supabase.auth.admin.listUsers();
+        const { data: usersPage, error } = await adminClient.auth.admin.listUsers();
         if (error) throw error;
 
         // Get roles for each user
         const usersWithRoles = await Promise.all(
-          users.users.map(async (user) => {
-            const { data: roles } = await supabase
+          (usersPage?.users || []).map(async (u: any) => {
+            const { data: roles } = await adminClient
               .from('user_roles')
               .select('role')
-              .eq('user_id', user.id);
+              .eq('user_id', u.id);
 
             return {
-              id: user.id,
-              email: user.email || '',
-              created_at: user.created_at,
-              user_metadata: user.user_metadata,
+              id: u.id,
+              email: u.email || '',
+              created_at: u.created_at,
+              user_metadata: u.user_metadata,
               roles: roles || []
             };
           })
@@ -90,10 +91,10 @@ const handler = async (req: Request): Promise<Response> => {
       }
 
       case "create-user": {
-        const { email, password, roles } = body;
+        const { email, password, roles } = body as { email: string; password: string; roles?: string[] };
 
         // Create user
-        const { data, error } = await supabase.auth.admin.createUser({
+        const { data, error } = await adminClient.auth.admin.createUser({
           email,
           password,
           email_confirm: true
@@ -108,7 +109,7 @@ const handler = async (req: Request): Promise<Response> => {
             role: role
           }));
 
-          const { error: roleError } = await supabase
+          const { error: roleError } = await adminClient
             .from('user_roles')
             .insert(roleInserts);
 
@@ -122,10 +123,10 @@ const handler = async (req: Request): Promise<Response> => {
       }
 
       case "update-roles": {
-        const { userId, roles } = body;
+        const { userId, roles } = body as { userId: string; roles: string[] };
 
         // Delete existing roles
-        await supabase
+        await adminClient
           .from('user_roles')
           .delete()
           .eq('user_id', userId);
@@ -137,7 +138,7 @@ const handler = async (req: Request): Promise<Response> => {
             role: role
           }));
 
-          const { error: roleError } = await supabase
+          const { error: roleError } = await adminClient
             .from('user_roles')
             .insert(roleInserts);
 
@@ -151,9 +152,9 @@ const handler = async (req: Request): Promise<Response> => {
       }
 
       case "grant-role": {
-        const { userId, role } = body;
+        const { userId, role } = body as { userId: string; role: string };
 
-        const { error } = await supabase
+        const { error } = await adminClient
           .from('user_roles')
           .insert({
             user_id: userId,
@@ -169,9 +170,9 @@ const handler = async (req: Request): Promise<Response> => {
       }
 
       case "revoke-role": {
-        const { userId, role } = body;
+        const { userId, role } = body as { userId: string; role: string };
 
-        const { error } = await supabase
+        const { error } = await adminClient
           .from('user_roles')
           .delete()
           .eq('user_id', userId)
@@ -186,22 +187,17 @@ const handler = async (req: Request): Promise<Response> => {
       }
 
       case "update-profile": {
-        const { userId, email, full_name, phone } = body;
+        const { userId, email, full_name, phone } = body as { userId: string; email?: string; full_name?: string; phone?: string };
 
         // Update user email and metadata
         const updateData: any = {};
-        
-        if (email) {
-          updateData.email = email;
-        }
-        
+        if (email) updateData.email = email;
         updateData.user_metadata = {
           full_name: full_name || '',
           phone: phone || ''
         };
 
-        const { data, error } = await supabase.auth.admin.updateUserById(userId, updateData);
-
+        const { data, error } = await adminClient.auth.admin.updateUserById(userId, updateData);
         if (error) throw error;
 
         return new Response(JSON.stringify({ success: true, user: data.user }), {
@@ -211,9 +207,9 @@ const handler = async (req: Request): Promise<Response> => {
       }
 
       case "delete-user": {
-        const { userId } = body;
+        const { userId } = body as { userId: string };
 
-        const { error } = await supabase.auth.admin.deleteUser(userId);
+        const { error } = await adminClient.auth.admin.deleteUser(userId);
         if (error) throw error;
 
         return new Response(JSON.stringify({ success: true }), {
@@ -231,7 +227,7 @@ const handler = async (req: Request): Promise<Response> => {
   } catch (error: any) {
     console.error("Error in admin-user-management function:", error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: error?.message || 'Unknown error' }),
       {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
