@@ -124,6 +124,24 @@ const ServicePricing = () => {
       return;
     }
 
+    if (!newServiceForm.price_min || !newServiceForm.price_max) {
+      toast({
+        title: "Validation Error",
+        description: "Please enter both minimum and maximum prices",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (newServiceForm.price_min > newServiceForm.price_max) {
+      toast({
+        title: "Validation Error",
+        description: "Minimum price cannot be greater than maximum price",
+        variant: "destructive",
+      });
+      return;
+    }
+
     // Check if service already exists for this provider
     const existingService = providerServices.find(ps => ps.service_id === newServiceForm.service_id);
     if (existingService) {
@@ -140,14 +158,28 @@ const ServicePricing = () => {
         .from('provider_services')
         .insert({
           provider_id: user.id,
-          ...newServiceForm
+          service_id: newServiceForm.service_id,
+          price_min: newServiceForm.price_min,
+          price_max: newServiceForm.price_max,
+          duration_minutes: newServiceForm.duration_minutes,
+          currency: newServiceForm.currency,
+          is_available: newServiceForm.is_available,
+          pickup_available: newServiceForm.pickup_available,
+          pickup_fee: newServiceForm.pickup_fee || 0,
+          dropoff_available: newServiceForm.dropoff_available,
+          dropoff_fee: newServiceForm.dropoff_fee || 0,
+          custom_name: newServiceForm.custom_name || null,
+          notes: newServiceForm.notes || null
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error adding service:', error);
+        throw error;
+      }
 
       toast({
         title: "Service Added",
-        description: "Service pricing has been configured",
+        description: "Service pricing has been configured successfully",
       });
 
       setNewServiceForm({
@@ -166,11 +198,11 @@ const ServicePricing = () => {
       });
       setIsAddDialogOpen(false);
       fetchData();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error adding service:', error);
       toast({
         title: "Error",
-        description: "Failed to add service",
+        description: error.message || "Failed to add service. Please try again.",
         variant: "destructive",
       });
     }
