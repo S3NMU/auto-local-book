@@ -73,30 +73,45 @@ export const RequestReview = () => {
         if (deleteProviderError) throw deleteProviderError;
       }
 
-      // If changing to approved, create provider entry
+      // If changing to approved, create or align provider entry
       if (newStatus === 'approved' && request.status !== 'approved') {
-        const { error: providerError } = await supabase
+        // Try to find any existing provider record for this business/email
+        const { data: existingProvider } = await supabase
           .from('providers')
-          .insert({
-            id: request.submitted_by, // CRITICAL: Set the provider ID to the user's ID
-            business_name: request.business_name,
-            owner_name: request.owner_name,
-            phone: request.phone,
-            email: request.email,
-            address: request.address,
-            city: request.city,
-            state: request.state,
-            zip_code: request.zip_code,
-            latitude: request.latitude,
-            longitude: request.longitude,
-            description: request.description,
-            website_url: request.website_url,
-            specialties: request.specialties,
-            is_mobile: request.is_mobile,
-            status: 'active',
-          });
+          .select('id')
+          .eq('email', request.email)
+          .maybeSingle();
 
-        if (providerError) throw providerError;
+        if (existingProvider) {
+          // Align the provider primary key with the user's id
+          const { error: updateProviderError } = await supabase
+            .from('providers')
+            .update({ id: request.submitted_by, status: 'active' })
+            .eq('id', existingProvider.id);
+          if (updateProviderError) throw updateProviderError;
+        } else {
+          const { error: providerError } = await supabase
+            .from('providers')
+            .insert({
+              id: request.submitted_by, // tie provider row to the user id
+              business_name: request.business_name,
+              owner_name: request.owner_name,
+              phone: request.phone,
+              email: request.email,
+              address: request.address,
+              city: request.city,
+              state: request.state,
+              zip_code: request.zip_code,
+              latitude: request.latitude,
+              longitude: request.longitude,
+              description: request.description,
+              website_url: request.website_url,
+              specialties: request.specialties,
+              is_mobile: request.is_mobile,
+              status: 'active',
+            });
+          if (providerError) throw providerError;
+        }
       }
 
       // Update request status

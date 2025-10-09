@@ -85,23 +85,30 @@ const ProviderDashboard = () => {
     if (!user) return;
 
     try {
-      const { data, error } = await supabase
+      const { data: providerData } = await supabase
         .from('providers')
         .select('status')
         .eq('id', user.id)
         .maybeSingle();
 
-      if (error) {
-        console.error('Error checking approval status:', error);
-        setIsApproved(false);
+      if (providerData?.status === 'active') {
+        setIsApproved(true);
         return;
       }
 
-      // Provider is approved if they have an active entry in providers table
-      setIsApproved(data?.status === 'active');
-      
-      // Redirect to pending approval page if not approved
-      if (!data || data.status !== 'active') {
+      // Fallback: if the user's request is approved, allow access
+      const { data: reqData } = await supabase
+        .from('provider_requests')
+        .select('status')
+        .eq('submitted_by', user.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      const approved = reqData?.status === 'approved';
+      setIsApproved(approved);
+
+      if (!approved) {
         navigate('/pending-approval');
       }
     } catch (error) {

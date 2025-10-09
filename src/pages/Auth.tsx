@@ -105,11 +105,22 @@ const Auth = () => {
           .eq('id', session.user.id)
           .maybeSingle();
         
-        // If provider is approved (has active entry in providers table), go to dashboard
         if (providerData?.status === 'active') {
           return '/provider-dashboard';
         }
-        // Otherwise, show pending approval page
+        
+        // Fallback: check provider request status for this user
+        const { data: reqData } = await supabase
+          .from('provider_requests')
+          .select('status')
+          .eq('submitted_by', session.user.id)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        
+        if (reqData?.status === 'approved') {
+          return '/provider-dashboard';
+        }
         return '/pending-approval';
       }
       

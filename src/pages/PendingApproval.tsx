@@ -19,6 +19,37 @@ const PendingApproval = () => {
     }
   }, [loading, isProvider, navigate]);
 
+  // Poll for approval status and auto-redirect when approved
+  useEffect(() => {
+    if (!user) return;
+    const interval = setInterval(async () => {
+      try {
+        const { data: providerData } = await supabase
+          .from('providers')
+          .select('status')
+          .eq('id', user.id)
+          .maybeSingle();
+        if (providerData?.status === 'active') {
+          navigate('/provider-dashboard');
+          return;
+        }
+        const { data: reqData } = await supabase
+          .from('provider_requests')
+          .select('status')
+          .eq('submitted_by', user.id)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        if (reqData?.status === 'approved') {
+          navigate('/provider-dashboard');
+        }
+      } catch (e) {
+        // no-op
+      }
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [user, navigate]);
+
   const handleSignOut = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) {
