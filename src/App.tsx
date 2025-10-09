@@ -15,6 +15,7 @@ import AccountSettings from "./pages/AccountSettings";
 import ListShop from "./pages/ListShop";
 import Admin from "./pages/Admin";
 import ProviderDashboard from "./pages/ProviderDashboard";
+import CustomerDashboard from "./pages/CustomerDashboard";
 import HowItWorks from "./pages/HowItWorks";
 import Careers from "./pages/Careers";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
@@ -50,6 +51,7 @@ const AppContent = () => {
           <Route path="/list-shop" element={<ListShop />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/provider-dashboard" element={<ProviderDashboard />} />
+          <Route path="/dashboard" element={<CustomerDashboard />} />
           <Route path="/blog" element={<Blog />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

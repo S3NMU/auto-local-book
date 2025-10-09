@@ -81,9 +81,25 @@ const Auth = () => {
   const { toast } = useToast();
 
   // Get the redirect path from location state or localStorage
-  const getRedirectPath = () => {
+  const getRedirectPath = async () => {
     const fromState = (location.state as any)?.from?.pathname;
     const fromStorage = localStorage.getItem('redirectAfterLogin');
+    
+    // Check user roles to redirect to appropriate dashboard
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user) {
+      const { data: rolesData } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', session.user.id);
+      
+      const userRoles = rolesData?.map(r => r.role) || [];
+      
+      if (userRoles.includes('admin')) return '/admin';
+      if (userRoles.includes('provider')) return '/provider-dashboard';
+      if (userRoles.includes('user')) return '/dashboard';
+    }
+    
     return fromState || fromStorage || '/';
   };
 
@@ -141,7 +157,7 @@ const Auth = () => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        const redirectPath = getRedirectPath();
+        const redirectPath = await getRedirectPath();
         localStorage.removeItem('redirectAfterLogin');
         navigate(redirectPath);
       }
@@ -185,7 +201,7 @@ const Auth = () => {
         description: "You've been successfully signed in.",
       });
       
-      const redirectPath = getRedirectPath();
+      const redirectPath = await getRedirectPath();
       localStorage.removeItem('redirectAfterLogin');
       navigate(redirectPath);
     } catch (error) {
