@@ -6,10 +6,20 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Edit, Trash2, Search, ExternalLink, Users, UserCheck, UserX, UserMinus, UserPlus } from 'lucide-react';
+import { Edit, Trash2, Search, ExternalLink, Users, UserCheck, UserX, UserMinus, UserPlus, AlertTriangle } from 'lucide-react';
 
 interface Provider {
   id: string;
@@ -33,6 +43,8 @@ export const ProviderManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [editingProvider, setEditingProvider] = useState<Provider | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [providerToDelete, setProviderToDelete] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -102,14 +114,19 @@ export const ProviderManagement = () => {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to PERMANENTLY DELETE this provider? This action cannot be undone.')) return;
+  const handleDeleteClick = (id: string) => {
+    setProviderToDelete(id);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!providerToDelete) return;
 
     try {
       const { error } = await supabase
         .from('providers')
         .delete()
-        .eq('id', id);
+        .eq('id', providerToDelete);
 
       if (error) throw error;
 
@@ -125,6 +142,9 @@ export const ProviderManagement = () => {
         description: "Failed to delete provider",
         variant: "destructive",
       });
+    } finally {
+      setDeleteDialogOpen(false);
+      setProviderToDelete(null);
     }
   };
 
@@ -295,8 +315,8 @@ export const ProviderManagement = () => {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handleDelete(provider.id)}
-                      className="text-red-600 hover:text-red-700"
+                      onClick={() => handleDeleteClick(provider.id)}
+                      className="text-destructive hover:text-destructive hover:bg-destructive/10"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -477,6 +497,33 @@ export const ProviderManagement = () => {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
+                <AlertTriangle className="h-6 w-6 text-destructive" />
+              </div>
+              <AlertDialogTitle className="text-xl">Delete Provider?</AlertDialogTitle>
+            </div>
+            <AlertDialogDescription className="text-base pt-2">
+              Are you sure you want to <span className="font-semibold text-destructive">permanently delete</span> this provider? 
+              This action cannot be undone and will remove all associated data, including reviews and bookings.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="gap-2 sm:gap-2">
+            <AlertDialogCancel className="mt-0">Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete Provider
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
