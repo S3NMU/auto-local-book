@@ -216,6 +216,7 @@ export type Database = {
           insurance_coverage_type: string | null
           insurance_expiry: string | null
           insurance_proof_url: string | null
+          is_approved: boolean | null
           is_mobile_only: boolean | null
           is_mobile_service: boolean | null
           labor_rate_per_hour: number | null
@@ -306,6 +307,7 @@ export type Database = {
           insurance_coverage_type?: string | null
           insurance_expiry?: string | null
           insurance_proof_url?: string | null
+          is_approved?: boolean | null
           is_mobile_only?: boolean | null
           is_mobile_service?: boolean | null
           labor_rate_per_hour?: number | null
@@ -396,6 +398,7 @@ export type Database = {
           insurance_coverage_type?: string | null
           insurance_expiry?: string | null
           insurance_proof_url?: string | null
+          is_approved?: boolean | null
           is_mobile_only?: boolean | null
           is_mobile_service?: boolean | null
           labor_rate_per_hour?: number | null

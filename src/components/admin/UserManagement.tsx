@@ -169,7 +169,9 @@ export const UserManagement = () => {
       // Update provider profile to approved
       const { error: profileError } = await supabase
         .from('provider_profiles')
-        .update({ is_approved: true })
+        .update({ 
+          is_approved: true as any // Temporary type assertion until types regenerate
+        })
         .eq('user_id', userId);
 
       if (profileError) throw profileError;
@@ -291,9 +293,9 @@ export const UserManagement = () => {
       });
 
       setCreateUserOpen(false);
-      setNewUser({ 
-        email: '', 
-        password: '', 
+      setNewUser({
+        email: '',
+        password: '',
         roles: ['user'],
         fullName: '',
         phone: '',
@@ -310,7 +312,8 @@ export const UserManagement = () => {
         businessType: '',
         primaryCategory: '',
         serviceRadius: '',
-        websiteUrl: ''
+        websiteUrl: '',
+        needsApproval: false
       });
       fetchUsers();
     } catch (error: any) {
@@ -527,10 +530,14 @@ export const UserManagement = () => {
   return (
     <div className="space-y-6">
       <Tabs defaultValue="users" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="users" className="flex items-center gap-2">
-            <Users className="h-4 w-4" />
+            <Users className="h-4 h-4" />
             All Users
+          </TabsTrigger>
+          <TabsTrigger value="pending" className="flex items-center gap-2">
+            <Shield className="h-4 w-4" />
+            Pending ({pendingProviders.length})
           </TabsTrigger>
           <TabsTrigger value="create" className="flex items-center gap-2">
             <UserPlus className="h-4 w-4" />
@@ -622,6 +629,74 @@ export const UserManagement = () => {
                   ))}
                 </TableBody>
               </Table>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Pending Providers Tab */}
+        <TabsContent value="pending" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Shield className="h-5 w-5" />
+                Pending Provider Applications
+              </CardTitle>
+              <CardDescription>
+                Review and approve or reject provider applications
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {pendingProviders.length === 0 ? (
+                <div className="text-center py-12">
+                  <Shield className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+                  <p className="text-lg font-medium mb-2">No pending applications</p>
+                  <p className="text-muted-foreground">All provider applications have been reviewed</p>
+                </div>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Business Name</TableHead>
+                      <TableHead>Owner</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Phone</TableHead>
+                      <TableHead>Applied</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {pendingProviders.map((provider) => (
+                      <TableRow key={provider.id}>
+                        <TableCell className="font-medium">{provider.business_name}</TableCell>
+                        <TableCell>{provider.full_name}</TableCell>
+                        <TableCell>{provider.email}</TableCell>
+                        <TableCell>{provider.business_phone}</TableCell>
+                        <TableCell>
+                          {new Date(provider.created_at).toLocaleDateString()}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex gap-2 justify-end">
+                            <Button
+                              size="sm"
+                              variant="default"
+                              onClick={() => approveProvider(provider.user_id)}
+                            >
+                              Approve
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              onClick={() => rejectProvider(provider.user_id)}
+                            >
+                              Reject
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
