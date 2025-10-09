@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Textarea } from '@/components/ui/textarea';
 import { UserPlus, Users, Shield, Edit } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -44,7 +45,25 @@ export const UserManagement = () => {
   const [newUser, setNewUser] = useState({
     email: '',
     password: '',
-    roles: ['user'] as string[]
+    roles: ['user'] as string[],
+    fullName: '',
+    phone: '',
+    city: '',
+    zipCode: '',
+    preferredComm: [] as ("email" | "sms")[],
+    // Customer fields
+    ownsVehicle: false,
+    vehicleMake: '',
+    vehicleModel: '',
+    vehicleYear: '',
+    vehicleLicensePlate: '',
+    // Provider fields
+    businessPhone: '',
+    businessName: '',
+    businessType: '',
+    primaryCategory: '',
+    serviceRadius: '',
+    websiteUrl: ''
   });
   const { toast } = useToast();
 
@@ -107,7 +126,9 @@ export const UserManagement = () => {
           action: 'create-user',
           email: newUser.email,
           password: newUser.password,
-          roles: newUser.roles
+          roles: newUser.roles,
+          full_name: newUser.fullName,
+          phone: newUser.phone
         },
         headers: {
           Authorization: `Bearer ${session.session.access_token}`,
@@ -116,13 +137,54 @@ export const UserManagement = () => {
 
       if (error) throw error;
 
+      // If provider role, create provider profile
+      if (newUser.roles.includes('provider') && data.user) {
+        const { error: profileError } = await supabase
+          .from('provider_profiles')
+          .insert({
+            user_id: data.user.id,
+            business_name: newUser.businessName,
+            business_phone: newUser.businessPhone,
+            business_city: newUser.city,
+            business_zip_code: newUser.zipCode,
+            service_radius_miles: newUser.serviceRadius ? parseInt(newUser.serviceRadius) : 25,
+            website_url: newUser.websiteUrl,
+            primary_category: newUser.primaryCategory,
+            business_type: newUser.businessType
+          });
+
+        if (profileError) {
+          console.error('Error creating provider profile:', profileError);
+        }
+      }
+
       toast({
         title: "Success",
         description: "User created successfully"
       });
 
       setCreateUserOpen(false);
-      setNewUser({ email: '', password: '', roles: ['user'] });
+      setNewUser({ 
+        email: '', 
+        password: '', 
+        roles: ['user'],
+        fullName: '',
+        phone: '',
+        city: '',
+        zipCode: '',
+        preferredComm: [],
+        ownsVehicle: false,
+        vehicleMake: '',
+        vehicleModel: '',
+        vehicleYear: '',
+        vehicleLicensePlate: '',
+        businessPhone: '',
+        businessName: '',
+        businessType: '',
+        primaryCategory: '',
+        serviceRadius: '',
+        websiteUrl: ''
+      });
       fetchUsers();
     } catch (error: any) {
       console.error('Error creating user:', error);
@@ -309,6 +371,18 @@ export const UserManagement = () => {
     setNewUser({ ...newUser, roles: newRoles });
   };
 
+  const toggleNewUserCommPreference = (value: "email" | "sms") => {
+    const currentPrefs = newUser.preferredComm;
+    if (currentPrefs.includes(value)) {
+      setNewUser({ ...newUser, preferredComm: currentPrefs.filter(p => p !== value) });
+    } else {
+      setNewUser({ ...newUser, preferredComm: [...currentPrefs, value] });
+    }
+  };
+
+  const isProviderAccount = newUser.roles.includes('provider');
+  const isCustomerAccount = !isProviderAccount;
+
   const filteredUsers = users.filter(user => {
     const query = searchQuery.toLowerCase();
     return (
@@ -430,35 +504,62 @@ export const UserManagement = () => {
             <CardHeader>
               <CardTitle>Create New User</CardTitle>
               <CardDescription>
-                Create a new employee account with specified privileges
+                Create a new user account with detailed information
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={newUser.email}
-                    onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
-                    placeholder="employee@company.com"
-                  />
+            <CardContent className="space-y-6">
+              {/* Basic Account Info */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Basic Account Info</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="fullName">Full Name <span className="text-destructive">*</span></Label>
+                    <Input
+                      id="fullName"
+                      value={newUser.fullName}
+                      onChange={(e) => setNewUser({ ...newUser, fullName: e.target.value })}
+                      placeholder="John Doe"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="email">Email <span className="text-destructive">*</span></Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={newUser.email}
+                      onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+                      placeholder="user@example.com"
+                    />
+                  </div>
                 </div>
-                <div>
-                  <Label htmlFor="password">Password</Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    value={newUser.password}
-                    onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
-                    placeholder="Secure password"
-                  />
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="password">Password <span className="text-destructive">*</span></Label>
+                    <Input
+                      id="password"
+                      type="password"
+                      value={newUser.password}
+                      onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                      placeholder="Secure password"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="phone">Phone Number</Label>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      value={newUser.phone}
+                      onChange={(e) => setNewUser({ ...newUser, phone: e.target.value })}
+                      placeholder="(555) 123-4567"
+                    />
+                  </div>
                 </div>
               </div>
-              <div>
-                <Label htmlFor="roles">Roles</Label>
-                <div className="grid grid-cols-2 gap-2 mt-2">
+
+              {/* Roles */}
+              <div className="space-y-3">
+                <Label>User Roles <span className="text-destructive">*</span></Label>
+                <div className="grid grid-cols-2 gap-2">
                   {availableRoles.map((role) => (
                     <div key={role} className="flex items-center space-x-2">
                       <Checkbox
@@ -468,13 +569,232 @@ export const UserManagement = () => {
                           handleNewUserRoleToggle(role, checked as boolean)
                         }
                       />
-                      <Label htmlFor={`new-user-${role}`} className="capitalize">
+                      <Label htmlFor={`new-user-${role}`} className="capitalize cursor-pointer">
                         {role}
                       </Label>
                     </div>
                   ))}
                 </div>
               </div>
+
+              {/* Location & Preferences (for customers) */}
+              {isCustomerAccount && (
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold">Location & Preferences</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="city">City</Label>
+                      <Input
+                        id="city"
+                        value={newUser.city}
+                        onChange={(e) => setNewUser({ ...newUser, city: e.target.value })}
+                        placeholder="Los Angeles"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="zipCode">ZIP Code</Label>
+                      <Input
+                        id="zipCode"
+                        value={newUser.zipCode}
+                        onChange={(e) => setNewUser({ ...newUser, zipCode: e.target.value })}
+                        placeholder="90001"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <Label>Preferred Communication</Label>
+                    <div className="flex gap-4">
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="new-comm-email"
+                          checked={newUser.preferredComm.includes("email")}
+                          onCheckedChange={() => toggleNewUserCommPreference("email")}
+                        />
+                        <Label htmlFor="new-comm-email" className="cursor-pointer font-normal">Email</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="new-comm-sms"
+                          checked={newUser.preferredComm.includes("sms")}
+                          onCheckedChange={() => toggleNewUserCommPreference("sms")}
+                        />
+                        <Label htmlFor="new-comm-sms" className="cursor-pointer font-normal">SMS</Label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="ownsVehicle"
+                      checked={newUser.ownsVehicle}
+                      onCheckedChange={(checked) => 
+                        setNewUser({ ...newUser, ownsVehicle: checked as boolean })
+                      }
+                    />
+                    <Label htmlFor="ownsVehicle" className="cursor-pointer">I own a vehicle</Label>
+                  </div>
+
+                  {newUser.ownsVehicle && (
+                    <div className="space-y-4 p-4 border rounded-lg">
+                      <h4 className="font-medium">Vehicle Details</h4>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="vehicleMake">Make</Label>
+                          <Input
+                            id="vehicleMake"
+                            value={newUser.vehicleMake}
+                            onChange={(e) => setNewUser({ ...newUser, vehicleMake: e.target.value })}
+                            placeholder="Toyota"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="vehicleModel">Model</Label>
+                          <Input
+                            id="vehicleModel"
+                            value={newUser.vehicleModel}
+                            onChange={(e) => setNewUser({ ...newUser, vehicleModel: e.target.value })}
+                            placeholder="Camry"
+                          />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="vehicleYear">Year</Label>
+                          <Input
+                            id="vehicleYear"
+                            value={newUser.vehicleYear}
+                            onChange={(e) => setNewUser({ ...newUser, vehicleYear: e.target.value })}
+                            placeholder="2020"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="vehicleLicensePlate">License Plate (optional)</Label>
+                          <Input
+                            id="vehicleLicensePlate"
+                            value={newUser.vehicleLicensePlate}
+                            onChange={(e) => setNewUser({ ...newUser, vehicleLicensePlate: e.target.value })}
+                            placeholder="ABC1234"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Provider Business Overview */}
+              {isProviderAccount && (
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold">Business Overview</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="businessName">Business Name <span className="text-destructive">*</span></Label>
+                      <Input
+                        id="businessName"
+                        value={newUser.businessName}
+                        onChange={(e) => setNewUser({ ...newUser, businessName: e.target.value })}
+                        placeholder="Auto Repair Shop"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="businessPhone">Business Phone <span className="text-destructive">*</span></Label>
+                      <Input
+                        id="businessPhone"
+                        type="tel"
+                        value={newUser.businessPhone}
+                        onChange={(e) => setNewUser({ ...newUser, businessPhone: e.target.value })}
+                        placeholder="(555) 987-6543"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="businessType">Business Type</Label>
+                      <Select 
+                        value={newUser.businessType} 
+                        onValueChange={(value) => setNewUser({ ...newUser, businessType: value })}
+                      >
+                        <SelectTrigger id="businessType">
+                          <SelectValue placeholder="Select type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="independent">Independent mechanic</SelectItem>
+                          <SelectItem value="auto_shop">Auto shop</SelectItem>
+                          <SelectItem value="mobile">Mobile service</SelectItem>
+                          <SelectItem value="detailing">Detailing</SelectItem>
+                          <SelectItem value="specialty">Specialty shop</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label htmlFor="primaryCategory">Primary Service Category</Label>
+                      <Select 
+                        value={newUser.primaryCategory} 
+                        onValueChange={(value) => setNewUser({ ...newUser, primaryCategory: value })}
+                      >
+                        <SelectTrigger id="primaryCategory">
+                          <SelectValue placeholder="Select category" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="general">General Repair</SelectItem>
+                          <SelectItem value="brakes">Brakes</SelectItem>
+                          <SelectItem value="tires">Tires</SelectItem>
+                          <SelectItem value="diagnostics">Diagnostics</SelectItem>
+                          <SelectItem value="detailing">Detailing</SelectItem>
+                          <SelectItem value="electrical">Electrical</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="providerCity">City <span className="text-destructive">*</span></Label>
+                      <Input
+                        id="providerCity"
+                        value={newUser.city}
+                        onChange={(e) => setNewUser({ ...newUser, city: e.target.value })}
+                        placeholder="Los Angeles"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="providerZipCode">ZIP Code <span className="text-destructive">*</span></Label>
+                      <Input
+                        id="providerZipCode"
+                        value={newUser.zipCode}
+                        onChange={(e) => setNewUser({ ...newUser, zipCode: e.target.value })}
+                        placeholder="90001"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="serviceRadius">Service Radius (miles)</Label>
+                      <Input
+                        id="serviceRadius"
+                        type="number"
+                        value={newUser.serviceRadius}
+                        onChange={(e) => setNewUser({ ...newUser, serviceRadius: e.target.value })}
+                        placeholder="25"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="websiteUrl">Website or Google Maps Link</Label>
+                      <Input
+                        id="websiteUrl"
+                        type="url"
+                        value={newUser.websiteUrl}
+                        onChange={(e) => setNewUser({ ...newUser, websiteUrl: e.target.value })}
+                        placeholder="https://example.com"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <Button onClick={createUser} className="w-full">
                 Create User
               </Button>
