@@ -64,6 +64,7 @@ const ProviderRevenue = ({ onRevenueUpdate }: ProviderRevenueProps) => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingRevenue, setEditingRevenue] = useState<RevenueEntry | null>(null);
   const [newRevenue, setNewRevenue] = useState({
+    booking_id: "",
     amount: "",
     description: "",
     entry_date: new Date().toISOString().split('T')[0],
@@ -159,11 +160,21 @@ const ProviderRevenue = ({ onRevenueUpdate }: ProviderRevenueProps) => {
       return;
     }
 
+    if (!newRevenue.entry_date) {
+      toast({
+        title: "Validation Error",
+        description: "Please select the payment date",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from('revenue_entries')
         .insert({
           provider_id: user.id,
+          booking_id: newRevenue.booking_id || null,
           amount: parseFloat(newRevenue.amount),
           description: newRevenue.description,
           entry_date: newRevenue.entry_date,
@@ -180,6 +191,7 @@ const ProviderRevenue = ({ onRevenueUpdate }: ProviderRevenueProps) => {
       });
 
       setNewRevenue({
+        booking_id: "",
         amount: "",
         description: "",
         entry_date: new Date().toISOString().split('T')[0],
@@ -418,6 +430,60 @@ const ProviderRevenue = ({ onRevenueUpdate }: ProviderRevenueProps) => {
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
+              {/* Booking Selection */}
+              {completedBookings.length > 0 && (
+                <div>
+                  <Label>Select Completed Booking (Optional)</Label>
+                  <Select 
+                    value={newRevenue.booking_id} 
+                    onValueChange={(value) => {
+                      const booking = completedBookings.find(b => b.id === value);
+                      if (booking) {
+                        const amount = booking.total_service_cost || booking.price_final || booking.price_quoted || 0;
+                        setNewRevenue({
+                          ...newRevenue,
+                          booking_id: value,
+                          amount: amount.toString(),
+                          description: `${booking.service_type} - ${booking.customer_name}`,
+                          notes: booking.service_description || ''
+                        });
+                      } else {
+                        setNewRevenue({
+                          ...newRevenue,
+                          booking_id: "",
+                          amount: "",
+                          description: "",
+                          notes: ""
+                        });
+                      }
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Choose from completed bookings" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-background border shadow-lg z-50">
+                      <SelectItem value="">Manual Entry (No Booking)</SelectItem>
+                      {completedBookings.map((booking) => {
+                        const amount = booking.total_service_cost || booking.price_final || booking.price_quoted || 0;
+                        return (
+                          <SelectItem key={booking.id} value={booking.id}>
+                            <div className="flex flex-col">
+                              <span className="font-medium">{booking.customer_name} - {booking.service_type}</span>
+                              <span className="text-xs text-muted-foreground">
+                                {format(new Date(booking.scheduled_date), 'MMM dd, yyyy')} • ${amount.toFixed(2)}
+                              </span>
+                            </div>
+                          </SelectItem>
+                        );
+                      })}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Select a completed booking or leave blank for manual entry
+                  </p>
+                </div>
+              )}
+
               <div>
                 <Label>Amount *</Label>
                 <Input
@@ -437,12 +503,15 @@ const ProviderRevenue = ({ onRevenueUpdate }: ProviderRevenueProps) => {
                 />
               </div>
               <div>
-                <Label>Date</Label>
+                <Label>Payment Date *</Label>
                 <Input
                   type="date"
                   value={newRevenue.entry_date}
                   onChange={(e) => setNewRevenue({ ...newRevenue, entry_date: e.target.value })}
                 />
+                <p className="text-xs text-muted-foreground mt-1">
+                  When was the payment received?
+                </p>
               </div>
               <div>
                 <Label>Payment Method</Label>
@@ -450,7 +519,7 @@ const ProviderRevenue = ({ onRevenueUpdate }: ProviderRevenueProps) => {
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-background border shadow-lg z-50">
                     <SelectItem value="cash">Cash</SelectItem>
                     <SelectItem value="card">Credit/Debit Card</SelectItem>
                     <SelectItem value="check">Check</SelectItem>
@@ -465,6 +534,7 @@ const ProviderRevenue = ({ onRevenueUpdate }: ProviderRevenueProps) => {
                   id="is_paid"
                   checked={newRevenue.is_paid}
                   onChange={(e) => setNewRevenue({ ...newRevenue, is_paid: e.target.checked })}
+                  className="rounded"
                 />
                 <Label htmlFor="is_paid">Payment received</Label>
               </div>
