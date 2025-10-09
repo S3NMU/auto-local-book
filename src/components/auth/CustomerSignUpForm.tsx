@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -16,7 +15,7 @@ export interface CustomerSignUpFormData {
   phone?: string;
   city?: string;
   zipCode?: string;
-  preferredComm?: "email" | "sms";
+  preferredComm?: ("email" | "sms")[];
   ownsVehicle?: boolean;
   vehicleMake?: string;
   vehicleModel?: string;
@@ -36,6 +35,16 @@ export const CustomerSignUpForm = ({ form, onSubmit, isLoading }: CustomerSignUp
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const ownsVehicle = form.watch("ownsVehicle");
+  const preferredComm = form.watch("preferredComm") || [];
+
+  const toggleCommPreference = (value: "email" | "sms") => {
+    const currentPrefs = preferredComm;
+    if (currentPrefs.includes(value)) {
+      form.setValue("preferredComm", currentPrefs.filter(p => p !== value));
+    } else {
+      form.setValue("preferredComm", [...currentPrefs, value]);
+    }
+  };
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -160,20 +169,24 @@ export const CustomerSignUpForm = ({ form, onSubmit, isLoading }: CustomerSignUp
 
         <div className="space-y-3">
           <Label>Preferred Communication</Label>
-          <RadioGroup
-            value={form.watch("preferredComm")}
-            onValueChange={(value) => form.setValue("preferredComm", value as "email" | "sms")}
-            className="flex gap-4"
-          >
+          <div className="flex gap-4">
             <div className="flex items-center space-x-2">
-              <RadioGroupItem value="email" id="comm-email" />
+              <Checkbox
+                id="comm-email"
+                checked={preferredComm.includes("email")}
+                onCheckedChange={() => toggleCommPreference("email")}
+              />
               <Label htmlFor="comm-email" className="cursor-pointer font-normal">Email</Label>
             </div>
             <div className="flex items-center space-x-2">
-              <RadioGroupItem value="sms" id="comm-sms" />
+              <Checkbox
+                id="comm-sms"
+                checked={preferredComm.includes("sms")}
+                onCheckedChange={() => toggleCommPreference("sms")}
+              />
               <Label htmlFor="comm-sms" className="cursor-pointer font-normal">SMS</Label>
             </div>
-          </RadioGroup>
+          </div>
         </div>
 
         <div className="flex items-center space-x-2">
