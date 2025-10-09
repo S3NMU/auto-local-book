@@ -46,6 +46,7 @@ const ProviderDashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [avatarUrl, setAvatarUrl] = useState<string>("");
+  const [isApproved, setIsApproved] = useState<boolean | null>(null);
   const [dashboardStats, setDashboardStats] = useState({
     totalRevenue: 0,
     monthlyBookings: 0,
@@ -75,9 +76,39 @@ const ProviderDashboard = () => {
     }
 
     if (user && isProvider) {
+      checkApprovalStatus();
       fetchDashboardStats();
     }
   }, [user, isProvider, loading, navigate]);
+
+  const checkApprovalStatus = async () => {
+    if (!user) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('providers')
+        .select('status')
+        .eq('id', user.id)
+        .maybeSingle();
+
+      if (error) {
+        console.error('Error checking approval status:', error);
+        setIsApproved(false);
+        return;
+      }
+
+      // Provider is approved if they have an active entry in providers table
+      setIsApproved(data?.status === 'active');
+      
+      // Redirect to pending approval page if not approved
+      if (!data || data.status !== 'active') {
+        navigate('/pending-approval');
+      }
+    } catch (error) {
+      console.error('Error checking approval status:', error);
+      setIsApproved(false);
+    }
+  };
 
   const fetchDashboardStats = async () => {
     if (!user) return;
@@ -154,7 +185,7 @@ const ProviderDashboard = () => {
     }
   };
 
-  if (loading) {
+  if (loading || isApproved === null) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
@@ -165,7 +196,7 @@ const ProviderDashboard = () => {
     );
   }
 
-  if (!isProvider) {
+  if (!isProvider || !isApproved) {
     return null;
   }
 

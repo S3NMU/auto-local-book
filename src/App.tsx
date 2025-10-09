@@ -22,6 +22,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import CookiePolicy from "./pages/CookiePolicy";
 import ProviderBenefits from "./pages/ProviderBenefits";
+import PendingApproval from "./pages/PendingApproval";
 import NotFound from "./pages/NotFound";
 import Blog from "./pages/Blog";
 
@@ -51,6 +52,7 @@ const AppContent = () => {
           <Route path="/list-shop" element={<ListShop />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/provider-dashboard" element={<ProviderDashboard />} />
+          <Route path="/pending-approval" element={<PendingApproval />} />
           <Route path="/dashboard" element={<CustomerDashboard />} />
           <Route path="/blog" element={<Blog />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

@@ -351,11 +351,11 @@ const Auth = () => {
 
       toast({
         title: "Provider account created!",
-        description: "Please check your email and click the confirmation link. You can complete your profile setup after signing in.",
+        description: "Please check your email and click the confirmation link to continue.",
       });
       
-      const signInTab = document.querySelector('[value="signin"]') as HTMLElement;
-      signInTab?.click();
+      // Redirect to pending approval page
+      navigate("/pending-approval");
     } catch (error) {
       toast({
         title: "Error",
