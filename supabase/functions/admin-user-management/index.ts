@@ -150,6 +150,41 @@ const handler = async (req: Request): Promise<Response> => {
         });
       }
 
+      case "grant-role": {
+        const { userId, role } = body;
+
+        const { error } = await supabase
+          .from('user_roles')
+          .insert({
+            user_id: userId,
+            role: role
+          });
+
+        if (error) throw error;
+
+        return new Response(JSON.stringify({ success: true }), {
+          status: 200,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      case "revoke-role": {
+        const { userId, role } = body;
+
+        const { error } = await supabase
+          .from('user_roles')
+          .delete()
+          .eq('user_id', userId)
+          .eq('role', role);
+
+        if (error) throw error;
+
+        return new Response(JSON.stringify({ success: true }), {
+          status: 200,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
       case "update-profile": {
         const { userId, email, full_name, phone } = body;
 

@@ -16,19 +16,13 @@ interface User {
   user_metadata?: {
     full_name?: string;
   };
-}
-
-interface UserRole {
-  user_id: string;
-  role: 'admin' | 'provider' | 'user';
-}
-
-interface UserWithRoles extends User {
-  roles: string[];
+  roles: Array<{
+    role: string;
+  }>;
 }
 
 export const UserManagement = () => {
-  const [users, setUsers] = useState<UserWithRoles[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [confirmDialog, setConfirmDialog] = useState<{
@@ -44,34 +38,28 @@ export const UserManagement = () => {
     try {
       setLoading(true);
       
-      // Fetch all users from auth (via admin API)
-      const { data: { users: authUsers }, error: authError } = await supabase.auth.admin.listUsers();
-      
-      if (authError) throw authError;
+      const { data: session } = await supabase.auth.getSession();
+      if (!session.session) {
+        throw new Error('Not authenticated');
+      }
 
-      // Fetch all user roles
-      const { data: userRoles, error: rolesError } = await supabase
-        .from('user_roles')
-        .select('user_id, role');
-
-      if (rolesError) throw rolesError;
-
-      // Combine users with their roles
-      const usersWithRoles: UserWithRoles[] = (authUsers || []).map(user => {
-        const roles = (userRoles || [])
-          .filter(r => r.user_id === user.id)
-          .map(r => r.role);
-        
-        return {
-          id: user.id,
-          email: user.email || 'No email',
-          created_at: user.created_at,
-          user_metadata: user.user_metadata,
-          roles: roles.length > 0 ? roles : ['user'] // Default to user if no roles
-        };
+      const { data, error } = await supabase.functions.invoke('admin-user-management', {
+        body: { action: 'list-users' },
+        headers: {
+          Authorization: `Bearer ${session.session.access_token}`,
+        },
       });
 
-      setUsers(usersWithRoles);
+      if (error) {
+        console.error('Function invoke error:', error);
+        throw error;
+      }
+
+      if (data?.users) {
+        setUsers(data.users);
+      } else {
+        throw new Error('No users data returned');
+      }
     } catch (error) {
       console.error('Error fetching users:', error);
       toast({
@@ -104,36 +92,28 @@ export const UserManagement = () => {
     try {
       const { userId, role, action } = confirmDialog;
 
-      if (action === 'grant') {
-        // Insert the role
-        const { error } = await supabase
-          .from('user_roles')
-          .insert({
-            user_id: userId,
-            role: role
-          });
-
-        if (error) throw error;
-
-        toast({
-          title: "Access Granted",
-          description: `Successfully granted ${role} access`,
-        });
-      } else {
-        // Revoke the role
-        const { error } = await supabase
-          .from('user_roles')
-          .delete()
-          .eq('user_id', userId)
-          .eq('role', role);
-
-        if (error) throw error;
-
-        toast({
-          title: "Access Revoked",
-          description: `Successfully revoked ${role} access`,
-        });
+      const { data: session } = await supabase.auth.getSession();
+      if (!session.session) {
+        throw new Error('Not authenticated');
       }
+
+      const { error } = await supabase.functions.invoke('admin-user-management', {
+        body: {
+          action: action === 'grant' ? 'grant-role' : 'revoke-role',
+          userId,
+          role
+        },
+        headers: {
+          Authorization: `Bearer ${session.session.access_token}`,
+        },
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: action === 'grant' ? "Access Granted" : "Access Revoked",
+        description: `Successfully ${action === 'grant' ? 'granted' : 'revoked'} ${role} access`,
+      });
 
       // Refresh users list
       await fetchUsers();
@@ -227,8 +207,9 @@ export const UserManagement = () => {
                     </TableRow>
                   ) : (
                     filteredUsers.map((user) => {
-                      const hasAdmin = user.roles.includes('admin');
-                      const hasProvider = user.roles.includes('provider');
+                      const roles = user.roles.map(r => r.role);
+                      const hasAdmin = roles.includes('admin');
+                      const hasProvider = roles.includes('provider');
                       
                       return (
                         <TableRow key={user.id}>
@@ -238,16 +219,23 @@ export const UserManagement = () => {
                           <TableCell>{user.email}</TableCell>
                           <TableCell>
                             <div className="flex flex-wrap gap-1">
-                              {user.roles.map((role) => (
-                                <Badge 
-                                  key={role} 
-                                  variant={getRoleBadgeVariant(role)}
-                                  className="flex items-center gap-1"
-                                >
-                                  {getRoleIcon(role)}
-                                  <span className="capitalize">{role}</span>
+                              {roles.length > 0 ? (
+                                roles.map((role) => (
+                                  <Badge 
+                                    key={role} 
+                                    variant={getRoleBadgeVariant(role)}
+                                    className="flex items-center gap-1"
+                                  >
+                                    {getRoleIcon(role)}
+                                    <span className="capitalize">{role}</span>
+                                  </Badge>
+                                ))
+                              ) : (
+                                <Badge variant="outline" className="flex items-center gap-1">
+                                  <UserIcon className="w-3 h-3" />
+                                  Customer
                                 </Badge>
-                              ))}
+                              )}
                             </div>
                           </TableCell>
                           <TableCell>
