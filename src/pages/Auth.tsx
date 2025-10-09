@@ -96,7 +96,23 @@ const Auth = () => {
       const userRoles = rolesData?.map(r => r.role) || [];
       
       if (userRoles.includes('admin')) return '/admin';
-      if (userRoles.includes('provider')) return '/provider-dashboard';
+      
+      // For providers, check if they're approved before redirecting to dashboard
+      if (userRoles.includes('provider')) {
+        const { data: providerData } = await supabase
+          .from('providers')
+          .select('status')
+          .eq('id', session.user.id)
+          .maybeSingle();
+        
+        // If provider is approved (has active entry in providers table), go to dashboard
+        if (providerData?.status === 'active') {
+          return '/provider-dashboard';
+        }
+        // Otherwise, show pending approval page
+        return '/pending-approval';
+      }
+      
       if (userRoles.includes('user')) return '/dashboard';
     }
     
