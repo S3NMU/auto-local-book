@@ -10,9 +10,13 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Eye, EyeOff, ArrowLeft, User, Wrench } from "lucide-react";
+import { CustomerSignUpForm as CustomerSignUpFormComponent, type CustomerSignUpFormData } from "@/components/auth/CustomerSignUpForm";
+import { ProviderSignUpForm as ProviderSignUpFormComponent, type ProviderSignUpFormData } from "@/components/auth/ProviderSignUpForm";
 
 // Validation schemas
 const signInSchema = z.object({
@@ -20,27 +24,58 @@ const signInSchema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
-const signUpSchema = z.object({
+const customerSignUpSchema = z.object({
+  fullName: z.string().trim().min(2, "Full name is required").max(100, "Name is too long"),
   email: z.string().trim().email("Please enter a valid email address"),
   password: z.string()
     .min(8, "Password must be at least 8 characters")
-    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, "Password must contain at least one uppercase letter, one lowercase letter, and one number"),
+    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, "Password must contain uppercase, lowercase, and number"),
   confirmPassword: z.string(),
-  userType: z.enum(["user", "provider"], {
-    required_error: "Please select your account type",
-  }),
+  phone: z.string().trim().optional(),
+  city: z.string().trim().optional(),
+  zipCode: z.string().trim().optional(),
+  preferredComm: z.enum(["email", "sms"]).optional(),
+  ownsVehicle: z.boolean().optional(),
+  vehicleMake: z.string().trim().optional(),
+  vehicleModel: z.string().trim().optional(),
+  vehicleYear: z.string().trim().optional(),
+  licensePlate: z.string().trim().optional(),
+  agreeToTerms: z.boolean().refine((val) => val === true, "You must agree to the Terms of Service"),
+  agreeToPrivacy: z.boolean().refine((val) => val === true, "You must agree to the Privacy Policy"),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
+});
+
+const providerSignUpSchema = z.object({
+  fullName: z.string().trim().min(2, "Full name is required").max(100, "Name is too long"),
+  email: z.string().trim().email("Please enter a valid email address"),
+  password: z.string()
+    .min(8, "Password must be at least 8 characters")
+    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, "Password must contain uppercase, lowercase, and number"),
+  confirmPassword: z.string(),
+  businessPhone: z.string().trim().min(10, "Business phone is required"),
+  businessName: z.string().trim().min(2, "Business name is required").max(200, "Name is too long"),
+  businessType: z.string().min(1, "Please select a business type"),
+  primaryCategory: z.string().min(1, "Please select a primary service category"),
+  city: z.string().trim().min(2, "City is required"),
+  zipCode: z.string().trim().min(5, "ZIP code is required"),
+  serviceRadius: z.string().trim().optional(),
+  websiteUrl: z.string().trim().optional(),
+  agreeToTerms: z.boolean().refine((val) => val === true, "You must agree to the Provider Terms of Service"),
+  confirmAccuracy: z.boolean().refine((val) => val === true, "You must confirm business info accuracy"),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],
 });
 
 type SignInForm = z.infer<typeof signInSchema>;
-type SignUpForm = z.infer<typeof signUpSchema>;
 
 const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [signUpType, setSignUpType] = useState<"customer" | "provider">("customer");
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
@@ -60,13 +95,44 @@ const Auth = () => {
     },
   });
 
-  const signUpForm = useForm<SignUpForm>({
-    resolver: zodResolver(signUpSchema),
+  const customerSignUpForm = useForm<CustomerSignUpFormData>({
+    resolver: zodResolver(customerSignUpSchema),
     defaultValues: {
+      fullName: "",
       email: "",
       password: "",
       confirmPassword: "",
-      userType: "user",
+      phone: "",
+      city: "",
+      zipCode: "",
+      preferredComm: "email",
+      ownsVehicle: false,
+      vehicleMake: "",
+      vehicleModel: "",
+      vehicleYear: "",
+      licensePlate: "",
+      agreeToTerms: false,
+      agreeToPrivacy: false,
+    },
+  });
+
+  const providerSignUpForm = useForm<ProviderSignUpFormData>({
+    resolver: zodResolver(providerSignUpSchema),
+    defaultValues: {
+      fullName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      businessPhone: "",
+      businessName: "",
+      businessType: "",
+      primaryCategory: "",
+      city: "",
+      zipCode: "",
+      serviceRadius: "",
+      websiteUrl: "",
+      agreeToTerms: false,
+      confirmAccuracy: false,
     },
   });
 
@@ -133,7 +199,7 @@ const Auth = () => {
     }
   };
 
-  const onSignUp = async (data: SignUpForm) => {
+  const onCustomerSignUp = async (data: CustomerSignUpFormData) => {
     setIsLoading(true);
     try {
       const redirectUrl = `${window.location.origin}/`;
@@ -144,7 +210,9 @@ const Auth = () => {
         options: {
           emailRedirectTo: redirectUrl,
           data: {
-            user_type: data.userType
+            full_name: data.fullName,
+            phone: data.phone,
+            display_name: data.fullName,
           }
         }
       });
@@ -166,39 +234,110 @@ const Auth = () => {
         return;
       }
 
-      // If user was created successfully, add their role
       if (authData.user) {
         const { error: roleError } = await supabase
           .from('user_roles')
           .insert({
             user_id: authData.user.id,
-            role: data.userType === 'provider' ? 'provider' : 'user'
+            role: 'user'
+          });
+
+        if (roleError) {
+          console.error('Error setting user role:', roleError);
+        }
+      }
+
+      toast({
+        title: "Account created!",
+        description: "Please check your email and click the confirmation link to complete your registration.",
+      });
+      
+      const signInTab = document.querySelector('[value="signin"]') as HTMLElement;
+      signInTab?.click();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const onProviderSignUp = async (data: ProviderSignUpFormData) => {
+    setIsLoading(true);
+    try {
+      const redirectUrl = `${window.location.origin}/`;
+      
+      const { data: authData, error } = await supabase.auth.signUp({
+        email: data.email,
+        password: data.password,
+        options: {
+          emailRedirectTo: redirectUrl,
+          data: {
+            full_name: data.fullName,
+            phone: data.businessPhone,
+            display_name: data.businessName,
+          }
+        }
+      });
+
+      if (error) {
+        if (error.message.includes("User already registered")) {
+          toast({
+            title: "Account exists",
+            description: "An account with this email already exists. Please sign in instead.",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Sign up failed",
+            description: error.message,
+            variant: "destructive",
+          });
+        }
+        return;
+      }
+
+      if (authData.user) {
+        const { error: roleError } = await supabase
+          .from('user_roles')
+          .insert({
+            user_id: authData.user.id,
+            role: 'provider'
           });
 
         if (roleError) {
           console.error('Error setting user role:', roleError);
         }
 
-        // If it's a provider, create their profile
-        if (data.userType === 'provider') {
-          const { error: profileError } = await supabase
-            .from('provider_profiles')
-            .insert({
-              user_id: authData.user.id
-            });
+        const { error: profileError } = await supabase
+          .from('provider_profiles')
+          .insert({
+            user_id: authData.user.id,
+            business_name: data.businessName,
+            business_phone: data.businessPhone,
+            business_email: data.email,
+            owner_full_name: data.fullName,
+            business_city: data.city,
+            business_zip_code: data.zipCode,
+            primary_category: data.primaryCategory,
+            service_radius_miles: data.serviceRadius ? parseInt(data.serviceRadius) : 25,
+            website_url: data.websiteUrl || null,
+            short_description: `${data.businessType} offering ${data.primaryCategory} services`,
+          });
 
-          if (profileError) {
-            console.error('Error creating provider profile:', profileError);
-          }
+        if (profileError) {
+          console.error('Error creating provider profile:', profileError);
         }
       }
 
       toast({
-        title: "Account created!",
-        description: `Please check your email and click the confirmation link to complete your ${data.userType} registration.`,
+        title: "Provider account created!",
+        description: "Please check your email and click the confirmation link. You can complete your profile setup after signing in.",
       });
       
-      // Switch to sign in tab
       const signInTab = document.querySelector('[value="signin"]') as HTMLElement;
       signInTab?.click();
     } catch (error) {
@@ -302,17 +441,17 @@ const Auth = () => {
                   </AlertDescription>
                 </Alert>
 
-                <form onSubmit={signUpForm.handleSubmit(onSignUp)} className="space-y-4">
+                <div className="space-y-4">
                   <div className="space-y-3">
                     <Label>Account Type</Label>
                     <RadioGroup
-                      value={signUpForm.watch("userType")}
-                      onValueChange={(value) => signUpForm.setValue("userType", value as "user" | "provider")}
+                      value={signUpType}
+                      onValueChange={(value) => setSignUpType(value as "customer" | "provider")}
                       className="grid grid-cols-2 gap-4"
                     >
                       <div className="flex items-center space-x-2 border rounded-lg p-4 hover:bg-accent cursor-pointer">
-                        <RadioGroupItem value="user" id="user" />
-                        <Label htmlFor="user" className="flex items-center gap-2 cursor-pointer flex-1">
+                        <RadioGroupItem value="customer" id="type-customer" />
+                        <Label htmlFor="type-customer" className="flex items-center gap-2 cursor-pointer flex-1">
                           <User className="w-4 h-4" />
                           <div>
                             <div className="font-medium">Customer</div>
@@ -321,8 +460,8 @@ const Auth = () => {
                         </Label>
                       </div>
                       <div className="flex items-center space-x-2 border rounded-lg p-4 hover:bg-accent cursor-pointer">
-                        <RadioGroupItem value="provider" id="provider" />
-                        <Label htmlFor="provider" className="flex items-center gap-2 cursor-pointer flex-1">
+                        <RadioGroupItem value="provider" id="type-provider" />
+                        <Label htmlFor="type-provider" className="flex items-center gap-2 cursor-pointer flex-1">
                           <Wrench className="w-4 h-4" />
                           <div>
                             <div className="font-medium">Service Provider</div>
@@ -331,97 +470,22 @@ const Auth = () => {
                         </Label>
                       </div>
                     </RadioGroup>
-                    {signUpForm.formState.errors.userType && (
-                      <p className="text-sm text-destructive">
-                        {signUpForm.formState.errors.userType.message}
-                      </p>
-                    )}
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-email">Email</Label>
-                    <Input
-                      id="signup-email"
-                      type="email"
-                      placeholder="Enter your email"
-                      {...signUpForm.register("email")}
-                      disabled={isLoading}
+                  {signUpType === "customer" ? (
+                    <CustomerSignUpFormComponent 
+                      form={customerSignUpForm}
+                      onSubmit={onCustomerSignUp}
+                      isLoading={isLoading}
                     />
-                    {signUpForm.formState.errors.email && (
-                      <p className="text-sm text-destructive">
-                        {signUpForm.formState.errors.email.message}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-password">Password</Label>
-                    <div className="relative">
-                      <Input
-                        id="signup-password"
-                        type={showPassword ? "text" : "password"}
-                        placeholder="Create a password"
-                        {...signUpForm.register("password")}
-                        disabled={isLoading}
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                        onClick={() => setShowPassword(!showPassword)}
-                        disabled={isLoading}
-                      >
-                        {showPassword ? (
-                          <EyeOff className="h-4 w-4" />
-                        ) : (
-                          <Eye className="h-4 w-4" />
-                        )}
-                      </Button>
-                    </div>
-                    {signUpForm.formState.errors.password && (
-                      <p className="text-sm text-destructive">
-                        {signUpForm.formState.errors.password.message}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-confirm-password">Confirm Password</Label>
-                    <div className="relative">
-                      <Input
-                        id="signup-confirm-password"
-                        type={showConfirmPassword ? "text" : "password"}
-                        placeholder="Confirm your password"
-                        {...signUpForm.register("confirmPassword")}
-                        disabled={isLoading}
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        disabled={isLoading}
-                      >
-                        {showConfirmPassword ? (
-                          <EyeOff className="h-4 w-4" />
-                        ) : (
-                          <Eye className="h-4 w-4" />
-                        )}
-                      </Button>
-                    </div>
-                    {signUpForm.formState.errors.confirmPassword && (
-                      <p className="text-sm text-destructive">
-                        {signUpForm.formState.errors.confirmPassword.message}
-                      </p>
-                    )}
-                  </div>
-
-                  <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? "Creating account..." : "Create Account"}
-                  </Button>
-                </form>
+                  ) : (
+                    <ProviderSignUpFormComponent 
+                      form={providerSignUpForm}
+                      onSubmit={onProviderSignUp}
+                      isLoading={isLoading}
+                    />
+                  )}
+                </div>
               </TabsContent>
             </Tabs>
           </CardContent>
