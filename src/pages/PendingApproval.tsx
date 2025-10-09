@@ -9,15 +9,21 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 const PendingApproval = () => {
-  const { user, isProvider, loading } = useAuth();
+  const { user, isProvider, isAdmin, loading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
+    // Admins should never see this page
+    if (!loading && isAdmin) {
+      navigate("/admin");
+      return;
+    }
+    
     if (!loading && !isProvider) {
       navigate("/");
     }
-  }, [loading, isProvider, navigate]);
+  }, [loading, isProvider, isAdmin, navigate]);
 
   // Poll for approval status and auto-redirect when approved
   useEffect(() => {

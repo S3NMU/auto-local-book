@@ -84,6 +84,12 @@ const ProviderDashboard = () => {
   const checkApprovalStatus = async () => {
     if (!user) return;
 
+    // Admins bypass approval checks
+    if (isAdmin) {
+      setIsApproved(true);
+      return;
+    }
+
     try {
       const { data: providerData } = await supabase
         .from('providers')
