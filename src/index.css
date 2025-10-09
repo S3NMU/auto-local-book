@@ -169,6 +169,14 @@ All colors MUST be HSL for consistency and theming.
     box-shadow: var(--shadow-lg);
   }
 
+  .shadow-card {
+    box-shadow: var(--shadow-md);
+  }
+
+  .shadow-hover {
+    box-shadow: var(--shadow-xl);
+  }
+
   .transition-smooth {
     transition: var(--transition-smooth);
   }
