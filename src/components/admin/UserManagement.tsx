@@ -29,6 +29,7 @@ interface User {
 export const UserManagement = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
   const [createUserOpen, setCreateUserOpen] = useState(false);
   const [editRolesOpen, setEditRolesOpen] = useState(false);
   const [editProfileOpen, setEditProfileOpen] = useState(false);
@@ -308,6 +309,16 @@ export const UserManagement = () => {
     setNewUser({ ...newUser, roles: newRoles });
   };
 
+  const filteredUsers = users.filter(user => {
+    const query = searchQuery.toLowerCase();
+    return (
+      user.email.toLowerCase().includes(query) ||
+      user.user_metadata?.full_name?.toLowerCase().includes(query) ||
+      user.user_metadata?.phone?.toLowerCase().includes(query) ||
+      user.roles.some(r => r.role.toLowerCase().includes(query))
+    );
+  });
+
   if (loading) {
     return <div className="text-center">Loading users...</div>;
   }
@@ -338,6 +349,14 @@ export const UserManagement = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
+              <div className="mb-4">
+                <Input
+                  placeholder="Search by email, name, phone, or role..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="max-w-md"
+                />
+              </div>
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -350,7 +369,7 @@ export const UserManagement = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {users.map((user) => (
+                  {filteredUsers.map((user) => (
                     <TableRow key={user.id}>
                       <TableCell className="font-medium">{user.email}</TableCell>
                       <TableCell>{user.user_metadata?.full_name || '-'}</TableCell>
