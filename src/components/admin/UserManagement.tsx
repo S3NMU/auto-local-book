@@ -126,38 +126,34 @@ export const UserManagement = () => {
           id,
           user_id,
           business_name,
-          business_phone
+          business_phone,
+          created_at
         `)
         .is('is_approved', null)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
 
-      // Get user details for each pending provider
-      if (data) {
-        const providersWithUsers = await Promise.all(
-          data.map(async (profile) => {
-            const { data: session } = await supabase.auth.getSession();
-            const { data: userData } = await supabase.functions.invoke('admin-user-management', {
-              body: { action: 'get-user', userId: profile.user_id },
-              headers: {
-                Authorization: `Bearer ${session.session?.access_token}`,
-              },
-            });
-
-            return {
-              id: profile.id,
-              user_id: profile.user_id,
-              email: userData?.user?.email || 'Unknown',
-              full_name: userData?.user?.user_metadata?.full_name || 'Unknown',
-              business_name: profile.business_name || 'Unknown',
-              business_phone: profile.business_phone || 'N/A',
-              created_at: userData?.user?.created_at || new Date().toISOString()
-            };
-          })
-        );
+      if (data && data.length > 0) {
+        // Get all user info from the existing users list
+        const userMap = new Map(users.map(u => [u.id, u]));
+        
+        const providersWithUsers = data.map(profile => {
+          const user = userMap.get(profile.user_id);
+          return {
+            id: profile.id,
+            user_id: profile.user_id,
+            email: user?.email || 'Unknown',
+            full_name: user?.user_metadata?.full_name || 'Unknown',
+            business_name: profile.business_name || 'Unknown',
+            business_phone: profile.business_phone || 'N/A',
+            created_at: profile.created_at || new Date().toISOString()
+          };
+        });
 
         setPendingProviders(providersWithUsers);
+      } else {
+        setPendingProviders([]);
       }
     } catch (error) {
       console.error('Error fetching pending providers:', error);
