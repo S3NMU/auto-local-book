@@ -436,6 +436,16 @@ const ProviderRevenue = ({ onRevenueUpdate }: ProviderRevenueProps) => {
                 <Select 
                   value={newRevenue.booking_id} 
                   onValueChange={(value) => {
+                    if (value === "none" || value === "nobookings") {
+                      setNewRevenue({
+                        ...newRevenue,
+                        booking_id: "",
+                        amount: "",
+                        description: "",
+                        notes: ""
+                      });
+                      return;
+                    }
                     const booking = completedBookings.find(b => b.id === value);
                     if (booking) {
                       const amount = booking.total_service_cost || booking.price_final || booking.price_quoted || 0;
@@ -465,9 +475,9 @@ const ProviderRevenue = ({ onRevenueUpdate }: ProviderRevenueProps) => {
                     } />
                   </SelectTrigger>
                   <SelectContent className="bg-background border shadow-lg z-50">
-                    <SelectItem value="">Manual Entry (No Booking)</SelectItem>
+                    <SelectItem value="none">Manual Entry (No Booking)</SelectItem>
                     {completedBookings.length === 0 ? (
-                      <SelectItem value="" disabled>
+                      <SelectItem value="nobookings" disabled>
                         No completed bookings found
                       </SelectItem>
                     ) : (

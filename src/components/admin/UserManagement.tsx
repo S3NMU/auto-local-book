@@ -27,8 +27,19 @@ interface User {
   };
 }
 
+interface PendingProvider {
+  id: string;
+  user_id: string;
+  email: string;
+  full_name: string;
+  business_name: string;
+  business_phone: string;
+  created_at: string;
+}
+
 export const UserManagement = () => {
   const [users, setUsers] = useState<User[]>([]);
+  const [pendingProviders, setPendingProviders] = useState<PendingProvider[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [createUserOpen, setCreateUserOpen] = useState(false);
@@ -63,7 +74,8 @@ export const UserManagement = () => {
     businessType: '',
     primaryCategory: '',
     serviceRadius: '',
-    websiteUrl: ''
+    websiteUrl: '',
+    needsApproval: false // Don't require approval for admin-created providers
   });
   const { toast } = useToast();
 
@@ -93,6 +105,7 @@ export const UserManagement = () => {
       } else {
         throw new Error('No users data returned');
       }
+      fetchPendingProviders();
     } catch (error) {
       console.error('Error fetching users:', error);
       toast({
@@ -102,6 +115,120 @@ export const UserManagement = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchPendingProviders = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('provider_profiles')
+        .select(`
+          id,
+          user_id,
+          business_name,
+          business_phone
+        `)
+        .is('is_approved', null)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      // Get user details for each pending provider
+      if (data) {
+        const providersWithUsers = await Promise.all(
+          data.map(async (profile) => {
+            const { data: session } = await supabase.auth.getSession();
+            const { data: userData } = await supabase.functions.invoke('admin-user-management', {
+              body: { action: 'get-user', userId: profile.user_id },
+              headers: {
+                Authorization: `Bearer ${session.session?.access_token}`,
+              },
+            });
+
+            return {
+              id: profile.id,
+              user_id: profile.user_id,
+              email: userData?.user?.email || 'Unknown',
+              full_name: userData?.user?.user_metadata?.full_name || 'Unknown',
+              business_name: profile.business_name || 'Unknown',
+              business_phone: profile.business_phone || 'N/A',
+              created_at: userData?.user?.created_at || new Date().toISOString()
+            };
+          })
+        );
+
+        setPendingProviders(providersWithUsers);
+      }
+    } catch (error) {
+      console.error('Error fetching pending providers:', error);
+    }
+  };
+
+  const approveProvider = async (userId: string) => {
+    try {
+      // Update provider profile to approved
+      const { error: profileError } = await supabase
+        .from('provider_profiles')
+        .update({ is_approved: true })
+        .eq('user_id', userId);
+
+      if (profileError) throw profileError;
+
+      // Add provider role
+      const { data: session } = await supabase.auth.getSession();
+      const { error: roleError } = await supabase.functions.invoke('admin-user-management', {
+        body: {
+          action: 'update-roles',
+          userId: userId,
+          roles: ['provider']
+        },
+        headers: {
+          Authorization: `Bearer ${session.session?.access_token}`,
+        },
+      });
+
+      if (roleError) throw roleError;
+
+      toast({
+        title: "Provider Approved",
+        description: "The provider has been approved and can now access their dashboard"
+      });
+
+      fetchPendingProviders();
+      fetchUsers();
+    } catch (error) {
+      console.error('Error approving provider:', error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to approve provider"
+      });
+    }
+  };
+
+  const rejectProvider = async (userId: string) => {
+    try {
+      // Delete provider profile
+      const { error: profileError } = await supabase
+        .from('provider_profiles')
+        .delete()
+        .eq('user_id', userId);
+
+      if (profileError) throw profileError;
+
+      toast({
+        title: "Provider Rejected",
+        description: "The provider application has been rejected"
+      });
+
+      fetchPendingProviders();
+    } catch (error) {
+      console.error('Error rejecting provider:', error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to reject provider"
+      });
     }
   };
 
