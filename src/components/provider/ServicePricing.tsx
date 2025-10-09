@@ -65,6 +65,11 @@ const ServicePricing = () => {
     duration_minutes: 60,
     currency: "USD",
     is_available: true,
+    pickup_available: false,
+    pickup_fee: 0,
+    dropoff_available: false,
+    dropoff_fee: 0,
+    custom_name: "",
     notes: ""
   });
 
@@ -152,6 +157,11 @@ const ServicePricing = () => {
         duration_minutes: 60,
         currency: "USD",
         is_available: true,
+        pickup_available: false,
+        pickup_fee: 0,
+        dropoff_available: false,
+        dropoff_fee: 0,
+        custom_name: "",
         notes: ""
       });
       setIsAddDialogOpen(false);
@@ -270,84 +280,130 @@ const ServicePricing = () => {
               Add Service
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Add Service Pricing</DialogTitle>
               <DialogDescription>
                 Configure pricing and options for a new service
               </DialogDescription>
             </DialogHeader>
-            <div className="space-y-4 max-h-[60vh] overflow-y-auto">
+            <div className="space-y-6 py-4">
+              {/* Service Selection */}
               <div>
-                <Label>Service</Label>
-                <Select value={newServiceForm.service_id} onValueChange={(value) => 
-                  setNewServiceForm({ ...newServiceForm, service_id: value })
-                }>
-                  <SelectTrigger>
+                <Label htmlFor="service-select">Service *</Label>
+                <Select value={newServiceForm.service_id} onValueChange={(value) => {
+                  const selectedService = availableServices.find(s => s.id === value);
+                  setNewServiceForm({ 
+                    ...newServiceForm, 
+                    service_id: value,
+                    duration_minutes: selectedService?.duration_minutes || 60,
+                    price_min: selectedService?.base_price_min || 0,
+                    price_max: selectedService?.base_price_max || 0
+                  });
+                }}>
+                  <SelectTrigger id="service-select">
                     <SelectValue placeholder="Select a service" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-background border shadow-lg z-50">
                     {getAvailableServicesForAdd().map((service) => (
                       <SelectItem key={service.id} value={service.id}>
                         <div>
                           <div className="font-medium">{service.name}</div>
-                          <div className="text-sm text-muted-foreground">{service.category}</div>
+                          <div className="text-xs text-muted-foreground">{service.category}</div>
                         </div>
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
+                {getAvailableServicesForAdd().length === 0 && (
+                  <p className="text-sm text-muted-foreground mt-1">All services have been added</p>
+                )}
               </div>
 
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <Label>Currency</Label>
-                  <Select value={newServiceForm.currency} onValueChange={(value) => 
-                    setNewServiceForm({ ...newServiceForm, currency: value })
-                  }>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {currencies.map((currency) => (
-                        <SelectItem key={currency.code} value={currency.code}>
-                          {currency.symbol} {currency.code}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label>Min Price</Label>
-                  <Input
-                    type="number"
-                    step="0.01"
-                    value={newServiceForm.price_min}
-                    onChange={(e) => setNewServiceForm({ 
-                      ...newServiceForm, 
-                      price_min: parseFloat(e.target.value) || 0 
-                    })}
-                  />
-                </div>
-                <div>
-                  <Label>Max Price</Label>
-                  <Input
-                    type="number"
-                    step="0.01"
-                    value={newServiceForm.price_max}
-                    onChange={(e) => setNewServiceForm({ 
-                      ...newServiceForm, 
-                      price_max: parseFloat(e.target.value) || 0 
-                    })}
-                  />
-                </div>
-              </div>
-
+              {/* Custom Name */}
               <div>
-                <Label>Duration (minutes)</Label>
+                <Label htmlFor="custom-name">Custom Service Name (Optional)</Label>
                 <Input
+                  id="custom-name"
+                  placeholder="Leave empty to use default service name"
+                  value={newServiceForm.custom_name}
+                  onChange={(e) => setNewServiceForm({ ...newServiceForm, custom_name: e.target.value })}
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Customize the service name for your business
+                </p>
+              </div>
+
+              {/* Pricing Section */}
+              <div className="space-y-4 border-t pt-4">
+                <h4 className="font-medium flex items-center gap-2">
+                  <DollarSign className="w-4 h-4" />
+                  Pricing
+                </h4>
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <Label htmlFor="currency">Currency</Label>
+                    <Select value={newServiceForm.currency} onValueChange={(value) => 
+                      setNewServiceForm({ ...newServiceForm, currency: value })
+                    }>
+                      <SelectTrigger id="currency">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-background border shadow-lg z-50">
+                        {currencies.map((currency) => (
+                          <SelectItem key={currency.code} value={currency.code}>
+                            {currency.symbol} {currency.code}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="price-min">Min Price *</Label>
+                    <Input
+                      id="price-min"
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      placeholder="0.00"
+                      value={newServiceForm.price_min || ''}
+                      onChange={(e) => setNewServiceForm({ 
+                        ...newServiceForm, 
+                        price_min: parseFloat(e.target.value) || 0 
+                      })}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="price-max">Max Price *</Label>
+                    <Input
+                      id="price-max"
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      placeholder="0.00"
+                      value={newServiceForm.price_max || ''}
+                      onChange={(e) => setNewServiceForm({ 
+                        ...newServiceForm, 
+                        price_max: parseFloat(e.target.value) || 0 
+                      })}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Duration */}
+              <div>
+                <Label htmlFor="duration" className="flex items-center gap-2">
+                  <Clock className="w-4 h-4" />
+                  Estimated Duration (minutes) *
+                </Label>
+                <Input
+                  id="duration"
                   type="number"
-                  value={newServiceForm.duration_minutes}
+                  min="15"
+                  step="15"
+                  placeholder="60"
+                  value={newServiceForm.duration_minutes || ''}
                   onChange={(e) => setNewServiceForm({ 
                     ...newServiceForm, 
                     duration_minutes: parseInt(e.target.value) || 60 
@@ -355,18 +411,113 @@ const ServicePricing = () => {
                 />
               </div>
 
+              {/* Transport Options */}
+              <div className="space-y-4 border-t pt-4">
+                <h4 className="font-medium flex items-center gap-2">
+                  <Car className="w-4 h-4" />
+                  Transport Options
+                </h4>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-3 p-4 border rounded-lg">
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-1">
+                        <Label htmlFor="pickup-available">Vehicle Pickup</Label>
+                        <p className="text-xs text-muted-foreground">Pick up customer's vehicle</p>
+                      </div>
+                      <Switch
+                        id="pickup-available"
+                        checked={newServiceForm.pickup_available}
+                        onCheckedChange={(checked) => setNewServiceForm({ 
+                          ...newServiceForm, 
+                          pickup_available: checked 
+                        })}
+                      />
+                    </div>
+                    {newServiceForm.pickup_available && (
+                      <div>
+                        <Label htmlFor="pickup-fee">Pickup Fee ({getCurrencySymbol(newServiceForm.currency)})</Label>
+                        <Input
+                          id="pickup-fee"
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          placeholder="0.00"
+                          value={newServiceForm.pickup_fee || ''}
+                          onChange={(e) => setNewServiceForm({ 
+                            ...newServiceForm, 
+                            pickup_fee: parseFloat(e.target.value) || 0 
+                          })}
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="space-y-3 p-4 border rounded-lg">
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-1">
+                        <Label htmlFor="dropoff-available">Vehicle Dropoff</Label>
+                        <p className="text-xs text-muted-foreground">Return vehicle to customer</p>
+                      </div>
+                      <Switch
+                        id="dropoff-available"
+                        checked={newServiceForm.dropoff_available}
+                        onCheckedChange={(checked) => setNewServiceForm({ 
+                          ...newServiceForm, 
+                          dropoff_available: checked 
+                        })}
+                      />
+                    </div>
+                    {newServiceForm.dropoff_available && (
+                      <div>
+                        <Label htmlFor="dropoff-fee">Dropoff Fee ({getCurrencySymbol(newServiceForm.currency)})</Label>
+                        <Input
+                          id="dropoff-fee"
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          placeholder="0.00"
+                          value={newServiceForm.dropoff_fee || ''}
+                          onChange={(e) => setNewServiceForm({ 
+                            ...newServiceForm, 
+                            dropoff_fee: parseFloat(e.target.value) || 0 
+                          })}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Notes */}
               <div>
-                <Label>Notes</Label>
+                <Label htmlFor="notes">Additional Notes</Label>
                 <Textarea
-                  placeholder="Special instructions or service details..."
+                  id="notes"
+                  rows={3}
+                  placeholder="Special instructions, requirements, or service details..."
                   value={newServiceForm.notes}
                   onChange={(e) => setNewServiceForm({ ...newServiceForm, notes: e.target.value })}
                 />
               </div>
 
-              <Button onClick={addProviderService} className="w-full">
-                Add Service
-              </Button>
+              <div className="flex gap-3 pt-4 border-t">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setIsAddDialogOpen(false)}
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  onClick={addProviderService} 
+                  className="flex-1"
+                  disabled={!newServiceForm.service_id}
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Service
+                </Button>
+              </div>
             </div>
           </DialogContent>
         </Dialog>
