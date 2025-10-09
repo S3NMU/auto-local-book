@@ -37,6 +37,13 @@ export const useAuth = () => {
         setIsProvider(providerCheck.data === true);
       }
 
+      // Lightweight debugging (no sensitive data)
+      console.log('[useAuth] role check', {
+        userId: userId.slice(0, 8) + '...',
+        isAdmin: adminCheck?.data === true,
+        isProvider: providerCheck?.data === true,
+      });
+
     } catch (error) {
       console.error('Error checking user roles:', error);
       setIsAdmin(false);
