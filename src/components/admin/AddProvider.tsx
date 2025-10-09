@@ -148,6 +148,7 @@ export const AddProvider = () => {
           const { error: providerError } = await supabase
             .from('providers')
             .insert({
+              id: authData.user.id, // CRITICAL: Set the provider ID to the user's ID
               business_name: formData.businessName,
               owner_name: formData.fullName || null,
               phone: formData.businessPhone || null,

@@ -68,8 +68,7 @@ export const RequestReview = () => {
         const { error: deleteProviderError } = await supabase
           .from('providers')
           .delete()
-          .eq('business_name', request.business_name)
-          .eq('email', request.email);
+          .eq('id', request.submitted_by); // Delete by user ID
 
         if (deleteProviderError) throw deleteProviderError;
       }
@@ -79,6 +78,7 @@ export const RequestReview = () => {
         const { error: providerError } = await supabase
           .from('providers')
           .insert({
+            id: request.submitted_by, // CRITICAL: Set the provider ID to the user's ID
             business_name: request.business_name,
             owner_name: request.owner_name,
             phone: request.phone,
