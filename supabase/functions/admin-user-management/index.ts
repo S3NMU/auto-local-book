@@ -12,6 +12,9 @@ const handler = async (req: Request): Promise<Response> => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Basic log to help debug in Supabase logs
+  console.log('[admin-user-management] request received');
+
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -30,12 +33,8 @@ const handler = async (req: Request): Promise<Response> => {
 
     const token = authHeader.replace("Bearer ", "");
 
-    // Use a client that forwards the caller token in headers to get the user reliably
-    const userClient = createClient(supabaseUrl, supabaseServiceKey, {
-      global: { headers: { Authorization: `Bearer ${token}` } },
-    });
-
-    const { data: { user }, error: authError } = await userClient.auth.getUser();
+    // Validate and extract the user from the provided access token
+    const { data: { user }, error: authError } = await adminClient.auth.getUser(token);
 
     if (authError || !user) {
       return new Response(JSON.stringify({ error: "Invalid token" }), {
