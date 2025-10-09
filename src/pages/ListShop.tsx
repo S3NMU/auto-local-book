@@ -171,6 +171,61 @@ const ListShop = () => {
     setIsSubmitting(true);
     
     try {
+      // Step 1: Change user role from 'user' to 'provider'
+      const { data: existingRoles } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', session.user.id);
+
+      const userRoles = existingRoles?.map(r => r.role) || [];
+      
+      // Only add provider role if user doesn't already have it
+      if (!userRoles.includes('provider')) {
+        const { error: roleError } = await supabase
+          .from('user_roles')
+          .insert({
+            user_id: session.user.id,
+            role: 'provider'
+          });
+
+        if (roleError) {
+          console.error('Error adding provider role:', roleError);
+          // Continue anyway - we still want to submit the request
+        }
+      }
+
+      // Step 2: Create provider profile if it doesn't exist
+      const { data: existingProfile } = await supabase
+        .from('provider_profiles')
+        .select('id')
+        .eq('user_id', session.user.id)
+        .maybeSingle();
+
+      if (!existingProfile) {
+        const { error: profileError } = await supabase
+          .from('provider_profiles')
+          .insert({
+            user_id: session.user.id,
+            business_name: data.business_name,
+            business_phone: data.phone,
+            business_email: data.email,
+            business_city: data.city,
+            business_zip_code: data.zip_code,
+            business_address: data.address,
+            business_state: data.state,
+            short_description: data.description,
+            website_url: data.website_url || null,
+            latitude: location.lat,
+            longitude: location.lng,
+          });
+
+        if (profileError) {
+          console.error('Error creating provider profile:', profileError);
+          // Continue anyway
+        }
+      }
+
+      // Step 3: Submit the provider request for admin approval
       const { error } = await supabase
         .from('provider_requests')
         .insert({
@@ -199,8 +254,8 @@ const ListShop = () => {
         description: "Your shop request has been submitted for admin review. We'll notify you once it's approved.",
       });
 
-      // Redirect to success page or home
-      navigate("/");
+      // Redirect to pending approval page
+      navigate("/pending-approval");
     } catch (error: any) {
       console.error("Error submitting shop:", error);
       toast({
