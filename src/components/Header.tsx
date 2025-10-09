@@ -194,14 +194,6 @@ const Header = () => {
                       Account Settings
                     </Link>
                   </DropdownMenuItem>
-                  {!isAdmin && !isProvider && (
-                    <DropdownMenuItem asChild>
-                      <Link to="/dashboard" className="cursor-pointer">
-                        <User className="w-4 h-4 mr-2" />
-                        Dashboard
-                      </Link>
-                    </DropdownMenuItem>
-                  )}
                   {isAdmin && (
                     <DropdownMenuItem asChild>
                       <Link to="/admin" className="cursor-pointer">
@@ -215,6 +207,14 @@ const Header = () => {
                       <Link to="/provider-dashboard" className="cursor-pointer">
                         <Store className="w-4 h-4 mr-2" />
                         Provider Dashboard
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                  {!isAdmin && !isProvider && (
+                    <DropdownMenuItem asChild>
+                      <Link to="/dashboard" className="cursor-pointer">
+                        <User className="w-4 h-4 mr-2" />
+                        Customer Dashboard
                       </Link>
                     </DropdownMenuItem>
                   )}
