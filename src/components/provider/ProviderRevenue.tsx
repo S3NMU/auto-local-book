@@ -36,6 +36,19 @@ interface RevenueEntry {
   created_at: string;
 }
 
+interface CompletedBooking {
+  id: string;
+  customer_name: string;
+  service_type: string;
+  service_description: string;
+  scheduled_date: string;
+  price_final: number;
+  price_quoted: number;
+  total_service_cost: number;
+  status: string;
+  created_at: string;
+}
+
 interface ProviderRevenueProps {
   onRevenueUpdate: () => void;
 }
@@ -44,6 +57,7 @@ const ProviderRevenue = ({ onRevenueUpdate }: ProviderRevenueProps) => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [revenues, setRevenues] = useState<RevenueEntry[]>([]);
+  const [completedBookings, setCompletedBookings] = useState<CompletedBooking[]>([]);
   const [loading, setLoading] = useState(true);
   const [showDeleted, setShowDeleted] = useState(false);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -61,13 +75,13 @@ const ProviderRevenue = ({ onRevenueUpdate }: ProviderRevenueProps) => {
   useEffect(() => {
     if (user) {
       fetchRevenues();
+      fetchCompletedBookings();
     }
   }, [user, showDeleted]);
 
   const fetchRevenues = async () => {
     if (!user) return;
 
-    setLoading(true);
     try {
       let query = supabase
         .from('revenue_entries')
@@ -89,6 +103,45 @@ const ProviderRevenue = ({ onRevenueUpdate }: ProviderRevenueProps) => {
       toast({
         title: "Error",
         description: "Failed to load revenue entries",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const fetchCompletedBookings = async () => {
+    if (!user) return;
+
+    setLoading(true);
+    try {
+      // Fetch completed bookings that don't have revenue entries yet
+      const { data: bookingsData, error: bookingsError } = await supabase
+        .from('bookings')
+        .select('*')
+        .eq('provider_id', user.id)
+        .eq('status', 'completed')
+        .is('deleted_at', null)
+        .order('scheduled_date', { ascending: false });
+
+      if (bookingsError) throw bookingsError;
+
+      // Fetch existing revenue entries to filter out bookings that already have revenue
+      const { data: revenueData, error: revenueError } = await supabase
+        .from('revenue_entries')
+        .select('booking_id')
+        .eq('provider_id', user.id)
+        .not('booking_id', 'is', null);
+
+      if (revenueError) throw revenueError;
+
+      const revenueBookingIds = new Set(revenueData?.map(r => r.booking_id) || []);
+      const unbilledBookings = (bookingsData || []).filter(b => !revenueBookingIds.has(b.id));
+
+      setCompletedBookings(unbilledBookings);
+    } catch (error) {
+      console.error('Error fetching completed bookings:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load completed bookings",
         variant: "destructive",
       });
     } finally {
@@ -136,6 +189,7 @@ const ProviderRevenue = ({ onRevenueUpdate }: ProviderRevenueProps) => {
       });
       setIsAddDialogOpen(false);
       fetchRevenues();
+      fetchCompletedBookings();
       onRevenueUpdate();
     } catch (error) {
       console.error('Error adding revenue:', error);
@@ -173,6 +227,7 @@ const ProviderRevenue = ({ onRevenueUpdate }: ProviderRevenueProps) => {
       setIsEditDialogOpen(false);
       setEditingRevenue(null);
       fetchRevenues();
+      fetchCompletedBookings();
       onRevenueUpdate();
     } catch (error) {
       console.error('Error updating revenue:', error);
@@ -199,6 +254,7 @@ const ProviderRevenue = ({ onRevenueUpdate }: ProviderRevenueProps) => {
       });
 
       fetchRevenues();
+      fetchCompletedBookings();
       onRevenueUpdate();
     } catch (error) {
       console.error('Error deleting revenue:', error);
@@ -225,6 +281,7 @@ const ProviderRevenue = ({ onRevenueUpdate }: ProviderRevenueProps) => {
       });
 
       fetchRevenues();
+      fetchCompletedBookings();
       onRevenueUpdate();
     } catch (error) {
       console.error('Error restoring revenue:', error);
@@ -251,12 +308,50 @@ const ProviderRevenue = ({ onRevenueUpdate }: ProviderRevenueProps) => {
       });
 
       fetchRevenues();
+      fetchCompletedBookings();
       onRevenueUpdate();
     } catch (error) {
       console.error('Error permanently deleting revenue:', error);
       toast({
         title: "Error",
         description: "Failed to permanently delete revenue entry",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const markBookingAsPaid = async (booking: CompletedBooking, paymentMethod: string) => {
+    try {
+      const amount = booking.total_service_cost || booking.price_final || booking.price_quoted || 0;
+      
+      const { error } = await supabase
+        .from('revenue_entries')
+        .insert({
+          provider_id: user!.id,
+          booking_id: booking.id,
+          amount: amount,
+          description: `${booking.service_type} - ${booking.customer_name}`,
+          entry_date: new Date().toISOString().split('T')[0],
+          payment_method: paymentMethod,
+          is_paid: true,
+          notes: booking.service_description || ''
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Payment Recorded",
+        description: `Revenue entry created for $${amount.toFixed(2)}`,
+      });
+
+      fetchRevenues();
+      fetchCompletedBookings();
+      onRevenueUpdate();
+    } catch (error) {
+      console.error('Error recording payment:', error);
+      toast({
+        title: "Error",
+        description: "Failed to record payment",
         variant: "destructive",
       });
     }
@@ -426,8 +521,55 @@ const ProviderRevenue = ({ onRevenueUpdate }: ProviderRevenueProps) => {
         </Card>
       </div>
 
+      {/* Completed Bookings Awaiting Payment */}
+      {completedBookings.length > 0 && !showDeleted && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Completed Jobs - Payment Pending</CardTitle>
+            <CardDescription>Mark these completed jobs as paid to track revenue</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {completedBookings.map((booking) => {
+                const amount = booking.total_service_cost || booking.price_final || booking.price_quoted || 0;
+                return (
+                  <div key={booking.id} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h4 className="font-medium">{booking.customer_name}</h4>
+                        <Badge variant="outline">{booking.service_type}</Badge>
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        {format(new Date(booking.scheduled_date), 'MMM dd, yyyy')} • ${amount.toFixed(2)}
+                      </p>
+                      {booking.service_description && (
+                        <p className="text-sm text-muted-foreground mt-1">{booking.service_description}</p>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Select onValueChange={(paymentMethod) => markBookingAsPaid(booking, paymentMethod)}>
+                        <SelectTrigger className="w-[180px]">
+                          <SelectValue placeholder="Mark as Paid" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="cash">Cash</SelectItem>
+                          <SelectItem value="card">Card</SelectItem>
+                          <SelectItem value="check">Check</SelectItem>
+                          <SelectItem value="transfer">Transfer</SelectItem>
+                          <SelectItem value="other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Revenue Entries */}
-      {revenues.length === 0 ? (
+      {revenues.length === 0 && completedBookings.length === 0 ? (
         <Card>
           <CardContent className="text-center py-12">
             <DollarSign className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
