@@ -16,6 +16,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useLocation as useGeoLocation } from "@/hooks/useLocation";
 import { useAuth } from "@/hooks/useAuth";
 import LocationDialog from "./LocationDialog";
+import { ThemeToggle } from "./ThemeToggle";
 import type { Session } from "@supabase/supabase-js";
 
 const Header = () => {
@@ -126,7 +127,8 @@ const Header = () => {
           </nav>
 
           {/* Actions */}
-          <div className="flex items-center space-x-3" role="toolbar" aria-label="User actions">
+          <div className="flex items-center space-x-2" role="toolbar" aria-label="User actions">
+            <ThemeToggle />
             {location ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
