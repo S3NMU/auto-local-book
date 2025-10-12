@@ -83,13 +83,13 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-card border-b border-border shadow-card">
+    <header className="bg-card border-b border-border shadow-card" role="banner">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
+          <Link to="/" className="flex items-center space-x-2" aria-label="H3 Automo home">
             <div className="w-10 h-10 rounded-lg overflow-hidden bg-primary/10 p-1">
-              <img src={logoImage} alt="H3 Automo Logo" className="w-full h-full object-contain" />
+              <img src={logoImage} alt="H3 Automo Logo - Crossed wrenches symbol" className="w-full h-full object-contain" />
             </div>
             <div className="flex flex-col">
               <h1 className="text-xl font-bold text-foreground">H3 Automo</h1>
@@ -98,7 +98,7 @@ const Header = () => {
           </Link>
 
           {/* Navigation - Desktop */}
-          <nav className="hidden lg:flex items-center space-x-6">
+          <nav className="hidden lg:flex items-center space-x-6" role="navigation" aria-label="Main navigation">
             <Link to="/" className={getLinkClassName("/")}>
               Home
             </Link>
@@ -126,17 +126,17 @@ const Header = () => {
           </nav>
 
           {/* Actions */}
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-3" role="toolbar" aria-label="User actions">
             {location ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="hidden sm:flex items-center gap-2 max-w-48">
-                    <MapPin className="w-4 h-4 flex-shrink-0" />
+                  <Button variant="ghost" size="sm" className="hidden sm:flex items-center gap-2 max-w-48" aria-label={`Current location: ${location.address}`}>
+                    <MapPin className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
                     <div className="flex flex-col items-start min-w-0">
                       <span className="text-xs text-muted-foreground">Location</span>
                       <span className="text-sm font-medium truncate max-w-32">{location.address.split(",")[0]}</span>
                     </div>
-                    <ChevronDown className="w-3 h-3 flex-shrink-0" />
+                    <ChevronDown className="w-3 h-3 flex-shrink-0" aria-hidden="true" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-64 bg-background border border-border shadow-lg z-50">
@@ -151,9 +151,10 @@ const Header = () => {
                         size="sm"
                         onClick={handleClearLocation}
                         className="h-6 w-6 p-0 hover:bg-destructive hover:text-destructive-foreground ml-2 flex-shrink-0"
-                        title="Clear location"
+                        aria-label="Clear location"
                       >
-                        <X className="w-3 h-3" />
+                        <X className="w-3 h-3" aria-hidden="true" />
+                        <span className="sr-only">Clear location</span>
                       </Button>
                     </div>
                   </div>
@@ -164,23 +165,23 @@ const Header = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Button variant="ghost" size="sm" className="hidden sm:flex" onClick={() => setLocationDialogOpen(true)}>
-                <MapPin className="w-4 h-4" />
+              <Button variant="ghost" size="sm" className="hidden sm:flex" onClick={() => setLocationDialogOpen(true)} aria-label="Find location">
+                <MapPin className="w-4 h-4" aria-hidden="true" />
                 Find Location
               </Button>
             )}
             {session ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="flex items-center gap-2">
+                  <Button variant="ghost" size="sm" className="flex items-center gap-2" aria-label="User menu">
                     <Avatar className="w-6 h-6">
-                      <AvatarImage src={avatarUrl} />
+                      <AvatarImage src={avatarUrl} alt={`${session.user.user_metadata?.display_name || session.user.email}'s profile picture`} />
                       <AvatarFallback className="text-xs">{session.user.email?.charAt(0).toUpperCase()}</AvatarFallback>
                     </Avatar>
                     <span className="hidden sm:inline">
                       {session.user.user_metadata?.display_name || session.user.email?.split("@")[0]}
                     </span>
-                    <ChevronDown className="w-3 h-3" />
+                    <ChevronDown className="w-3 h-3" aria-hidden="true" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56 bg-background border border-border shadow-lg z-50">
@@ -236,14 +237,15 @@ const Header = () => {
                   }
                   navigate('/auth', { state: { from: { pathname: currentPath } } });
                 }}
+                aria-label="Sign in to your account"
               >
-                <User className="w-4 h-4" />
+                <User className="w-4 h-4" aria-hidden="true" />
                 Sign In
               </Button>
             )}
-            <Link to="/list-shop">
+            <Link to="/list-shop" aria-label="List your auto service shop">
               <Button variant="hero" size="sm">
-                <Store className="w-4 h-4" />
+                <Store className="w-4 h-4" aria-hidden="true" />
                 List Your Shop
               </Button>
             </Link>
