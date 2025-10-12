@@ -12,40 +12,7 @@ serve(async (req) => {
     return new Response('ok', { headers: corsHeaders })
   }
 
-  // Verify JWT token for authentication
-  const authHeader = req.headers.get('Authorization')
-  if (!authHeader) {
-    console.log('Missing authorization header')
-    return new Response(
-      JSON.stringify({ error: 'Authorization header required' }),
-      { 
-        status: 401, 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-      }
-    )
-  }
-
-  const supabaseClient = createClient(
-    Deno.env.get('SUPABASE_URL') ?? '',
-    Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-    { global: { headers: { Authorization: authHeader } } }
-  )
-
-  // Verify the user is authenticated
-  const { data: { user }, error: authError } = await supabaseClient.auth.getUser()
-  
-  if (authError || !user) {
-    console.log('Authentication failed:', authError?.message)
-    return new Response(
-      JSON.stringify({ error: 'Invalid or expired token' }),
-      { 
-        status: 401, 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-      }
-    )
-  }
-
-  console.log('Authenticated user accessing Mapbox token:', user.id)
+  console.log('Serving Mapbox token to public request')
 
   try {
     const mapboxToken = Deno.env.get('MAPBOX_PUBLIC_TOKEN')
