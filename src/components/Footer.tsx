@@ -32,10 +32,30 @@ const Footer = () => {
               providers for transparent, instant booking.
             </p>
             <div className="flex space-x-4">
-              <Facebook className="w-5 h-5 text-primary-foreground/60 hover:text-primary-foreground cursor-pointer transition-fast" />
-              <Twitter className="w-5 h-5 text-primary-foreground/60 hover:text-primary-foreground cursor-pointer transition-fast" />
-              <Instagram className="w-5 h-5 text-primary-foreground/60 hover:text-primary-foreground cursor-pointer transition-fast" />
-              <Linkedin className="w-5 h-5 text-primary-foreground/60 hover:text-primary-foreground cursor-pointer transition-fast" />
+              <a 
+                href="https://www.facebook.com/profile.php?id=61577950858585" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                aria-label="Visit our Facebook page"
+              >
+                <Facebook className="w-5 h-5 text-primary-foreground/60 hover:text-primary-foreground cursor-pointer transition-fast" />
+              </a>
+              <a 
+                href="https://x.com/H3AUTOMO" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                aria-label="Visit our Twitter/X page"
+              >
+                <Twitter className="w-5 h-5 text-primary-foreground/60 hover:text-primary-foreground cursor-pointer transition-fast" />
+              </a>
+              <a 
+                href="https://www.instagram.com/h3automo/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                aria-label="Visit our Instagram page"
+              >
+                <Instagram className="w-5 h-5 text-primary-foreground/60 hover:text-primary-foreground cursor-pointer transition-fast" />
+              </a>
             </div>
           </div>
 
