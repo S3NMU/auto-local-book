@@ -78,7 +78,7 @@ const Footer = () => {
             <ul className="space-y-2 text-sm text-primary-foreground/80">
               <li><Link to="/about" className="hover:text-primary-foreground transition-fast">About Us</Link></li>
               <li><Link to="/how-it-works" className="hover:text-primary-foreground transition-fast">How It Works</Link></li>
-              <li><Link to="/list-shop" className="hover:text-primary-foreground transition-fast">List Your Shop</Link></li>
+              <li><Link to="/for-providers#application-form" className="hover:text-primary-foreground transition-fast">List Your Shop</Link></li>
               <li><Link to="/provider-benefits" className="hover:text-primary-foreground transition-fast">Provider Benefits</Link></li>
               <li><Link to="/careers" className="hover:text-primary-foreground transition-fast">Careers</Link></li>
             </ul>

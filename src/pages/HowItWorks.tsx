@@ -189,7 +189,7 @@ const HowItWorks = () => {
                 Find Providers
               </Button>
             </Link>
-            <Link to="/list-shop">
+            <Link to="/for-providers#application-form">
               <Button variant="outline" size="lg" className="min-w-40">
                 List Your Shop
               </Button>

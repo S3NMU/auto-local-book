@@ -138,7 +138,7 @@ const Header = () => {
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <Link to="/for-providers" className="cursor-pointer">
+                  <Link to="/for-providers#application-form" className="cursor-pointer">
                     <Briefcase className="w-4 h-4 mr-2" />
                     Become a Provider
                   </Link>
@@ -281,7 +281,7 @@ const Header = () => {
                 Sign In
               </Button>
             )}
-            <Link to="/list-shop" aria-label="List your auto service shop">
+            <Link to="/for-providers#application-form" aria-label="List your auto service shop">
               <Button variant="hero" size="sm">
                 <Store className="w-4 h-4" aria-hidden="true" />
                 List Your Shop
