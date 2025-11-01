@@ -5,39 +5,40 @@ import {
   Calendar, 
   CreditCard, 
   CheckCircle, 
-  ArrowRight 
+  ArrowRight,
+  MapPin
 } from "lucide-react";
 
 const HowItWorks = () => {
   const navigate = useNavigate();
 
-  const handleFindServices = () => {
+  const handleGetStarted = () => {
     navigate('/providers');
   };
 
   const steps = [
     {
-      icon: Search,
-      title: "Find Services",
-      description: "Search for auto services by location, type, or provider. Compare prices, ratings, and availability.",
+      icon: MapPin,
+      title: "Set Your Location",
+      description: "Enter your location to discover nearby repair shops, rental vehicles, and vehicles for sale in your area.",
       color: "text-primary"
     },
     {
-      icon: Calendar,
-      title: "Book Instantly",
-      description: "Select your preferred time slot and book directly on the provider's official website. No phone calls needed.",
+      icon: Search,
+      title: "Browse & Compare",
+      description: "Compare services, rental rates, or vehicle prices. Read reviews, check availability, and view detailed information.",
       color: "text-accent"
     },
     {
-      icon: CreditCard,
-      title: "Secure Payment",
-      description: "Pay securely through the provider's official website with transparent pricing and trusted payment systems.",
+      icon: Calendar,
+      title: "Book or Inquire",
+      description: "Schedule repair appointments, reserve rental vehicles, or contact sellers directly through our platform.",
       color: "text-success"
     },
     {
       icon: CheckCircle,
-      title: "Get Service",
-      description: "Arrive at your scheduled time or have mobile service come to you. Rate your experience.",
+      title: "Complete & Review",
+      description: "Get your service completed, pick up your rental, or finalize your purchase. Share your experience with others.",
       color: "text-warning"
     }
   ];
@@ -50,8 +51,7 @@ const HowItWorks = () => {
             How It Works
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Get your car serviced in four simple steps. No more phone tag or 
-            uncertain pricing.
+            Whether you need repairs, a rental, or looking to buy - get what you need in four simple steps
           </p>
         </div>
 
@@ -88,8 +88,8 @@ const HowItWorks = () => {
         </div>
 
         <div className="text-center space-y-4">
-          <Button variant="hero" size="lg" onClick={handleFindServices}>
-            Find Services
+          <Button variant="hero" size="lg" onClick={handleGetStarted}>
+            Get Started
           </Button>
           <p className="text-sm text-muted-foreground">
             Join thousands of satisfied customers • No setup fees

@@ -45,17 +45,18 @@ const ProviderCTA = () => {
   }, []);
 
   const benefits = [
-    "Get more bookings without phone tag",
-    "Lightweight CRM and calendar management",
-    "Automated payment processing",
-    "Customer review system",
+    "List repair services, rental vehicles, or vehicles for sale",
+    "Reach more customers with our growing platform",
+    "Easy online booking and inquiry management",
+    "Automated payment processing for services",
+    "Build your reputation with customer reviews",
     "Mobile-friendly provider dashboard"
   ];
 
   const displayStats = [
     { icon: Users, value: `${stats.activeProviders}+`, label: "Active Providers" },
     { icon: TrendingUp, value: "30%", label: "Avg. Revenue Increase" },
-    { icon: Calendar, value: `${stats.totalBookings > 1000 ? Math.floor(stats.totalBookings / 1000) + 'k' : stats.totalBookings}+`, label: "Bookings Total" },
+    { icon: Calendar, value: `${stats.totalBookings > 1000 ? Math.floor(stats.totalBookings / 1000) + 'k' : stats.totalBookings}+`, label: "Total Bookings" },
     { icon: CreditCard, value: "2-day", label: "Fast Payouts" }
   ];
 
@@ -68,11 +69,11 @@ const ProviderCTA = () => {
               For Service Providers
             </Badge>
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Grow Your Auto Service Business
+              Grow Your Automotive Business
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Join hundreds of shops and mobile mechanics already using H3 Automo 
-              to increase bookings and streamline operations.
+              Whether you're a repair shop, rental company, or dealership - join H3 Automo 
+              to reach more customers and streamline your operations.
             </p>
           </div>
 
