@@ -9,7 +9,7 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { MapPin, User, LogOut, ChevronDown, Settings, Store, Shield, X } from "lucide-react";
+import { MapPin, User, LogOut, ChevronDown, Settings, Store, Shield, X, Car, ShoppingCart, Wrench, Briefcase } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -106,9 +106,45 @@ const Header = () => {
             <Link to="/services" className={getLinkClassName("/services")}>
               Auto Services
             </Link>
-            <Link to="/providers" className={getLinkClassName("/providers")}>
-              Service Providers
-            </Link>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className={`flex items-center gap-1 transition-fast ${
+                  isActive("/providers") || isActive("/services") || isActive("/for-providers")
+                    ? "text-primary font-medium"
+                    : "text-foreground hover:text-primary"
+                }`}>
+                  Get Started
+                  <ChevronDown className="w-3 h-3" aria-hidden="true" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-56 bg-background border border-border shadow-lg z-50">
+                <DropdownMenuItem asChild>
+                  <Link to="/services" className="cursor-pointer">
+                    <Car className="w-4 h-4 mr-2" />
+                    Rent a Vehicle
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/services" className="cursor-pointer">
+                    <ShoppingCart className="w-4 h-4 mr-2" />
+                    Buy a Car
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/services" className="cursor-pointer">
+                    <Wrench className="w-4 h-4 mr-2" />
+                    Schedule a Repair
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link to="/for-providers" className="cursor-pointer">
+                    <Briefcase className="w-4 h-4 mr-2" />
+                    Become a Provider
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Link to="/how-it-works" className={getLinkClassName("/how-it-works")}>
               How It Works
             </Link>
