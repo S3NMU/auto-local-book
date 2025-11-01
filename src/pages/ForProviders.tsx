@@ -25,7 +25,9 @@ import {
   MapPin,
   Wrench,
   GraduationCap,
-  HelpCircle
+  HelpCircle,
+  Car,
+  ShoppingCart
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -61,6 +63,27 @@ const ForProviders = () => {
 
   const businessBenefits = [
     {
+      icon: Car,
+      title: "Vehicle Rentals",
+      description: "List your rental fleet and manage bookings seamlessly. Perfect for rental companies and dealerships with rental programs.",
+      linkText: "Learn about rentals",
+      linkTo: "/rentals?type=rental"
+    },
+    {
+      icon: ShoppingCart,
+      title: "Vehicle Sales",
+      description: "Showcase your inventory to buyers. Sell pre-owned vehicles with transparent listings and streamlined inquiries.",
+      linkText: "View sales platform",
+      linkTo: "/rentals?type=sale"
+    },
+    {
+      icon: Wrench,
+      title: "Repair Services",
+      description: "Connect with customers needing repairs. From oil changes to major repairs, manage all your service bookings.",
+      linkText: "Explore services",
+      linkTo: "/services"
+    },
+    {
       icon: TrendingUp,
       title: "Quick Setup",
       description: "Get started in minutes with our simple onboarding process. No technical skills required.",
@@ -91,6 +114,14 @@ const ForProviders = () => {
   ];
 
   const growthStrategies = [
+    {
+      title: "Multiple Revenue Streams",
+      points: [
+        "List rental vehicles for daily or weekly bookings",
+        "Showcase inventory for vehicle sales with detailed listings",
+        "Offer repair and maintenance services to a broad customer base"
+      ]
+    },
     {
       title: "Digital Presence",
       points: [
@@ -167,7 +198,7 @@ const ForProviders = () => {
     {
       step: "3",
       title: "Set Up Profile",
-      description: "List your services, set your pricing, and customize your availability"
+      description: "List your services, rental vehicles, or inventory. Set pricing and customize availability"
     },
     {
       step: "4",
@@ -185,22 +216,22 @@ const ForProviders = () => {
     {
       icon: Shield,
       title: "Valid Business License",
-      description: "Current business license or permit to operate automotive services"
+      description: "Current business license or permit to operate automotive services, rentals, or sales"
     },
     {
       icon: Award,
       title: "Insurance Coverage",
-      description: "Liability insurance (minimum $1M coverage recommended)"
+      description: "Liability insurance (minimum $1M coverage for repairs, appropriate coverage for rentals/sales)"
     },
     {
       icon: Wrench,
       title: "Professional Experience",
-      description: "Minimum 2 years of automotive service experience"
+      description: "Relevant experience: 2+ years for mechanics, established business for rentals/sales"
     },
     {
       icon: Phone,
       title: "Technology Requirements",
-      description: "Smartphone or tablet with internet access for managing bookings"
+      description: "Smartphone or tablet with internet access for managing bookings and inventory"
     }
   ];
 
@@ -215,7 +246,7 @@ const ForProviders = () => {
     },
     {
       question: "What equipment or software do I need?",
-      answer: "You need a smartphone or tablet with internet access to manage bookings through our provider app. All other equipment should be standard for your automotive services."
+      answer: "You need a smartphone or tablet with internet access to manage bookings and listings through our provider platform. For repair services, standard automotive tools are required. For rentals/sales, proper vehicle documentation and tracking systems."
     },
     {
       question: "Are there any startup fees?",
@@ -223,7 +254,7 @@ const ForProviders = () => {
     },
     {
       question: "Can I set my own prices?",
-      answer: "Yes, you have full control over your service pricing. We provide suggested price ranges based on local market data, but the final decision is yours."
+      answer: "Yes, you have full control over your service pricing, rental rates, and vehicle sale prices. We provide suggested price ranges based on local market data, but the final decision is yours."
     },
     {
       question: "What support is available?",
@@ -243,11 +274,11 @@ const ForProviders = () => {
             Join the H3 Automo Network – Earn More, Work Flexibly
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-4">
-            Whether you're a mobile mechanic, repair shop, or service center, H3 Automo connects you with thousands of 
-            customers actively searching for automotive services in your area.
+            Whether you're a mechanic, repair shop, vehicle rental company, or dealership, H3 Automo connects you with thousands of 
+            customers actively searching for automotive services, rentals, and vehicles in your area.
           </p>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
-            Join our verified network of professional automotive service providers and grow your business with guaranteed bookings, streamlined payments, and powerful tools.
+            Join our verified network of professional automotive providers and grow your business with guaranteed bookings, streamlined payments, and powerful tools.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
             <Button size="lg" className="gap-2" asChild>
