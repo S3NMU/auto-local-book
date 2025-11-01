@@ -257,13 +257,9 @@ const Rentals = () => {
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-primary to-primary-glow text-primary-foreground py-16">
         <div className="container mx-auto px-4">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            {activeTab === "rental" ? "Rent a Vehicle" : "Buy a Vehicle"}
-          </h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">Vehicles</h1>
           <p className="text-lg md:text-xl mb-8 max-w-2xl">
-            {activeTab === "rental"
-              ? "Choose from our wide selection of rental vehicles. Competitive rates, flexible terms, and exceptional service."
-              : "Find your perfect vehicle from our quality inventory. Thoroughly inspected, competitively priced, and ready to drive."}
+            Browse our selection of vehicles for rent or purchase. Quality vehicles, competitive prices, exceptional service.
           </p>
 
           {/* Search Bar */}
