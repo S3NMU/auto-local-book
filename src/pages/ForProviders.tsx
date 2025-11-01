@@ -220,8 +220,18 @@ const ForProviders = () => {
     },
     {
       icon: Award,
-      title: "Insurance Coverage",
-      description: "Liability insurance (minimum $1M coverage for repairs, appropriate coverage for rentals/sales)"
+      title: "Owner's ID",
+      description: "Valid government-issued identification for business owner verification"
+    },
+    {
+      icon: Clock,
+      title: "Operation History",
+      description: "Minimum 6 months of operation history required for all providers"
+    },
+    {
+      icon: MapPin,
+      title: "Business Location",
+      description: "Consistent business location required for non-mobile providers"
     },
     {
       icon: Wrench,
