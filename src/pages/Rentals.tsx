@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -184,7 +185,11 @@ export interface VehicleFilters {
 }
 
 const Rentals = () => {
-  const [listingType, setListingType] = useState<VehicleListingType>("rental");
+  const [searchParams] = useSearchParams();
+  const typeParam = searchParams.get("type");
+  const [listingType, setListingType] = useState<VehicleListingType>(
+    typeParam === "sale" ? "sale" : "rental"
+  );
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState<VehicleFilters>({
     make: [],
@@ -195,6 +200,15 @@ const Rentals = () => {
   });
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
   const [vehicles] = useState<Vehicle[]>(mockVehicles);
+
+  // Update listing type when URL parameter changes
+  useEffect(() => {
+    if (typeParam === "sale") {
+      setListingType("sale");
+    } else if (typeParam === "rental") {
+      setListingType("rental");
+    }
+  }, [typeParam]);
 
   const currentVehicles = vehicles.filter((v) => v.listing_type === listingType);
 
