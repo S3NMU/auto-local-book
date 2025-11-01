@@ -14,7 +14,8 @@ import {
   Star,
   ExternalLink,
   DollarSign,
-  MessageCircle
+  MessageCircle,
+  Download
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -153,10 +154,16 @@ const ForProviders = () => {
           <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
             Grow Your Auto Service Business
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-8">
             Join H3 Automo and transform your automotive service business with modern tools, 
             increased visibility, and a steady stream of qualified customers.
           </p>
+          <div className="flex justify-center">
+            <Button size="lg" className="gap-2">
+              <Download className="w-5 h-5" />
+              Download H3 Provider Hub
+            </Button>
+          </div>
         </div>
 
         {/* Stats Section */}
