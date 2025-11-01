@@ -9,7 +9,7 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { MapPin, User, LogOut, ChevronDown, Settings, Store, Shield, X, Car, ShoppingCart, Wrench, Briefcase } from "lucide-react";
+import { MapPin, User, LogOut, ChevronDown, Settings, Store, Shield, X, Car, ShoppingCart, Wrench, Briefcase, BookOpen, Bell, HelpCircle, Download } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -148,9 +148,51 @@ const Header = () => {
             <Link to="/how-it-works" className={getLinkClassName("/how-it-works")}>
               How It Works
             </Link>
-            <Link to="/for-providers" className={getLinkClassName("/for-providers")}>
-              For Providers
-            </Link>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className={`flex items-center gap-1 transition-fast ${
+                  isActive("/for-providers")
+                    ? "text-primary font-medium"
+                    : "text-foreground hover:text-primary"
+                }`}>
+                  Provider Resources
+                  <ChevronDown className="w-3 h-3" aria-hidden="true" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-56 bg-background border border-border shadow-lg z-50">
+                <DropdownMenuItem asChild>
+                  <Link to="/provider-resources/guides" className="cursor-pointer">
+                    <BookOpen className="w-4 h-4 mr-2" />
+                    Guides & Tutorials
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/provider-resources/announcements" className="cursor-pointer">
+                    <Bell className="w-4 h-4 mr-2" />
+                    Announcements / Updates
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/provider-resources/support" className="cursor-pointer">
+                    <HelpCircle className="w-4 h-4 mr-2" />
+                    Contact Provider Support
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/provider-resources/downloads" className="cursor-pointer">
+                    <Download className="w-4 h-4 mr-2" />
+                    Download Links
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link to="/for-providers" className="cursor-pointer">
+                    <Briefcase className="w-4 h-4 mr-2" />
+                    Become a Provider
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Link to="/blog" className={getLinkClassName("/blog")}>
               Blog
             </Link>
