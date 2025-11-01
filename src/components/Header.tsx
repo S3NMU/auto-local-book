@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import logoImage from "@/assets/h3-automo-logo-new.png";
+import logoImage from "@/assets/crossed-wrenches-icon.png";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
