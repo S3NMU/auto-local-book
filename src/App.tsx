@@ -7,6 +7,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Index from "./pages/Index";
 import Services from "./pages/Services";
+import Rentals from "./pages/Rentals";
 import Providers from "./pages/Providers";
 import About from "./pages/About";
 import ForProviders from "./pages/ForProviders";
@@ -38,6 +39,7 @@ const AppContent = () => {
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/services" element={<Services />} />
+          <Route path="/rentals" element={<Rentals />} />
           <Route path="/providers" element={<Providers />} />
           <Route path="/about" element={<About />} />
           <Route path="/for-providers" element={<ForProviders />} />

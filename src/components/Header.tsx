@@ -119,7 +119,7 @@ const Header = () => {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="w-56 bg-background border border-border shadow-lg z-50">
                 <DropdownMenuItem asChild>
-                  <Link to="/services" className="cursor-pointer">
+                  <Link to="/rentals" className="cursor-pointer">
                     <Car className="w-4 h-4 mr-2" />
                     Rent a Vehicle
                   </Link>
