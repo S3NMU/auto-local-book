@@ -11,7 +11,10 @@ import {
   Target,
   Lightbulb,
   Handshake,
-  ArrowRight
+  ArrowRight,
+  Car,
+  Wrench,
+  ShoppingCart
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -81,11 +84,11 @@ const About = () => {
   ];
 
   const forUsers = [
-    "Find trusted auto services near you instantly",
+    "Rent vehicles with flexible terms and competitive rates",
+    "Browse quality pre-owned vehicles for purchase",
+    "Find trusted auto repair services near you instantly",
     "Compare prices and reviews before booking",
-    "Book online 24/7 with transparent pricing",
-    "Track service history and maintenance",
-    "Get instant confirmations and reminders"
+    "Track service history and vehicle maintenance"
   ];
 
   const forProviders = [
@@ -109,9 +112,69 @@ const About = () => {
             <span className="block text-primary">Trusted Auto Services</span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            H3 Automo is the modern platform that makes finding and booking automotive services 
-            simple, transparent, and reliable.
+            H3 Automo is the comprehensive automotive platform offering vehicle rentals, 
+            sales, and repair services — making all your automotive needs simple, transparent, and reliable.
           </p>
+        </div>
+
+        {/* Services Overview Section */}
+        <div className="mb-16">
+          <h2 className="text-3xl font-bold text-center mb-12">Our Services</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <Card className="hover:shadow-elegant transition-smooth">
+              <CardHeader>
+                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                  <Car className="w-6 h-6 text-primary" />
+                </div>
+                <CardTitle className="text-xl">Vehicle Rentals</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CardDescription className="text-base">
+                  Wide selection of rental vehicles with competitive daily and weekly rates. 
+                  Flexible terms and exceptional service for all your transportation needs.
+                </CardDescription>
+                <Button variant="outline" className="w-full mt-4" asChild>
+                  <Link to="/rentals?type=rental">Browse Rentals</Link>
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="hover:shadow-elegant transition-smooth">
+              <CardHeader>
+                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                  <ShoppingCart className="w-6 h-6 text-primary" />
+                </div>
+                <CardTitle className="text-xl">Vehicle Sales</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CardDescription className="text-base">
+                  Quality pre-owned vehicles thoroughly inspected and ready to drive. 
+                  Transparent pricing and comprehensive vehicle history reports.
+                </CardDescription>
+                <Button variant="outline" className="w-full mt-4" asChild>
+                  <Link to="/rentals?type=sale">View Inventory</Link>
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="hover:shadow-elegant transition-smooth">
+              <CardHeader>
+                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                  <Wrench className="w-6 h-6 text-primary" />
+                </div>
+                <CardTitle className="text-xl">Auto Repairs</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CardDescription className="text-base">
+                  Connect with verified mechanics for all your vehicle maintenance and repair needs. 
+                  Trusted professionals with transparent pricing.
+                </CardDescription>
+                <Button variant="outline" className="w-full mt-4" asChild>
+                  <Link to="/services">Find Services</Link>
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
         {/* Stats Section */}
@@ -147,16 +210,16 @@ const About = () => {
                 </div>
                 <div>
                   <p className="text-lg text-muted-foreground leading-relaxed">
-                    H3 Automo was founded to solve the frustration of finding reliable automotive services. 
-                    We believe that getting your car serviced shouldn't involve phone tag, surprise fees, 
-                    or uncertainty about quality.
+                    H3 Automo was founded to provide a comprehensive solution for all automotive needs. 
+                    Whether you need to rent a vehicle, purchase a quality pre-owned car, or find reliable repair services, 
+                    we believe the process shouldn't involve phone tag, surprise fees, or uncertainty about quality.
                   </p>
                 </div>
               </div>
               <p className="text-lg text-muted-foreground leading-relaxed">
-                Our platform connects drivers with vetted local professionals who provide transparent pricing 
-                and quality service, while helping local businesses grow through modern digital tools and 
-                marketing support.
+                Our platform offers vehicle rentals and sales alongside connections to vetted local repair professionals, 
+                all with transparent pricing and quality assurance. We're helping drivers access everything they need 
+                while empowering local businesses to grow through modern digital tools and marketing support.
               </p>
             </div>
           </div>
@@ -167,7 +230,7 @@ const About = () => {
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4">Built for Everyone</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Whether you're looking for auto services or providing them, H3 Automo has you covered.
+              Whether you need a vehicle, want to buy one, or looking for repair services, H3 Automo has you covered.
             </p>
           </div>
 
@@ -247,24 +310,34 @@ const About = () => {
         </div>
 
         {/* CTA Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="text-center bg-card p-8 rounded-lg border">
-            <h3 className="text-2xl font-bold mb-4">Need Auto Service?</h3>
+            <h3 className="text-2xl font-bold mb-4">Rent a Vehicle</h3>
             <p className="text-muted-foreground mb-6">
-              Find trusted local providers and book instantly with transparent pricing.
+              Browse our selection of rental vehicles with flexible terms and competitive rates.
             </p>
             <Button size="lg" asChild>
-              <Link to="/providers">Find Providers</Link>
+              <Link to="/rentals?type=rental">View Rentals</Link>
+            </Button>
+          </div>
+
+          <div className="text-center bg-card p-8 rounded-lg border">
+            <h3 className="text-2xl font-bold mb-4">Buy a Vehicle</h3>
+            <p className="text-muted-foreground mb-6">
+              Explore quality pre-owned vehicles thoroughly inspected and ready to drive.
+            </p>
+            <Button size="lg" asChild>
+              <Link to="/rentals?type=sale">Browse Inventory</Link>
             </Button>
           </div>
 
           <div className="text-center bg-card p-8 rounded-lg border border-primary">
-            <h3 className="text-2xl font-bold mb-4">Grow Your Business</h3>
+            <h3 className="text-2xl font-bold mb-4">Need Repairs?</h3>
             <p className="text-muted-foreground mb-6">
-              Join our platform and start getting more customers today.
+              Connect with verified mechanics for all your vehicle maintenance and repair needs.
             </p>
             <Button size="lg" asChild>
-              <Link to="/for-providers">Join as Provider</Link>
+              <Link to="/services">Find Services</Link>
             </Button>
           </div>
         </div>
