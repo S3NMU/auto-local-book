@@ -14,7 +14,13 @@ import {
   MapPin,
   Phone,
   Star,
-  Quote
+  Quote,
+  BarChart3,
+  FileText,
+  DollarSign,
+  Settings,
+  Smartphone,
+  Database
 } from "lucide-react";
 import {
   Accordion,
@@ -266,7 +272,189 @@ const ForProviders = () => {
           </div>
         </div>
 
-        {/* Provider Application Form */}
+        {/* H3 Provider HUB Section */}
+        <div className="mb-20 bg-gradient-to-br from-primary/5 to-accent/5 rounded-2xl p-8 md:p-12">
+          <div className="text-center mb-12">
+            <Badge variant="default" className="mb-4 bg-primary">
+              Management Software
+            </Badge>
+            <h2 className="text-4xl font-bold mb-4">H3 Provider HUB</h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Everything you need to run your automotive business in one powerful platform
+            </p>
+          </div>
+
+          {/* Features Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12 max-w-6xl mx-auto">
+            <Card className="p-6">
+              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                <Users className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Customer Management</h3>
+              <p className="text-sm text-muted-foreground">
+                Track customer information, service history, vehicle details, and communication all in one place
+              </p>
+            </Card>
+
+            <Card className="p-6">
+              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                <DollarSign className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Revenue Tracking</h3>
+              <p className="text-sm text-muted-foreground">
+                Monitor daily, weekly, and monthly revenue. Track payments, outstanding invoices, and financial performance
+              </p>
+            </Card>
+
+            <Card className="p-6">
+              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                <Settings className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Service Management</h3>
+              <p className="text-sm text-muted-foreground">
+                List and manage your services, set pricing, availability, and track service completion rates
+              </p>
+            </Card>
+
+            <Card className="p-6">
+              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                <Calendar className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Booking Calendar</h3>
+              <p className="text-sm text-muted-foreground">
+                Interactive calendar to manage appointments, view schedules, and prevent double-bookings
+              </p>
+            </Card>
+
+            <Card className="p-6">
+              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                <BarChart3 className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Analytics Dashboard</h3>
+              <p className="text-sm text-muted-foreground">
+                Real-time insights into bookings, revenue trends, customer behavior, and business performance
+              </p>
+            </Card>
+
+            <Card className="p-6">
+              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                <Smartphone className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Mobile Access</h3>
+              <p className="text-sm text-muted-foreground">
+                Access your dashboard from any device - desktop, tablet, or smartphone. Manage on the go
+              </p>
+            </Card>
+
+            <Card className="p-6">
+              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                <FileText className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Invoicing & Reports</h3>
+              <p className="text-sm text-muted-foreground">
+                Generate professional invoices, service reports, and export financial data for accounting
+              </p>
+            </Card>
+
+            <Card className="p-6">
+              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                <Star className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Review Management</h3>
+              <p className="text-sm text-muted-foreground">
+                Monitor and respond to customer reviews. Build your reputation and improve service quality
+              </p>
+            </Card>
+
+            <Card className="p-6">
+              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                <Database className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Inventory Tracking</h3>
+              <p className="text-sm text-muted-foreground">
+                Track rental vehicles, vehicles for sale, parts inventory, and stock levels in real-time
+              </p>
+            </Card>
+          </div>
+
+          {/* Pricing Section */}
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-8">
+              <h3 className="text-2xl font-bold mb-2">Simple, Transparent Pricing</h3>
+              <p className="text-muted-foreground">Everything you need to manage and grow your business</p>
+            </div>
+
+            <Card className="p-8 bg-card relative overflow-hidden">
+              <div className="absolute top-0 right-0 bg-accent text-accent-foreground px-6 py-2 rounded-bl-lg font-semibold">
+                Limited Time Offer
+              </div>
+              
+              <div className="text-center mb-6 pt-8">
+                <div className="flex items-center justify-center gap-3 mb-4">
+                  <span className="text-5xl font-bold text-foreground">$49</span>
+                  <span className="text-muted-foreground">/month</span>
+                </div>
+                <Badge variant="secondary" className="text-base px-4 py-2">
+                  First 6 Months FREE for New Providers
+                </Badge>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                <div className="space-y-3">
+                  <div className="flex items-start gap-2">
+                    <CheckCircle className="w-5 h-5 text-success mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">Unlimited customers & bookings</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CheckCircle className="w-5 h-5 text-success mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">Advanced analytics & reporting</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CheckCircle className="w-5 h-5 text-success mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">Revenue & expense tracking</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CheckCircle className="w-5 h-5 text-success mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">Mobile app access</span>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <div className="flex items-start gap-2">
+                    <CheckCircle className="w-5 h-5 text-success mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">Automated invoicing</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CheckCircle className="w-5 h-5 text-success mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">Customer communication tools</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CheckCircle className="w-5 h-5 text-success mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">Inventory management</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CheckCircle className="w-5 h-5 text-success mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">Priority customer support</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-muted/50 rounded-lg p-4 mb-6">
+                <p className="text-sm text-center">
+                  <strong>Special Launch Offer:</strong> Sign up today and get your first 6 months completely free! 
+                  After your free trial, continue for just $49/month. Cancel anytime.
+                </p>
+              </div>
+
+              <div className="text-center">
+                <Button size="lg" className="w-full md:w-auto px-8" onClick={handleApplyClick}>
+                  Start Your Free 6 Months
+                </Button>
+                <p className="text-xs text-muted-foreground mt-3">No credit card required to start</p>
+              </div>
+            </Card>
+          </div>
+        </div>
+
         <div id="application-form" className="mb-20 scroll-mt-20">
           <div className="max-w-3xl mx-auto">
             <div className="text-center mb-8">
