@@ -115,9 +115,9 @@ const ProviderCTA = () => {
               </div>
 
               <div className="pt-4">
-                <Link to="/for-providers">
+                <Link to="/for-providers#application-form">
                   <Button variant="hero" size="lg" className="group">
-                    Learn More About Growing Your Business
+                    Apply to Become a Provider
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-fast" />
                   </Button>
                 </Link>
