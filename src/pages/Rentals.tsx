@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import VehicleCard from "@/components/rental/VehicleCard";
 import VehicleFilters from "@/components/rental/VehicleFilters";
 import VehicleDetailsDialog from "@/components/rental/VehicleDetailsDialog";
@@ -186,9 +187,9 @@ export interface VehicleFilters {
 const Rentals = () => {
   const [searchParams] = useSearchParams();
   const typeParam = searchParams.get("type");
-  const rentalSectionRef = useRef<HTMLElement>(null);
-  const saleSectionRef = useRef<HTMLElement>(null);
-  
+  const [activeTab, setActiveTab] = useState<VehicleListingType>(
+    typeParam === "sale" ? "sale" : "rental"
+  );
   const [searchQuery, setSearchQuery] = useState("");
   const [rentalFilters, setRentalFilters] = useState<VehicleFilters>({
     make: [],
@@ -205,15 +206,14 @@ const Rentals = () => {
     priceRange: [0, 100],
   });
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
-  const [selectedVehicleType, setSelectedVehicleType] = useState<VehicleListingType>("rental");
   const [vehicles] = useState<Vehicle[]>(mockVehicles);
 
-  // Scroll to appropriate section based on URL parameter
+  // Update active tab when URL parameter changes
   useEffect(() => {
-    if (typeParam === "sale" && saleSectionRef.current) {
-      saleSectionRef.current.scrollIntoView({ behavior: "smooth" });
-    } else if (typeParam === "rental" && rentalSectionRef.current) {
-      rentalSectionRef.current.scrollIntoView({ behavior: "smooth" });
+    if (typeParam === "sale") {
+      setActiveTab("sale");
+    } else if (typeParam === "rental") {
+      setActiveTab("rental");
     }
   }, [typeParam]);
 
@@ -252,19 +252,18 @@ const Rentals = () => {
     return matchesSearch && matchesMake && matchesModel && matchesType && matchesYear && matchesPrice;
   });
 
-  const handleViewDetails = (vehicle: Vehicle) => {
-    setSelectedVehicle(vehicle);
-    setSelectedVehicleType(vehicle.listing_type);
-  };
-
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-primary to-primary-glow text-primary-foreground py-16">
         <div className="container mx-auto px-4">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Vehicles</h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">
+            {activeTab === "rental" ? "Rent a Vehicle" : "Buy a Vehicle"}
+          </h1>
           <p className="text-lg md:text-xl mb-8 max-w-2xl">
-            Browse our selection of vehicles for rent or purchase. Quality vehicles, competitive prices, exceptional service.
+            {activeTab === "rental"
+              ? "Choose from our wide selection of rental vehicles. Competitive rates, flexible terms, and exceptional service."
+              : "Find your perfect vehicle from our quality inventory. Thoroughly inspected, competitively priced, and ready to drive."}
           </p>
 
           {/* Search Bar */}
@@ -281,116 +280,122 @@ const Rentals = () => {
         </div>
       </section>
 
-      {/* Rental Vehicles Section */}
-      <section ref={rentalSectionRef} className="py-16 bg-background">
-        <div className="container mx-auto px-4">
-          <div className="mb-8">
-            <h2 className="text-3xl md:text-4xl font-bold mb-2">Vehicles for Rent</h2>
-            <p className="text-muted-foreground text-lg">
-              Flexible rental options with competitive daily and weekly rates
-            </p>
-          </div>
+      {/* Main Content with Tabs */}
+      <div className="container mx-auto px-4 py-8">
+        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as VehicleListingType)} className="w-full">
+          <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-8">
+            <TabsTrigger value="rental">For Rent</TabsTrigger>
+            <TabsTrigger value="sale">For Sale</TabsTrigger>
+          </TabsList>
 
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            {/* Rental Filters Sidebar */}
-            <aside className="lg:col-span-1">
-              <VehicleFilters 
-                vehicles={rentalVehicles} 
-                filters={rentalFilters} 
-                onFiltersChange={setRentalFilters} 
-                listingType="rental"
-              />
-            </aside>
+          {/* Rental Tab Content */}
+          <TabsContent value="rental">
+            <div className="mb-6">
+              <h2 className="text-3xl font-bold mb-2">Vehicles for Rent</h2>
+              <p className="text-muted-foreground text-lg">
+                Flexible rental options with competitive daily and weekly rates
+              </p>
+            </div>
 
-            {/* Rental Vehicle Listings */}
-            <main className="lg:col-span-3">
-              <div className="mb-6 flex items-center justify-between">
-                <h3 className="text-2xl font-bold">
-                  {filteredRentalVehicles.length} Vehicle{filteredRentalVehicles.length !== 1 ? "s" : ""} Available
-                </h3>
-              </div>
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+              {/* Rental Filters Sidebar */}
+              <aside className="lg:col-span-1">
+                <VehicleFilters
+                  vehicles={rentalVehicles}
+                  filters={rentalFilters}
+                  onFiltersChange={setRentalFilters}
+                  listingType="rental"
+                />
+              </aside>
 
-              {filteredRentalVehicles.length === 0 ? (
-                <div className="text-center py-16">
-                  <p className="text-muted-foreground text-lg">No rental vehicles match your criteria.</p>
-                  <p className="text-sm text-muted-foreground mt-2">Try adjusting your filters or search query.</p>
+              {/* Rental Vehicle Listings */}
+              <main className="lg:col-span-3">
+                <div className="mb-6 flex items-center justify-between">
+                  <h3 className="text-2xl font-bold">
+                    {filteredRentalVehicles.length} Vehicle{filteredRentalVehicles.length !== 1 ? "s" : ""} Available
+                  </h3>
                 </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {filteredRentalVehicles.map((vehicle) => (
-                    <VehicleCard
-                      key={vehicle.id}
-                      vehicle={vehicle}
-                      listingType="rental"
-                      onViewDetails={() => handleViewDetails(vehicle)}
-                    />
-                  ))}
+
+                {filteredRentalVehicles.length === 0 ? (
+                  <div className="text-center py-16">
+                    <p className="text-muted-foreground text-lg">No rental vehicles match your criteria.</p>
+                    <p className="text-sm text-muted-foreground mt-2">Try adjusting your filters or search query.</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {filteredRentalVehicles.map((vehicle) => (
+                      <VehicleCard
+                        key={vehicle.id}
+                        vehicle={vehicle}
+                        listingType="rental"
+                        onViewDetails={() => setSelectedVehicle(vehicle)}
+                      />
+                    ))}
+                  </div>
+                )}
+              </main>
+            </div>
+          </TabsContent>
+
+          {/* Sale Tab Content */}
+          <TabsContent value="sale">
+            <div className="mb-6">
+              <h2 className="text-3xl font-bold mb-2">Vehicles for Sale</h2>
+              <p className="text-muted-foreground text-lg">
+                Quality pre-owned vehicles thoroughly inspected and ready to drive
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+              {/* Sale Filters Sidebar */}
+              <aside className="lg:col-span-1">
+                <VehicleFilters
+                  vehicles={saleVehicles}
+                  filters={saleFilters}
+                  onFiltersChange={setSaleFilters}
+                  listingType="sale"
+                />
+              </aside>
+
+              {/* Sale Vehicle Listings */}
+              <main className="lg:col-span-3">
+                <div className="mb-6 flex items-center justify-between">
+                  <h3 className="text-2xl font-bold">
+                    {filteredSaleVehicles.length} Vehicle{filteredSaleVehicles.length !== 1 ? "s" : ""} Available
+                  </h3>
                 </div>
-              )}
-            </main>
-          </div>
-        </div>
-      </section>
 
-      {/* Sale Vehicles Section */}
-      <section ref={saleSectionRef} className="py-16 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <div className="mb-8">
-            <h2 className="text-3xl md:text-4xl font-bold mb-2">Vehicles for Sale</h2>
-            <p className="text-muted-foreground text-lg">
-              Quality pre-owned vehicles thoroughly inspected and ready to drive
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            {/* Sale Filters Sidebar */}
-            <aside className="lg:col-span-1">
-              <VehicleFilters 
-                vehicles={saleVehicles} 
-                filters={saleFilters} 
-                onFiltersChange={setSaleFilters} 
-                listingType="sale"
-              />
-            </aside>
-
-            {/* Sale Vehicle Listings */}
-            <main className="lg:col-span-3">
-              <div className="mb-6 flex items-center justify-between">
-                <h3 className="text-2xl font-bold">
-                  {filteredSaleVehicles.length} Vehicle{filteredSaleVehicles.length !== 1 ? "s" : ""} Available
-                </h3>
-              </div>
-
-              {filteredSaleVehicles.length === 0 ? (
-                <div className="text-center py-16">
-                  <p className="text-muted-foreground text-lg">No vehicles for sale match your criteria.</p>
-                  <p className="text-sm text-muted-foreground mt-2">Try adjusting your filters or search query.</p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {filteredSaleVehicles.map((vehicle) => (
-                    <VehicleCard
-                      key={vehicle.id}
-                      vehicle={vehicle}
-                      listingType="sale"
-                      onViewDetails={() => handleViewDetails(vehicle)}
-                    />
-                  ))}
-                </div>
-              )}
-            </main>
-          </div>
-        </div>
-      </section>
+                {filteredSaleVehicles.length === 0 ? (
+                  <div className="text-center py-16">
+                    <p className="text-muted-foreground text-lg">No vehicles for sale match your criteria.</p>
+                    <p className="text-sm text-muted-foreground mt-2">Try adjusting your filters or search query.</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {filteredSaleVehicles.map((vehicle) => (
+                      <VehicleCard
+                        key={vehicle.id}
+                        vehicle={vehicle}
+                        listingType="sale"
+                        onViewDetails={() => setSelectedVehicle(vehicle)}
+                      />
+                    ))}
+                  </div>
+                )}
+              </main>
+            </div>
+          </TabsContent>
+        </Tabs>
+      </div>
 
       {/* Vehicle Details Dialog */}
       <VehicleDetailsDialog
         vehicle={selectedVehicle}
-        listingType={selectedVehicleType}
+        listingType={selectedVehicle?.listing_type || "rental"}
         open={!!selectedVehicle}
         onOpenChange={(open) => !open && setSelectedVehicle(null)}
         similarVehicles={
-          selectedVehicleType === "rental" 
+          selectedVehicle?.listing_type === "rental"
             ? rentalVehicles.filter((v) => v.id !== selectedVehicle?.id && v.type === selectedVehicle?.type)
             : saleVehicles.filter((v) => v.id !== selectedVehicle?.id && v.type === selectedVehicle?.type)
         }
