@@ -161,9 +161,9 @@ const Hero = () => {
         <div className="text-center space-y-8 animate-slide-up">
           <div className="space-y-6">
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-foreground leading-tight">
-              Find Trusted
-              <span className="block text-primary" aria-label="Auto Services">Auto Services</span>
-              Near You
+              Your Complete
+              <span className="block text-primary" aria-label="Auto Solution">Auto Solution</span>
+              Repairs • Rentals • Sales
             </h1>
           </div>
 
