@@ -9,19 +9,20 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Star, Gauge, Cog, Navigation, Calendar, MapPin, Shield, XCircle, CheckCircle } from "lucide-react";
+import { Star, Gauge, Cog, Navigation, Calendar, MapPin, Shield, XCircle, CheckCircle, DollarSign } from "lucide-react";
 import BookingCalendar from "./BookingCalendar";
 import VehicleCard from "./VehicleCard";
-import type { Vehicle } from "@/pages/Rentals";
+import type { Vehicle, VehicleListingType } from "@/pages/Rentals";
 
 interface VehicleDetailsDialogProps {
   vehicle: Vehicle | null;
+  listingType: VehicleListingType;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   similarVehicles: Vehicle[];
 }
 
-const VehicleDetailsDialog = ({ vehicle, open, onOpenChange, similarVehicles }: VehicleDetailsDialogProps) => {
+const VehicleDetailsDialog = ({ vehicle, listingType, open, onOpenChange, similarVehicles }: VehicleDetailsDialogProps) => {
   if (!vehicle) return null;
 
   return (
@@ -37,8 +38,8 @@ const VehicleDetailsDialog = ({ vehicle, open, onOpenChange, similarVehicles }: 
         <Tabs defaultValue="details" className="mt-6">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="details">Details</TabsTrigger>
-            <TabsTrigger value="booking">Book Now</TabsTrigger>
-            <TabsTrigger value="policies">Policies</TabsTrigger>
+            <TabsTrigger value="booking">{listingType === "rental" ? "Book Now" : "Inquire"}</TabsTrigger>
+            <TabsTrigger value="policies">{listingType === "rental" ? "Policies" : "Info"}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="details" className="space-y-6 mt-6">
@@ -61,8 +62,19 @@ const VehicleDetailsDialog = ({ vehicle, open, onOpenChange, similarVehicles }: 
                 <Badge variant="outline">{vehicle.type}</Badge>
               </div>
               <div className="text-right">
-                <div className="text-3xl font-bold text-primary">${vehicle.price_per_day}/day</div>
-                <div className="text-sm text-muted-foreground">${vehicle.price_per_week}/week</div>
+                {listingType === "rental" ? (
+                  <>
+                    <div className="text-3xl font-bold text-primary">${vehicle.price_per_day}/day</div>
+                    <div className="text-sm text-muted-foreground">${vehicle.price_per_week}/week</div>
+                  </>
+                ) : (
+                  <div className="flex items-baseline justify-end gap-2">
+                    <DollarSign className="w-6 h-6 text-primary" />
+                    <div className="text-3xl font-bold text-primary">
+                      {vehicle.sale_price?.toLocaleString()}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -142,85 +154,192 @@ const VehicleDetailsDialog = ({ vehicle, open, onOpenChange, similarVehicles }: 
           </TabsContent>
 
           <TabsContent value="booking" className="mt-6">
-            <BookingCalendar vehicle={vehicle} />
+            {listingType === "rental" ? (
+              <BookingCalendar vehicle={vehicle} />
+            ) : (
+              <Card>
+                <CardContent className="pt-6 space-y-4">
+                  <h3 className="font-semibold text-lg mb-4">Interested in this vehicle?</h3>
+                  <p className="text-muted-foreground">
+                    Contact us to schedule a test drive or get more information about this vehicle.
+                  </p>
+                  <div className="space-y-2 pt-4">
+                    <Button className="w-full" size="lg">Schedule Test Drive</Button>
+                    <Button className="w-full" variant="outline" size="lg">Contact Sales</Button>
+                  </div>
+                  <div className="border-t pt-4 mt-4 space-y-2 text-sm">
+                    <p className="flex justify-between">
+                      <span className="text-muted-foreground">Stock Number:</span>
+                      <span className="font-medium">{vehicle.stock_number}</span>
+                    </p>
+                    <p className="flex justify-between">
+                      <span className="text-muted-foreground">VIN:</span>
+                      <span className="font-medium">{vehicle.vin}</span>
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
 
           <TabsContent value="policies" className="space-y-6 mt-6">
-            {/* Rental Rules */}
-            <Card>
-              <CardContent className="pt-6">
-                <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
-                  <Shield className="w-5 h-5 text-primary" />
-                  Rental Rules
-                </h3>
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-                    Minimum age requirement: 25 years old
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-                    Valid driver's license and insurance required
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-                    Security deposit required at pickup
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-                    No smoking allowed in vehicle
-                  </li>
-                </ul>
-              </CardContent>
-            </Card>
+            {listingType === "rental" ? (
+              <>
+                {/* Rental Rules */}
+              <Card>
+                <CardContent className="pt-6">
+                  <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
+                    <Shield className="w-5 h-5 text-primary" />
+                    Rental Rules
+                  </h3>
+                  <ul className="space-y-2 text-sm text-muted-foreground">
+                    <li className="flex items-start gap-2">
+                      <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                      Minimum age requirement: 25 years old
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                      Valid driver's license and insurance required
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                      Security deposit required at pickup
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                      No smoking allowed in vehicle
+                    </li>
+                  </ul>
+                </CardContent>
+              </Card>
 
-            {/* Insurance Coverage */}
-            <Card>
-              <CardContent className="pt-6">
-                <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
-                  <Shield className="w-5 h-5 text-primary" />
-                  Insurance Coverage
-                </h3>
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-                    Basic liability coverage included
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-                    Collision damage waiver available for additional fee
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-                    Roadside assistance included 24/7
-                  </li>
-                </ul>
-              </CardContent>
-            </Card>
+              {/* Insurance Coverage */}
+              <Card>
+                <CardContent className="pt-6">
+                  <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
+                    <Shield className="w-5 h-5 text-primary" />
+                    Insurance Coverage
+                  </h3>
+                  <ul className="space-y-2 text-sm text-muted-foreground">
+                    <li className="flex items-start gap-2">
+                      <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                      Basic liability coverage included
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                      Collision damage waiver available for additional fee
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                      Roadside assistance included 24/7
+                    </li>
+                  </ul>
+                </CardContent>
+              </Card>
 
-            {/* Cancellation Policy */}
-            <Card>
-              <CardContent className="pt-6">
-                <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
-                  <XCircle className="w-5 h-5 text-destructive" />
-                  Cancellation Policy
-                </h3>
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-                    Free cancellation up to 48 hours before pickup
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-                    50% refund for cancellations 24-48 hours before pickup
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <XCircle className="w-4 h-4 text-destructive mt-0.5 flex-shrink-0" />
-                    No refund for cancellations within 24 hours of pickup
-                  </li>
-                </ul>
-              </CardContent>
-            </Card>
+              {/* Cancellation Policy */}
+              <Card>
+                <CardContent className="pt-6">
+                  <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
+                    <XCircle className="w-5 h-5 text-destructive" />
+                    Cancellation Policy
+                  </h3>
+                  <ul className="space-y-2 text-sm text-muted-foreground">
+                    <li className="flex items-start gap-2">
+                      <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                      Free cancellation up to 48 hours before pickup
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                      50% refund for cancellations 24-48 hours before pickup
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <XCircle className="w-4 h-4 text-destructive mt-0.5 flex-shrink-0" />
+                      No refund for cancellations within 24 hours of pickup
+                    </li>
+                  </ul>
+                </CardContent>
+              </Card>
+              </>
+            ) : (
+              <>
+                {/* Vehicle History */}
+                <Card>
+                  <CardContent className="pt-6">
+                    <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
+                      <Shield className="w-5 h-5 text-primary" />
+                      Vehicle Inspection & History
+                    </h3>
+                    <ul className="space-y-2 text-sm text-muted-foreground">
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                        Comprehensive multi-point inspection completed
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                        Clean vehicle history report available
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                        No accidents or damage reported
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                        Complete service records maintained
+                      </li>
+                    </ul>
+                  </CardContent>
+                </Card>
+
+                {/* Warranty */}
+                <Card>
+                  <CardContent className="pt-6">
+                    <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
+                      <Shield className="w-5 h-5 text-primary" />
+                      Warranty & Protection
+                    </h3>
+                    <ul className="space-y-2 text-sm text-muted-foreground">
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                        30-day limited warranty included
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                        Extended warranty options available
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                        7-day return policy if not satisfied
+                      </li>
+                    </ul>
+                  </CardContent>
+                </Card>
+
+                {/* Financing */}
+                <Card>
+                  <CardContent className="pt-6">
+                    <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
+                      <DollarSign className="w-5 h-5 text-primary" />
+                      Financing Options
+                    </h3>
+                    <ul className="space-y-2 text-sm text-muted-foreground">
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                        Flexible financing plans available
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                        Trade-in options accepted
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                        Pre-approval available online
+                      </li>
+                    </ul>
+                  </CardContent>
+                </Card>
+              </>
+            )}
           </TabsContent>
         </Tabs>
 
@@ -233,6 +352,7 @@ const VehicleDetailsDialog = ({ vehicle, open, onOpenChange, similarVehicles }: 
                 <VehicleCard
                   key={similarVehicle.id}
                   vehicle={similarVehicle}
+                  listingType={listingType}
                   onViewDetails={() => {
                     // This would typically update the dialog with the new vehicle
                     console.log("View similar vehicle:", similarVehicle.id);

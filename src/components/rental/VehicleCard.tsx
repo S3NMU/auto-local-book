@@ -1,15 +1,16 @@
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Star, Gauge, Cog, Navigation, Calendar } from "lucide-react";
-import type { Vehicle } from "@/pages/Rentals";
+import { Star, Gauge, Cog, Navigation, Calendar, DollarSign } from "lucide-react";
+import type { Vehicle, VehicleListingType } from "@/pages/Rentals";
 
 interface VehicleCardProps {
   vehicle: Vehicle;
+  listingType: VehicleListingType;
   onViewDetails: () => void;
 }
 
-const VehicleCard = ({ vehicle, onViewDetails }: VehicleCardProps) => {
+const VehicleCard = ({ vehicle, listingType, onViewDetails }: VehicleCardProps) => {
   return (
     <Card className="overflow-hidden hover:shadow-elegant transition-smooth">
       {/* Vehicle Image */}
@@ -64,13 +65,24 @@ const VehicleCard = ({ vehicle, onViewDetails }: VehicleCardProps) => {
 
         {/* Pricing */}
         <div className="pt-3 border-t border-border">
-          <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-bold text-primary">${vehicle.price_per_day}</span>
-            <span className="text-muted-foreground">/day</span>
-          </div>
-          <p className="text-sm text-muted-foreground mt-1">
-            ${vehicle.price_per_week}/week
-          </p>
+          {listingType === "rental" ? (
+            <>
+              <div className="flex items-baseline gap-2">
+                <span className="text-3xl font-bold text-primary">${vehicle.price_per_day}</span>
+                <span className="text-muted-foreground">/day</span>
+              </div>
+              <p className="text-sm text-muted-foreground mt-1">
+                ${vehicle.price_per_week}/week
+              </p>
+            </>
+          ) : (
+            <div className="flex items-baseline gap-2">
+              <DollarSign className="w-6 h-6 text-primary" />
+              <span className="text-3xl font-bold text-primary">
+                {vehicle.sale_price?.toLocaleString()}
+              </span>
+            </div>
+          )}
         </div>
       </CardContent>
 
@@ -79,7 +91,7 @@ const VehicleCard = ({ vehicle, onViewDetails }: VehicleCardProps) => {
           View Details
         </Button>
         <Button className="flex-1" onClick={onViewDetails}>
-          Book Now
+          {listingType === "rental" ? "Book Now" : "Inquire"}
         </Button>
       </CardFooter>
     </Card>

@@ -125,7 +125,7 @@ const Header = () => {
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link to="/services" className="cursor-pointer">
+                  <Link to="/rentals?type=sale" className="cursor-pointer">
                     <ShoppingCart className="w-4 h-4 mr-2" />
                     Buy a Car
                   </Link>

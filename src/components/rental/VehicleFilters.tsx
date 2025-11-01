@@ -4,15 +4,16 @@ import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
-import type { Vehicle, VehicleFilters as Filters } from "@/pages/Rentals";
+import type { Vehicle, VehicleFilters as Filters, VehicleListingType } from "@/pages/Rentals";
 
 interface VehicleFiltersProps {
   vehicles: Vehicle[];
   filters: Filters;
   onFiltersChange: (filters: Filters) => void;
+  listingType: VehicleListingType;
 }
 
-const VehicleFilters = ({ vehicles, filters, onFiltersChange }: VehicleFiltersProps) => {
+const VehicleFilters = ({ vehicles, filters, onFiltersChange, listingType }: VehicleFiltersProps) => {
   const makes = Array.from(new Set(vehicles.map((v) => v.make))).sort();
   const models = Array.from(new Set(vehicles.map((v) => v.model))).sort();
   const types = Array.from(new Set(vehicles.map((v) => v.type))).sort();
@@ -39,12 +40,13 @@ const VehicleFilters = ({ vehicles, filters, onFiltersChange }: VehicleFiltersPr
   };
 
   const clearAllFilters = () => {
+    const defaultPriceRange: [number, number] = listingType === "rental" ? [0, 200] : [0, 100];
     onFiltersChange({
       make: [],
       model: [],
       type: [],
       yearRange: [2020, 2025],
-      priceRange: [0, 200],
+      priceRange: defaultPriceRange,
     });
   };
 
@@ -54,8 +56,12 @@ const VehicleFilters = ({ vehicles, filters, onFiltersChange }: VehicleFiltersPr
     filters.type.length > 0 ||
     filters.yearRange[0] !== 2020 ||
     filters.yearRange[1] !== 2025 ||
-    filters.priceRange[0] !== 0 ||
-    filters.priceRange[1] !== 200;
+    (listingType === "rental" && (filters.priceRange[0] !== 0 || filters.priceRange[1] !== 200)) ||
+    (listingType === "sale" && (filters.priceRange[0] !== 0 || filters.priceRange[1] !== 100));
+
+  const priceLabel = listingType === "rental" ? "Price per Day" : "Sale Price (x$1,000)";
+  const maxPrice = listingType === "rental" ? 200 : 100;
+  const priceStep = listingType === "rental" ? 5 : 1;
 
   return (
     <Card>
@@ -141,18 +147,18 @@ const VehicleFilters = ({ vehicles, filters, onFiltersChange }: VehicleFiltersPr
 
         {/* Price Range */}
         <div className="space-y-3">
-          <h3 className="font-semibold">Price per Day</h3>
+          <h3 className="font-semibold">{priceLabel}</h3>
           <div className="px-2">
             <Slider
               min={0}
-              max={200}
-              step={5}
+              max={maxPrice}
+              step={priceStep}
               value={filters.priceRange}
               onValueChange={(value) => onFiltersChange({ ...filters, priceRange: value as [number, number] })}
             />
             <div className="flex justify-between mt-2 text-sm text-muted-foreground">
-              <span>${filters.priceRange[0]}</span>
-              <span>${filters.priceRange[1]}</span>
+              <span>${listingType === "rental" ? filters.priceRange[0] : filters.priceRange[0] + "k"}</span>
+              <span>${listingType === "rental" ? filters.priceRange[1] : filters.priceRange[1] + "k"}</span>
             </div>
           </div>
         </div>
