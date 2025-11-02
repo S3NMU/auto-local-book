@@ -181,7 +181,7 @@ const Header = () => {
                 <DropdownMenuItem asChild>
                   <Link to="/provider-resources/downloads" className="cursor-pointer">
                     <Download className="w-4 h-4 mr-2" />
-                    Download Links
+                    H3 Provider HUB
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
