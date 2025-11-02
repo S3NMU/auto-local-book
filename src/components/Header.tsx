@@ -103,9 +103,6 @@ const Header = () => {
             <Link to="/" className={getLinkClassName("/")}>
               Home
             </Link>
-            <Link to="/services" className={getLinkClassName("/services")}>
-              Auto Services
-            </Link>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className={`flex items-center gap-1 transition-fast ${
