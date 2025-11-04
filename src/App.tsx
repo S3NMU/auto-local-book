@@ -27,6 +27,7 @@ import ProviderBenefits from "./pages/ProviderBenefits";
 import PendingApproval from "./pages/PendingApproval";
 import NotFound from "./pages/NotFound";
 import Blog from "./pages/Blog";
+import ProviderAnnouncements from "./pages/ProviderAnnouncements";
 
 const AppContent = () => {
   const location = useLocation();
@@ -58,6 +59,7 @@ const AppContent = () => {
           <Route path="/pending-approval" element={<PendingApproval />} />
           <Route path="/dashboard" element={<CustomerDashboard />} />
           <Route path="/blog" element={<Blog />} />
+          <Route path="/provider-resources/announcements" element={<ProviderAnnouncements />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
