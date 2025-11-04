@@ -8,8 +8,9 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { MapPin, User, LogOut, ChevronDown, Settings, Store, Shield, X, Car, ShoppingCart, Wrench, Briefcase, BookOpen, Bell, HelpCircle, Download } from "lucide-react";
+import { MapPin, User, LogOut, ChevronDown, Settings, Store, Shield, X, Car, ShoppingCart, Wrench, Briefcase, BookOpen, Bell, HelpCircle, Download, Menu } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -23,6 +24,7 @@ const Header = () => {
   const navigate = useNavigate();
   const [session, setSession] = useState<Session | null>(null);
   const [locationDialogOpen, setLocationDialogOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string>("");
   const { toast } = useToast();
   const { location, setLocation } = useGeoLocation();
@@ -201,8 +203,238 @@ const Header = () => {
             </Link>
           </nav>
 
-          {/* Actions */}
-          <div className="flex items-center space-x-2" role="toolbar" aria-label="User actions">
+          {/* Mobile Menu Button */}
+          <div className="lg:hidden flex items-center gap-2">
+            <ThemeToggle />
+            <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="sm" aria-label="Open mobile menu">
+                  <Menu className="w-5 h-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-72 overflow-y-auto">
+                <SheetHeader>
+                  <SheetTitle>Menu</SheetTitle>
+                </SheetHeader>
+                <nav className="flex flex-col gap-4 mt-6">
+                  <Link 
+                    to="/" 
+                    className={getLinkClassName("/")}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Home
+                  </Link>
+                  
+                  <div className="space-y-2">
+                    <p className="text-sm font-semibold text-muted-foreground">Get Started</p>
+                    <Link 
+                      to="/rentals?type=rental" 
+                      className="flex items-center gap-2 pl-4 text-foreground hover:text-primary"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <Car className="w-4 h-4" />
+                      Rent a Vehicle
+                    </Link>
+                    <Link 
+                      to="/rentals?type=sale" 
+                      className="flex items-center gap-2 pl-4 text-foreground hover:text-primary"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <ShoppingCart className="w-4 h-4" />
+                      Buy a Car
+                    </Link>
+                    <Link 
+                      to="/services" 
+                      className="flex items-center gap-2 pl-4 text-foreground hover:text-primary"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <Wrench className="w-4 h-4" />
+                      Schedule a Repair
+                    </Link>
+                  </div>
+
+                  <Link 
+                    to="/how-it-works" 
+                    className={getLinkClassName("/how-it-works")}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    How It Works
+                  </Link>
+
+                  <div className="space-y-2">
+                    <p className="text-sm font-semibold text-muted-foreground">Provider Resources</p>
+                    <Link 
+                      to="/provider-resources/guides" 
+                      className="flex items-center gap-2 pl-4 text-foreground hover:text-primary"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <BookOpen className="w-4 h-4" />
+                      Guides & Tutorials
+                    </Link>
+                    <Link 
+                      to="/provider-resources/announcements" 
+                      className="flex items-center gap-2 pl-4 text-foreground hover:text-primary"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <Bell className="w-4 h-4" />
+                      Announcements / Updates
+                    </Link>
+                    <Link 
+                      to="/provider-resources/support" 
+                      className="flex items-center gap-2 pl-4 text-foreground hover:text-primary"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <HelpCircle className="w-4 h-4" />
+                      Contact Provider Support
+                    </Link>
+                    <Link 
+                      to="/provider-resources/downloads" 
+                      className="flex items-center gap-2 pl-4 text-foreground hover:text-primary"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <Download className="w-4 h-4" />
+                      H3 Provider HUB
+                    </Link>
+                  </div>
+
+                  <Link 
+                    to="/blog" 
+                    className={getLinkClassName("/blog")}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Blog
+                  </Link>
+                  <Link 
+                    to="/about" 
+                    className={getLinkClassName("/about")}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    About
+                  </Link>
+                  <Link 
+                    to="/contact" 
+                    className={getLinkClassName("/contact")}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Contact
+                  </Link>
+
+                  <div className="pt-4 border-t space-y-2">
+                    {session ? (
+                      <>
+                        <div className="p-3 bg-muted rounded-lg">
+                          <p className="text-sm font-medium">{session.user.user_metadata?.display_name || "User"}</p>
+                          <p className="text-xs text-muted-foreground">{session.user.email}</p>
+                        </div>
+                        <Link 
+                          to="/account" 
+                          className="flex items-center gap-2 text-foreground hover:text-primary"
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          <Settings className="w-4 h-4" />
+                          Account Settings
+                        </Link>
+                        {isAdmin && (
+                          <Link 
+                            to="/admin" 
+                            className="flex items-center gap-2 text-foreground hover:text-primary"
+                            onClick={() => setMobileMenuOpen(false)}
+                          >
+                            <Shield className="w-4 h-4" />
+                            Admin Dashboard
+                          </Link>
+                        )}
+                        {isProvider && (
+                          <Link 
+                            to="/provider-dashboard" 
+                            className="flex items-center gap-2 text-foreground hover:text-primary"
+                            onClick={() => setMobileMenuOpen(false)}
+                          >
+                            <Store className="w-4 h-4" />
+                            Provider Dashboard
+                          </Link>
+                        )}
+                        {!isAdmin && !isProvider && (
+                          <Link 
+                            to="/dashboard" 
+                            className="flex items-center gap-2 text-foreground hover:text-primary"
+                            onClick={() => setMobileMenuOpen(false)}
+                          >
+                            <User className="w-4 h-4" />
+                            Customer Dashboard
+                          </Link>
+                        )}
+                        <Button 
+                          onClick={() => {
+                            handleSignOut();
+                            setMobileMenuOpen(false);
+                          }}
+                          variant="ghost" 
+                          className="w-full justify-start text-destructive hover:text-destructive"
+                        >
+                          <LogOut className="w-4 h-4 mr-2" />
+                          Sign Out
+                        </Button>
+                      </>
+                    ) : (
+                      <Button 
+                        onClick={() => {
+                          const currentPath = routerLocation.pathname;
+                          if (currentPath !== '/auth') {
+                            localStorage.setItem('redirectAfterLogin', currentPath);
+                          }
+                          navigate('/auth', { state: { from: { pathname: currentPath } } });
+                          setMobileMenuOpen(false);
+                        }}
+                        variant="outline"
+                        className="w-full"
+                      >
+                        <User className="w-4 h-4 mr-2" />
+                        Sign In
+                      </Button>
+                    )}
+                    <Link 
+                      to="/for-providers#application-form"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <Button variant="hero" className="w-full">
+                        <Store className="w-4 h-4 mr-2" />
+                        List Your Shop
+                      </Button>
+                    </Link>
+                    {location ? (
+                      <Button 
+                        variant="outline" 
+                        className="w-full justify-start"
+                        onClick={() => {
+                          setLocationDialogOpen(true);
+                          setMobileMenuOpen(false);
+                        }}
+                      >
+                        <MapPin className="w-4 h-4 mr-2" />
+                        {location.address.split(",")[0]}
+                      </Button>
+                    ) : (
+                      <Button 
+                        variant="outline" 
+                        className="w-full justify-start"
+                        onClick={() => {
+                          setLocationDialogOpen(true);
+                          setMobileMenuOpen(false);
+                        }}
+                      >
+                        <MapPin className="w-4 h-4 mr-2" />
+                        Find Location
+                      </Button>
+                    )}
+                  </div>
+                </nav>
+              </SheetContent>
+            </Sheet>
+          </div>
+
+          {/* Actions - Desktop */}
+          <div className="hidden lg:flex items-center space-x-2" role="toolbar" aria-label="User actions">
             <ThemeToggle />
             {location ? (
               <DropdownMenu>
