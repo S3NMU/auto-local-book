@@ -259,23 +259,19 @@ const ProviderHub = () => {
                               <span>•</span>
                               <span>{item.size}</span>
                             </div>
-                            <Button 
-                              size="sm" 
-                              disabled={item.badge === "Coming Soon"}
-                              asChild={!item.badge}
-                            >
-                              {item.badge === "Coming Soon" ? (
-                                <>
-                                  <Download className="w-4 h-4 mr-2" />
-                                  Coming Soon
-                                </>
-                              ) : (
+                            {item.badge === "Coming Soon" ? (
+                              <Button size="sm" disabled>
+                                <Download className="w-4 h-4 mr-2" />
+                                Coming Soon
+                              </Button>
+                            ) : (
+                              <Button size="sm" asChild>
                                 <a href={item.downloadUrl} download>
                                   <Download className="w-4 h-4 mr-2" />
                                   Download
                                 </a>
-                              )}
-                            </Button>
+                              </Button>
+                            )}
                           </div>
                         </CardContent>
                       </Card>
