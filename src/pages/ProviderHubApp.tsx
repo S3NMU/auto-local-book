@@ -149,29 +149,60 @@ const ProviderHubApp = () => {
 
         {/* Download/Install Options for All Devices */}
         <div className="mb-12">
-          <h2 className="text-2xl font-bold text-foreground mb-6">Install on Your Device</h2>
-          <div className="grid gap-4">
-            {downloadButtons.map((platform, index) => {
-              const Icon = platform.icon;
-              return (
-                <Card key={index} className="hover:border-primary/50 transition-colors">
-                  <CardHeader>
-                    <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <Icon className="w-6 h-6 text-primary" />
+          <h2 className="text-2xl font-bold text-foreground mb-6 text-center">Install on Your Device</h2>
+          
+          {/* Desktop Platforms */}
+          <div className="mb-8">
+            <h3 className="text-lg font-semibold text-muted-foreground mb-4">Desktop</h3>
+            <div className="grid md:grid-cols-3 gap-4">
+              {downloadButtons.slice(0, 3).map((platform, index) => {
+                const Icon = platform.icon;
+                return (
+                  <Card key={index} className="hover:border-primary/50 transition-all hover:shadow-lg">
+                    <CardContent className="p-6">
+                      <div className="flex flex-col items-center text-center">
+                        <div className="w-16 h-16 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
+                          <Icon className="w-8 h-8 text-primary" />
+                        </div>
+                        <CardTitle className="text-xl mb-2">{platform.platform}</CardTitle>
+                        <CardDescription className="mb-4">{platform.description}</CardDescription>
+                        <div className="text-xs text-muted-foreground bg-muted/50 p-3 rounded-md">
+                          <strong className="block mb-1">Installation:</strong>
+                          {platform.action}
+                        </div>
                       </div>
-                      <div className="flex-1">
-                        <CardTitle className="text-lg mb-1">{platform.platform}</CardTitle>
-                        <CardDescription className="mb-3">{platform.description}</CardDescription>
-                        <p className="text-sm text-muted-foreground">
-                          <strong>How to install:</strong> {platform.action}
-                        </p>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Mobile Platforms */}
+          <div>
+            <h3 className="text-lg font-semibold text-muted-foreground mb-4">Mobile</h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              {downloadButtons.slice(3).map((platform, index) => {
+                const Icon = platform.icon;
+                return (
+                  <Card key={index} className="hover:border-primary/50 transition-all hover:shadow-lg">
+                    <CardContent className="p-6">
+                      <div className="flex flex-col items-center text-center">
+                        <div className="w-16 h-16 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
+                          <Icon className="w-8 h-8 text-primary" />
+                        </div>
+                        <CardTitle className="text-xl mb-2">{platform.platform}</CardTitle>
+                        <CardDescription className="mb-4">{platform.description}</CardDescription>
+                        <div className="text-xs text-muted-foreground bg-muted/50 p-3 rounded-md">
+                          <strong className="block mb-1">Installation:</strong>
+                          {platform.action}
+                        </div>
                       </div>
-                    </div>
-                  </CardHeader>
-                </Card>
-              );
-            })}
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
           </div>
         </div>
 
