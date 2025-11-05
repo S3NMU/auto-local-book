@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Download, FileText, Image, Video, Smartphone, Laptop, FileSpreadsheet, BookOpen, ExternalLink } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const ProviderHub = () => {
   const downloadCategories = [
@@ -63,12 +64,12 @@ const ProviderHub = () => {
           badge: "Coming Soon",
         },
         {
-          name: "Desktop Dashboard App",
-          description: "Native desktop application for Windows and Mac",
-          size: "120 MB",
-          format: "EXE/DMG",
-          downloadUrl: "#",
-          badge: "Beta",
+          name: "H3 Provider HUB (PWA)",
+          description: "Progressive Web App - Install on Windows, Mac, Linux, iOS & Android",
+          size: "~5 MB",
+          format: "PWA",
+          downloadUrl: "/provider-hub-app",
+          badge: "Recommended",
         },
       ],
     },
@@ -156,6 +157,7 @@ const ProviderHub = () => {
       case "play store":
         return Smartphone;
       case "exe/dmg":
+      case "pwa":
         return Laptop;
       default:
         return FileSpreadsheet;
@@ -263,6 +265,13 @@ const ProviderHub = () => {
                               <Button size="sm" disabled>
                                 <Download className="w-4 h-4 mr-2" />
                                 Coming Soon
+                              </Button>
+                            ) : item.format === "PWA" ? (
+                              <Button size="sm" asChild>
+                                <Link to={item.downloadUrl}>
+                                  <Download className="w-4 h-4 mr-2" />
+                                  Install
+                                </Link>
                               </Button>
                             ) : (
                               <Button size="sm" asChild>

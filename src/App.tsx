@@ -31,6 +31,7 @@ import ProviderAnnouncements from "./pages/ProviderAnnouncements";
 import ProviderSupport from "./pages/ProviderSupport";
 import ProviderHub from "./pages/ProviderHub";
 import ProviderGuides from "./pages/ProviderGuides";
+import ProviderHubApp from "./pages/ProviderHubApp";
 
 const AppContent = () => {
   const location = useLocation();
@@ -66,6 +67,7 @@ const AppContent = () => {
           <Route path="/provider-resources/support" element={<ProviderSupport />} />
           <Route path="/provider-resources/downloads" element={<ProviderHub />} />
           <Route path="/provider-resources/guides" element={<ProviderGuides />} />
+          <Route path="/provider-hub-app" element={<ProviderHubApp />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
