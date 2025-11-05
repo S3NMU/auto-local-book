@@ -28,17 +28,17 @@ export default defineConfig(({ mode }) => ({
         orientation: "any",
         icons: [
           {
-            src: "/pwa-192x192.png",
+            src: "/pwa-icon.png",
             sizes: "192x192",
             type: "image/png",
           },
           {
-            src: "/pwa-512x512.png",
+            src: "/pwa-icon.png",
             sizes: "512x512",
             type: "image/png",
           },
           {
-            src: "/pwa-512x512.png",
+            src: "/pwa-icon.png",
             sizes: "512x512",
             type: "image/png",
             purpose: "any maskable",
@@ -47,6 +47,7 @@ export default defineConfig(({ mode }) => ({
       },
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg,jpg}"],
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5 MB
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/ayefucundknjoumtqdlo\.supabase\.co\/.*/i,
