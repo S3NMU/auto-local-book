@@ -177,9 +177,9 @@ const ProviderHubApp = () => {
                             Installed
                           </Button>
                         ) : (
-                          <Button variant="outline" className="w-full" disabled>
+                          <Button variant="outline" className="w-full">
                             <Download className="w-4 h-4 mr-2" />
-                            Use Browser Menu
+                            Download
                           </Button>
                         )}
                       </div>
@@ -206,7 +206,8 @@ const ProviderHubApp = () => {
                         <CardTitle className="text-xl mb-2">{platform.platform}</CardTitle>
                         <CardDescription className="mb-4">{platform.description}</CardDescription>
                         <Button variant="outline" className="w-full">
-                          {platform.platform === "iOS" ? "Share → Add to Home" : "Menu → Install App"}
+                          <Download className="w-4 h-4 mr-2" />
+                          Download
                         </Button>
                       </div>
                     </CardContent>
