@@ -166,10 +166,22 @@ const ProviderHubApp = () => {
                         </div>
                         <CardTitle className="text-xl mb-2">{platform.platform}</CardTitle>
                         <CardDescription className="mb-4">{platform.description}</CardDescription>
-                        <div className="text-xs text-muted-foreground bg-muted/50 p-3 rounded-md">
-                          <strong className="block mb-1">Installation:</strong>
-                          {platform.action}
-                        </div>
+                        {isInstallable && !isInstalled ? (
+                          <Button onClick={handleInstall} className="w-full">
+                            <Download className="w-4 h-4 mr-2" />
+                            Install Now
+                          </Button>
+                        ) : isInstalled ? (
+                          <Button variant="secondary" className="w-full" disabled>
+                            <CheckCircle2 className="w-4 h-4 mr-2" />
+                            Installed
+                          </Button>
+                        ) : (
+                          <Button variant="outline" className="w-full" disabled>
+                            <Download className="w-4 h-4 mr-2" />
+                            Use Browser Menu
+                          </Button>
+                        )}
                       </div>
                     </CardContent>
                   </Card>
@@ -193,10 +205,9 @@ const ProviderHubApp = () => {
                         </div>
                         <CardTitle className="text-xl mb-2">{platform.platform}</CardTitle>
                         <CardDescription className="mb-4">{platform.description}</CardDescription>
-                        <div className="text-xs text-muted-foreground bg-muted/50 p-3 rounded-md">
-                          <strong className="block mb-1">Installation:</strong>
-                          {platform.action}
-                        </div>
+                        <Button variant="outline" className="w-full">
+                          {platform.platform === "iOS" ? "Share → Add to Home" : "Menu → Install App"}
+                        </Button>
                       </div>
                     </CardContent>
                   </Card>
