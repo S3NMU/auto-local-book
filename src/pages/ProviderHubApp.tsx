@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Download, CheckCircle2, Smartphone, Laptop, Monitor, AlertCircle } from "lucide-react";
+import { Download, CheckCircle2, Smartphone, Laptop, Monitor, AlertCircle, Apple, Chrome } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useNavigate } from "react-router-dom";
 
@@ -47,8 +47,42 @@ const ProviderHubApp = () => {
 
     if (outcome === "accepted") {
       setInstallPrompt(null);
+      setIsInstalled(true);
     }
   };
+
+  const downloadButtons = [
+    {
+      platform: "Windows",
+      icon: Monitor,
+      description: "Chrome, Edge, or Opera browser",
+      action: "Click the install icon in the address bar or use the button above",
+    },
+    {
+      platform: "macOS",
+      icon: Apple,
+      description: "Chrome, Edge, or Safari 16.4+",
+      action: "Click the install icon in the address bar or use the button above",
+    },
+    {
+      platform: "Linux",
+      icon: Laptop,
+      description: "Chrome, Edge, or Opera browser",
+      action: "Click the install icon in the address bar or use the button above",
+    },
+    {
+      platform: "iOS",
+      icon: Smartphone,
+      description: "Safari browser",
+      action: "Tap Share → Add to Home Screen",
+    },
+    {
+      platform: "Android",
+      icon: Chrome,
+      description: "Chrome or Edge browser",
+      action: "Tap menu (⋮) → Install App or Add to Home Screen",
+    },
+  ];
 
   const features = [
     {
@@ -94,9 +128,9 @@ const ProviderHubApp = () => {
         {isInstalled ? (
           <Alert className="mb-8 border-green-500/50 bg-green-500/10">
             <CheckCircle2 className="h-4 w-4 text-green-500" />
-            <AlertTitle className="text-green-700 dark:text-green-400">Already Installed!</AlertTitle>
+            <AlertTitle className="text-green-700 dark:text-green-400">Successfully Installed!</AlertTitle>
             <AlertDescription className="text-green-600 dark:text-green-300">
-              The H3 Provider HUB is installed on your device. You can access it from your applications menu or home screen.
+              The H3 Provider HUB is now installed on your device. See installation options for other devices below.
             </AlertDescription>
           </Alert>
         ) : isInstallable ? (
@@ -111,20 +145,35 @@ const ProviderHubApp = () => {
               Install Provider HUB
             </Button>
           </Alert>
-        ) : (
-          <Alert className="mb-8">
-            <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Installation Instructions</AlertTitle>
-            <AlertDescription>
-              To install this app:
-              <ul className="list-disc list-inside mt-2 space-y-1">
-                <li><strong>Desktop (Chrome/Edge):</strong> Click the install icon in the address bar</li>
-                <li><strong>Mobile (iOS):</strong> Tap Share → Add to Home Screen</li>
-                <li><strong>Mobile (Android):</strong> Tap menu → Install App</li>
-              </ul>
-            </AlertDescription>
-          </Alert>
-        )}
+        ) : null}
+
+        {/* Download/Install Options for All Devices */}
+        <div className="mb-12">
+          <h2 className="text-2xl font-bold text-foreground mb-6">Install on Your Device</h2>
+          <div className="grid gap-4">
+            {downloadButtons.map((platform, index) => {
+              const Icon = platform.icon;
+              return (
+                <Card key={index} className="hover:border-primary/50 transition-colors">
+                  <CardHeader>
+                    <div className="flex items-start gap-4">
+                      <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <Icon className="w-6 h-6 text-primary" />
+                      </div>
+                      <div className="flex-1">
+                        <CardTitle className="text-lg mb-1">{platform.platform}</CardTitle>
+                        <CardDescription className="mb-3">{platform.description}</CardDescription>
+                        <p className="text-sm text-muted-foreground">
+                          <strong>How to install:</strong> {platform.action}
+                        </p>
+                      </div>
+                    </div>
+                  </CardHeader>
+                </Card>
+              );
+            })}
+          </div>
+        </div>
 
         {/* Features */}
         <div className="mb-12">
