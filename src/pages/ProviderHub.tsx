@@ -270,7 +270,7 @@ const ProviderHub = () => {
                               <Button size="sm" asChild>
                                 <Link to={item.downloadUrl}>
                                   <Download className="w-4 h-4 mr-2" />
-                                  Install
+                                  Download
                                 </Link>
                               </Button>
                             ) : (
