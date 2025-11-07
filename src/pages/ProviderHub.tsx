@@ -72,7 +72,7 @@ const ProviderHub = () => {
           description: "Progressive Web App - Install on Windows, Mac, Linux, iOS & Android",
           size: "~5 MB",
           format: "PWA",
-          downloadUrl: "/provider-hub-app",
+          downloadUrl: "/provider-hub",
           badge: "Recommended",
         },
       ],
