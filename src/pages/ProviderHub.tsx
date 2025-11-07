@@ -18,6 +18,7 @@ const ProviderHub = () => {
           size: "2.4 MB",
           format: "ZIP",
           downloadUrl: "#",
+          badge: "Coming Soon",
         },
         {
           name: "Social Media Graphics Template",
@@ -25,6 +26,7 @@ const ProviderHub = () => {
           size: "8.1 MB",
           format: "ZIP",
           downloadUrl: "#",
+          badge: "Coming Soon",
         },
         {
           name: "Business Card Templates",
@@ -32,6 +34,7 @@ const ProviderHub = () => {
           size: "1.2 MB",
           format: "PDF",
           downloadUrl: "#",
+          badge: "Coming Soon",
         },
         {
           name: "Window Decal Designs",
@@ -39,6 +42,7 @@ const ProviderHub = () => {
           size: "3.5 MB",
           format: "PDF",
           downloadUrl: "#",
+          badge: "Coming Soon",
         },
       ],
     },
@@ -84,6 +88,7 @@ const ProviderHub = () => {
           size: "4.2 MB",
           format: "PDF",
           downloadUrl: "#",
+          badge: "Coming Soon",
         },
         {
           name: "Best Practices Handbook",
@@ -91,6 +96,7 @@ const ProviderHub = () => {
           size: "6.8 MB",
           format: "PDF",
           downloadUrl: "#",
+          badge: "Coming Soon",
         },
         {
           name: "Platform Training Videos",
@@ -98,6 +104,7 @@ const ProviderHub = () => {
           size: "250 MB",
           format: "MP4",
           downloadUrl: "#",
+          badge: "Coming Soon",
         },
         {
           name: "Customer Service Scripts",
@@ -105,6 +112,7 @@ const ProviderHub = () => {
           size: "890 KB",
           format: "DOCX",
           downloadUrl: "#",
+          badge: "Coming Soon",
         },
       ],
     },
@@ -119,6 +127,7 @@ const ProviderHub = () => {
           size: "1.5 MB",
           format: "XLSX",
           downloadUrl: "#",
+          badge: "Coming Soon",
         },
         {
           name: "Invoice Template",
@@ -126,6 +135,7 @@ const ProviderHub = () => {
           size: "580 KB",
           format: "DOCX",
           downloadUrl: "#",
+          badge: "Coming Soon",
         },
         {
           name: "Appointment Schedule Template",
@@ -133,6 +143,7 @@ const ProviderHub = () => {
           size: "920 KB",
           format: "XLSX",
           downloadUrl: "#",
+          badge: "Coming Soon",
         },
         {
           name: "Customer Intake Form",
@@ -140,6 +151,7 @@ const ProviderHub = () => {
           size: "450 KB",
           format: "PDF",
           downloadUrl: "#",
+          badge: "Coming Soon",
         },
       ],
     },
