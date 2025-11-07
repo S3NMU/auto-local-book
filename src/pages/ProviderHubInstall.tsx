@@ -1,20 +1,34 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { useSubscription } from '@/hooks/useSubscription';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Shield, Zap, BarChart3, Users } from 'lucide-react';
+import { Shield, Zap, BarChart3, Users, Loader2 } from 'lucide-react';
 
 export default function ProviderHubInstall() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
+  const { subscribed, loading: subLoading } = useSubscription();
   const navigate = useNavigate();
 
   useEffect(() => {
-    // If already logged in, redirect to the app
-    if (user) {
+    // If logged in and subscribed, go to app
+    if (user && !authLoading && !subLoading && subscribed) {
       navigate('/provider-hub-app');
     }
-  }, [user, navigate]);
+    // If logged in but no subscription, go to subscription page
+    else if (user && !authLoading && !subLoading && !subscribed) {
+      navigate('/provider-hub-subscription');
+    }
+  }, [user, authLoading, subscribed, subLoading, navigate]);
+
+  if (authLoading || subLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-secondary/20">
