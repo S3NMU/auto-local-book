@@ -142,7 +142,7 @@ const ProviderHubApp = () => {
             </AlertDescription>
             <Button onClick={handleInstall} className="w-full sm:w-auto">
               <Download className="w-4 h-4 mr-2" />
-              Install Provider HUB
+              Download
             </Button>
           </Alert>
         ) : null}
