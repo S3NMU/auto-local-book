@@ -807,13 +807,52 @@ export type Database = {
         }
         Relationships: []
       }
+      user_subscriptions: {
+        Row: {
+          created_at: string
+          current_period_end: string | null
+          id: string
+          price_id: string
+          product_id: string
+          status: string
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_period_end?: string | null
+          id?: string
+          price_id: string
+          product_id: string
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_period_end?: string | null
+          id?: string
+          price_id?: string
+          product_id?: string
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
       get_providers_with_contact_protection: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           address: string
           business_hours: Json
@@ -850,10 +889,7 @@ export type Database = {
         Args: { details?: Json; event_type: string; user_id?: string }
         Returns: undefined
       }
-      make_me_provider: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      make_me_provider: { Args: never; Returns: undefined }
     }
     Enums: {
       app_role: "admin" | "user" | "provider" | "employee"
