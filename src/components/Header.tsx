@@ -90,14 +90,13 @@ const Header = () => {
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2" aria-label="H3 Automo home">
-            <div className="w-10 h-10 rounded-lg overflow-hidden bg-primary/10 p-1">
-              <img src={logoImage} alt="H3 Automo Logo - Crossed wrenches symbol" className="w-full h-full object-contain" />
+          <Link to="/" className="flex items-center gap-3" aria-label="H3 Automo home">
+            <div className="flex items-center gap-2 text-2xl font-bold">
+              <span className="text-foreground">H</span>
+              <span className="text-primary">|</span>
+              <span className="text-foreground">3</span>
             </div>
-            <div className="flex flex-col">
-              <h1 className="text-xl font-bold text-foreground">H3 Automo</h1>
-              <p className="text-xs text-muted-foreground">Service Booking</p>
-            </div>
+            <span className="text-xl font-bold text-foreground">Automo</span>
           </Link>
 
           {/* Navigation - Desktop */}
