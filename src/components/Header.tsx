@@ -104,10 +104,44 @@ const Header = () => {
             <Link to="/" className={getLinkClassName("/")}>
               Home
             </Link>
-            <div className="flex items-center gap-1 text-muted-foreground cursor-not-allowed">
-              Get Started
-              <span className="text-xs ml-2 px-2 py-0.5 bg-muted rounded-full">Coming Soon</span>
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className={`flex items-center gap-1 transition-fast ${
+                  isActive("/providers") || isActive("/services") || isActive("/for-providers")
+                    ? "text-primary font-medium"
+                    : "text-foreground hover:text-primary"
+                }`}>
+                  Get Started
+                  <ChevronDown className="w-3 h-3" aria-hidden="true" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-56 bg-background border border-border shadow-lg z-50">
+                <DropdownMenuItem asChild>
+                  <Link to="/rentals?type=rental" className="cursor-pointer">
+                    <Car className="w-4 h-4 mr-2" />
+                    Rent a Vehicle
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/rentals?type=sale" className="cursor-pointer">
+                    <ShoppingCart className="w-4 h-4 mr-2" />
+                    Buy a Car
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/services" className="cursor-pointer">
+                    <Wrench className="w-4 h-4 mr-2" />
+                    Schedule a Repair
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem disabled className="cursor-not-allowed opacity-60">
+                  <Briefcase className="w-4 h-4 mr-2" />
+                  Become a Provider
+                  <span className="text-xs ml-auto px-2 py-0.5 bg-muted rounded-full">Coming Soon</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Link to="/blog" className={getLinkClassName("/blog")}>
               Blog
             </Link>
@@ -141,9 +175,37 @@ const Header = () => {
                     Home
                   </Link>
                   
-                  <div className="flex items-center gap-2 text-muted-foreground cursor-not-allowed">
-                    Get Started
-                    <span className="text-xs px-2 py-0.5 bg-muted rounded-full">Coming Soon</span>
+                  <div className="space-y-2">
+                    <p className="text-sm font-semibold text-muted-foreground">Get Started</p>
+                    <Link 
+                      to="/rentals?type=rental" 
+                      className="flex items-center gap-2 pl-4 text-foreground hover:text-primary"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <Car className="w-4 h-4" />
+                      Rent a Vehicle
+                    </Link>
+                    <Link 
+                      to="/rentals?type=sale" 
+                      className="flex items-center gap-2 pl-4 text-foreground hover:text-primary"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <ShoppingCart className="w-4 h-4" />
+                      Buy a Car
+                    </Link>
+                    <Link 
+                      to="/services" 
+                      className="flex items-center gap-2 pl-4 text-foreground hover:text-primary"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <Wrench className="w-4 h-4" />
+                      Schedule a Repair
+                    </Link>
+                    <div className="flex items-center gap-2 pl-4 text-muted-foreground cursor-not-allowed opacity-60">
+                      <Briefcase className="w-4 h-4" />
+                      Become a Provider
+                      <span className="text-xs ml-auto px-2 py-0.5 bg-muted rounded-full">Coming Soon</span>
+                    </div>
                   </div>
 
                   <Link 
