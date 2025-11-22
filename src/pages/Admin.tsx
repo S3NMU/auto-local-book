@@ -18,9 +18,11 @@ import { RequestReview } from '@/components/admin/RequestReview';
 import { UserManagement } from '@/components/admin/UserManagement';
 import { FeaturedProvidersManagement } from '@/components/admin/FeaturedProvidersManagement';
 import AnalyticsDashboard from '@/components/admin/AnalyticsDashboard';
+import { RentalsManagement } from '@/components/admin/RentalsManagement';
+import { VehiclesForSaleManagement } from '@/components/admin/VehiclesForSaleManagement';
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Shield, Users, Plus, FileText, UserCog, BarChart3, ArrowLeft, ChevronDown, LogOut, Settings, Store, Star } from 'lucide-react';
+import { Shield, Users, Plus, FileText, UserCog, BarChart3, ArrowLeft, ChevronDown, LogOut, Settings, Store, Star, Car, DollarSign } from 'lucide-react';
 
 const Admin = () => {
   const { user, loading, isAdmin, isProvider } = useAuth();
@@ -149,30 +151,38 @@ const Admin = () => {
         </div>
 
       <Tabs defaultValue="analytics" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8">
           <TabsTrigger value="analytics" className="flex items-center gap-2">
             <BarChart3 className="h-4 w-4" />
-            Analytics
+            <span className="hidden sm:inline">Analytics</span>
           </TabsTrigger>
           <TabsTrigger value="providers" className="flex items-center gap-2">
             <Users className="h-4 w-4" />
-            Providers
+            <span className="hidden sm:inline">Providers</span>
+          </TabsTrigger>
+          <TabsTrigger value="rentals" className="flex items-center gap-2">
+            <Car className="h-4 w-4" />
+            <span className="hidden sm:inline">Rentals</span>
+          </TabsTrigger>
+          <TabsTrigger value="sales" className="flex items-center gap-2">
+            <DollarSign className="h-4 w-4" />
+            <span className="hidden sm:inline">For Sale</span>
           </TabsTrigger>
           <TabsTrigger value="featured" className="flex items-center gap-2">
             <Star className="h-4 w-4" />
-            Featured
+            <span className="hidden sm:inline">Featured</span>
           </TabsTrigger>
           <TabsTrigger value="users" className="flex items-center gap-2">
             <UserCog className="h-4 w-4" />
-            Users
+            <span className="hidden sm:inline">Users</span>
           </TabsTrigger>
           <TabsTrigger value="add" className="flex items-center gap-2">
             <Plus className="h-4 w-4" />
-            Add Provider
+            <span className="hidden sm:inline">Add</span>
           </TabsTrigger>
           <TabsTrigger value="requests" className="flex items-center gap-2">
             <FileText className="h-4 w-4" />
-            Requests
+            <span className="hidden sm:inline">Requests</span>
           </TabsTrigger>
         </TabsList>
 
@@ -190,6 +200,34 @@ const Admin = () => {
             </CardHeader>
             <CardContent>
               <ProviderManagement />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="rentals">
+          <Card>
+            <CardHeader>
+              <CardTitle>Rental Listings</CardTitle>
+              <CardDescription>
+                View and manage all rental vehicle listings
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <RentalsManagement />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="sales">
+          <Card>
+            <CardHeader>
+              <CardTitle>Vehicles for Sale</CardTitle>
+              <CardDescription>
+                View and manage all vehicle listings for sale
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <VehiclesForSaleManagement />
             </CardContent>
           </Card>
         </TabsContent>
