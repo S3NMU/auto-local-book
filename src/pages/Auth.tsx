@@ -411,7 +411,7 @@ const Auth = () => {
           <CardHeader className="text-center">
             <CardTitle className="text-2xl">Welcome to H3 Automo</CardTitle>
             <CardDescription>
-              Sign in to access provider contact information and book services
+              Sign in to access services, rentals, vehicles for sale, and more
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -480,7 +480,7 @@ const Auth = () => {
               <TabsContent value="signup" className="space-y-4">
                 <Alert>
                   <AlertDescription>
-                    Create an account to access full provider contact information and book automotive services.
+                    Create an account to book services, rent vehicles, buy cars, and access full provider information.
                   </AlertDescription>
                 </Alert>
 
@@ -498,7 +498,7 @@ const Auth = () => {
                           <User className="w-4 h-4" />
                           <div>
                             <div className="font-medium">Customer</div>
-                            <div className="text-xs text-muted-foreground">Find and book services</div>
+                            <div className="text-xs text-muted-foreground">Rent, buy, and book services</div>
                           </div>
                         </Label>
                       </div>
@@ -507,8 +507,8 @@ const Auth = () => {
                         <Label htmlFor="type-provider" className="flex items-center gap-2 cursor-pointer flex-1">
                           <Wrench className="w-4 h-4" />
                           <div>
-                            <div className="font-medium">Service Provider</div>
-                            <div className="text-xs text-muted-foreground">Offer automotive services</div>
+                            <div className="font-medium">Provider</div>
+                            <div className="text-xs text-muted-foreground">Offer services, rentals & sales</div>
                           </div>
                         </Label>
                       </div>
