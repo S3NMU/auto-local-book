@@ -278,9 +278,12 @@ const ForProviders = () => {
             <Badge variant="default" className="mb-4 bg-primary">
               Management Software
             </Badge>
-            <h2 className="text-4xl font-bold mb-4">H3 Provider HUB</h2>
+            <h2 className="text-4xl font-bold mb-4">
+              H3 Provider HUB
+              <Badge variant="secondary" className="ml-3 text-sm">Coming Soon</Badge>
+            </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Everything you need to run your automotive business in one powerful platform
+              Our comprehensive management software is currently in development
             </p>
           </div>
 
@@ -377,82 +380,6 @@ const ForProviders = () => {
             </Card>
           </div>
 
-          {/* Pricing Section */}
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-8">
-              <h3 className="text-2xl font-bold mb-2">Simple, Transparent Pricing</h3>
-              <p className="text-muted-foreground">Everything you need to manage and grow your business</p>
-            </div>
-
-            <Card className="p-8 bg-card relative overflow-hidden">
-              <div className="absolute top-0 right-0 bg-accent text-accent-foreground px-6 py-2 rounded-bl-lg font-semibold">
-                Limited Time Offer
-              </div>
-              
-              <div className="text-center mb-6 pt-8">
-                <div className="flex items-center justify-center gap-3 mb-4">
-                  <span className="text-5xl font-bold text-foreground">$49</span>
-                  <span className="text-muted-foreground">/month</span>
-                </div>
-                <Badge variant="secondary" className="text-base px-4 py-2">
-                  First 6 Months FREE for New Providers
-                </Badge>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                <div className="space-y-3">
-                  <div className="flex items-start gap-2">
-                    <CheckCircle className="w-5 h-5 text-success mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Unlimited customers & bookings</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <CheckCircle className="w-5 h-5 text-success mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Advanced analytics & reporting</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <CheckCircle className="w-5 h-5 text-success mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Revenue & expense tracking</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <CheckCircle className="w-5 h-5 text-success mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Mobile app access</span>
-                  </div>
-                </div>
-                <div className="space-y-3">
-                  <div className="flex items-start gap-2">
-                    <CheckCircle className="w-5 h-5 text-success mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Automated invoicing</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <CheckCircle className="w-5 h-5 text-success mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Customer communication tools</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <CheckCircle className="w-5 h-5 text-success mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Inventory management</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <CheckCircle className="w-5 h-5 text-success mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Priority customer support</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-muted/50 rounded-lg p-4 mb-6">
-                <p className="text-sm text-center">
-                  <strong>Special Launch Offer:</strong> Sign up today and get your first 6 months completely free! 
-                  After your free trial, continue for just $49/month. Cancel anytime.
-                </p>
-              </div>
-
-              <div className="text-center">
-                <Button size="lg" className="w-full md:w-auto px-8" onClick={handleApplyClick}>
-                  Start Your Free 6 Months
-                </Button>
-                <p className="text-xs text-muted-foreground mt-3">No credit card required to start</p>
-              </div>
-            </Card>
-          </div>
         </div>
 
         <div id="application-form" className="mb-20 scroll-mt-20">
