@@ -681,6 +681,7 @@ export type Database = {
           id: string
           images: string[] | null
           is_active: boolean | null
+          is_featured: boolean | null
           location_city: string | null
           location_state: string | null
           make: string
@@ -706,6 +707,7 @@ export type Database = {
           id?: string
           images?: string[] | null
           is_active?: boolean | null
+          is_featured?: boolean | null
           location_city?: string | null
           location_state?: string | null
           make: string
@@ -731,6 +733,7 @@ export type Database = {
           id?: string
           images?: string[] | null
           is_active?: boolean | null
+          is_featured?: boolean | null
           location_city?: string | null
           location_state?: string | null
           make?: string
@@ -939,6 +942,7 @@ export type Database = {
           images: string[] | null
           interior_color: string | null
           is_active: boolean | null
+          is_featured: boolean | null
           location_city: string | null
           location_state: string | null
           make: string
@@ -966,6 +970,7 @@ export type Database = {
           images?: string[] | null
           interior_color?: string | null
           is_active?: boolean | null
+          is_featured?: boolean | null
           location_city?: string | null
           location_state?: string | null
           make: string
@@ -993,6 +998,7 @@ export type Database = {
           images?: string[] | null
           interior_color?: string | null
           is_active?: boolean | null
+          is_featured?: boolean | null
           location_city?: string | null
           location_state?: string | null
           make?: string
