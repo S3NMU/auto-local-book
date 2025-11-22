@@ -55,14 +55,6 @@ const Hero = () => {
             </Link>
           </div>
 
-          {/* Supporting CTA */}
-          <div className="pt-8">
-            <Link to="/providers">
-              <Button size="lg" variant="default" className="px-8 py-6 text-lg">
-                Explore All Services
-              </Button>
-            </Link>
-          </div>
         </div>
       </div>
     </section>
