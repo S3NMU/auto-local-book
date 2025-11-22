@@ -667,6 +667,84 @@ export type Database = {
         }
         Relationships: []
       }
+      rental_vehicles: {
+        Row: {
+          availability_status: string
+          category: string
+          created_at: string | null
+          daily_rate: number
+          deleted_at: string | null
+          deletion_reason: string | null
+          description: string | null
+          features: string[] | null
+          fuel_type: string | null
+          id: string
+          images: string[] | null
+          is_active: boolean | null
+          location_city: string | null
+          location_state: string | null
+          make: string
+          mileage: number | null
+          model: string
+          provider_id: string
+          seats: number | null
+          title: string
+          transmission: string | null
+          updated_at: string | null
+          year: number
+        }
+        Insert: {
+          availability_status?: string
+          category: string
+          created_at?: string | null
+          daily_rate: number
+          deleted_at?: string | null
+          deletion_reason?: string | null
+          description?: string | null
+          features?: string[] | null
+          fuel_type?: string | null
+          id?: string
+          images?: string[] | null
+          is_active?: boolean | null
+          location_city?: string | null
+          location_state?: string | null
+          make: string
+          mileage?: number | null
+          model: string
+          provider_id: string
+          seats?: number | null
+          title: string
+          transmission?: string | null
+          updated_at?: string | null
+          year: number
+        }
+        Update: {
+          availability_status?: string
+          category?: string
+          created_at?: string | null
+          daily_rate?: number
+          deleted_at?: string | null
+          deletion_reason?: string | null
+          description?: string | null
+          features?: string[] | null
+          fuel_type?: string | null
+          id?: string
+          images?: string[] | null
+          is_active?: boolean | null
+          location_city?: string | null
+          location_state?: string | null
+          make?: string
+          mileage?: number | null
+          model?: string
+          provider_id?: string
+          seats?: number | null
+          title?: string
+          transmission?: string | null
+          updated_at?: string | null
+          year?: number
+        }
+        Relationships: []
+      }
       revenue_entries: {
         Row: {
           amount: number
@@ -843,6 +921,90 @@ export type Database = {
           stripe_subscription_id?: string | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      vehicles_for_sale: {
+        Row: {
+          body_type: string | null
+          condition: string | null
+          created_at: string | null
+          deleted_at: string | null
+          deletion_reason: string | null
+          description: string | null
+          exterior_color: string | null
+          features: string[] | null
+          fuel_type: string | null
+          id: string
+          images: string[] | null
+          interior_color: string | null
+          is_active: boolean | null
+          location_city: string | null
+          location_state: string | null
+          make: string
+          mileage: number | null
+          model: string
+          price: number
+          provider_id: string
+          title: string
+          transmission: string | null
+          updated_at: string | null
+          vin: string | null
+          year: number
+        }
+        Insert: {
+          body_type?: string | null
+          condition?: string | null
+          created_at?: string | null
+          deleted_at?: string | null
+          deletion_reason?: string | null
+          description?: string | null
+          exterior_color?: string | null
+          features?: string[] | null
+          fuel_type?: string | null
+          id?: string
+          images?: string[] | null
+          interior_color?: string | null
+          is_active?: boolean | null
+          location_city?: string | null
+          location_state?: string | null
+          make: string
+          mileage?: number | null
+          model: string
+          price: number
+          provider_id: string
+          title: string
+          transmission?: string | null
+          updated_at?: string | null
+          vin?: string | null
+          year: number
+        }
+        Update: {
+          body_type?: string | null
+          condition?: string | null
+          created_at?: string | null
+          deleted_at?: string | null
+          deletion_reason?: string | null
+          description?: string | null
+          exterior_color?: string | null
+          features?: string[] | null
+          fuel_type?: string | null
+          id?: string
+          images?: string[] | null
+          interior_color?: string | null
+          is_active?: boolean | null
+          location_city?: string | null
+          location_state?: string | null
+          make?: string
+          mileage?: number | null
+          model?: string
+          price?: number
+          provider_id?: string
+          title?: string
+          transmission?: string | null
+          updated_at?: string | null
+          vin?: string | null
+          year?: number
         }
         Relationships: []
       }
