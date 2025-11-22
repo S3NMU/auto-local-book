@@ -144,7 +144,7 @@ const Admin = () => {
           <Shield className="h-8 w-8 text-primary" />
           <div>
             <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-            <p className="text-muted-foreground">Manage providers and review requests</p>
+            <p className="text-muted-foreground">Manage providers, users, and platform operations</p>
           </div>
         </div>
 
@@ -185,7 +185,7 @@ const Admin = () => {
             <CardHeader>
               <CardTitle>Provider Management</CardTitle>
               <CardDescription>
-                View, edit, and manage all service providers
+                View, edit, and manage all platform providers
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -227,7 +227,7 @@ const Admin = () => {
             <CardHeader>
               <CardTitle>Add New Provider</CardTitle>
               <CardDescription>
-                Manually add a new service provider to the platform
+                Manually add a new provider to the platform
               </CardDescription>
             </CardHeader>
             <CardContent>
