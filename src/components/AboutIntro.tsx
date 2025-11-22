@@ -31,7 +31,7 @@ const AboutIntro = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center max-w-7xl mx-auto">
           {/* Left: Welcome Text */}
           <div className="space-y-6">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground">
+            <h2 className="text-3xl md:text-4xl font-bold text-primary-foreground bg-primary px-6 py-4 rounded-lg inline-block">
               Welcome to H3 Automo
             </h2>
             <p className="text-lg text-muted-foreground leading-relaxed">
