@@ -27,11 +27,11 @@ const Index = () => {
       {/* Hero Section with H | 3 Branding & Quick CTAs */}
       <Hero />
       
-      {/* Featured Vehicles (Rent & Buy) */}
-      <FeaturedVehicles />
-      
       {/* Short Intro About H3 Automo */}
       <AboutIntro />
+      
+      {/* Featured Vehicles (Rent & Buy) */}
+      <FeaturedVehicles />
       
       {/* How It Works Section */}
       <HowItWorks />

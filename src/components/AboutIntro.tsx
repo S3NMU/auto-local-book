@@ -28,40 +28,44 @@ const AboutIntro = () => {
   return (
     <section className="py-16 bg-background">
       <div className="container mx-auto px-4">
-        <div className="max-w-4xl mx-auto text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">
-            Welcome to H3 Automo
-          </h2>
-          <p className="text-lg text-muted-foreground leading-relaxed mb-4">
-            H3 Automo is your all-in-one automotive solution, bringing together vehicle rentals, 
-            sales, and professional services in one convenient platform. Whether you need a car 
-            for a road trip, looking to buy your next vehicle, or require maintenance and repairs, 
-            we connect you with trusted local providers.
-          </p>
-          <p className="text-lg text-muted-foreground leading-relaxed">
-            Our mission is simple: <span className="text-foreground font-semibold">Travel smart. Rent the ride. Rest the night.</span> We're 
-            revolutionizing how people access automotive services by creating a seamless experience 
-            that puts you in control.
-          </p>
-        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center max-w-7xl mx-auto">
+          {/* Left: Welcome Text */}
+          <div className="space-y-6">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground">
+              Welcome to H3 Automo
+            </h2>
+            <p className="text-lg text-muted-foreground leading-relaxed">
+              H3 Automo is your all-in-one automotive solution, bringing together vehicle rentals, 
+              sales, and professional services in one convenient platform. Whether you need a car 
+              for a road trip, looking to buy your next vehicle, or require maintenance and repairs, 
+              we connect you with trusted local providers.
+            </p>
+            <p className="text-lg text-muted-foreground leading-relaxed">
+              Our mission is simple: <span className="text-foreground font-semibold">Travel smart. Rent the ride. Rest the night.</span> We're 
+              revolutionizing how people access automotive services by creating a seamless experience 
+              that puts you in control.
+            </p>
+          </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
-          {values.map((value, index) => {
-            const IconComponent = value.icon;
-            return (
-              <Card key={index} className="border-2 hover:border-primary transition-colors">
-                <CardContent className="p-6 text-center">
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center">
-                    <IconComponent className="w-8 h-8 text-primary" />
-                  </div>
-                  <h3 className="text-xl font-bold mb-3">{value.title}</h3>
-                  <p className="text-muted-foreground text-sm leading-relaxed">
-                    {value.description}
-                  </p>
-                </CardContent>
-              </Card>
-            );
-          })}
+          {/* Right: Value Cards Stacked */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {values.map((value, index) => {
+              const IconComponent = value.icon;
+              return (
+                <Card key={index} className="border-2 hover:border-primary transition-colors">
+                  <CardContent className="p-6 text-center">
+                    <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center">
+                      <IconComponent className="w-8 h-8 text-primary" />
+                    </div>
+                    <h3 className="text-xl font-bold mb-3">{value.title}</h3>
+                    <p className="text-muted-foreground text-sm leading-relaxed">
+                      {value.description}
+                    </p>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
         </div>
       </div>
     </section>
