@@ -135,9 +135,11 @@ const Header = () => {
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem disabled className="cursor-not-allowed opacity-60">
-                  <Briefcase className="w-4 h-4 mr-2" />
-                  Become a Provider
+                <DropdownMenuItem asChild>
+                  <Link to="/for-providers#application-form" className="cursor-pointer">
+                    <Briefcase className="w-4 h-4 mr-2" />
+                    Become a Provider
+                  </Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -200,10 +202,14 @@ const Header = () => {
                       <Wrench className="w-4 h-4" />
                       Schedule a Repair
                     </Link>
-                    <div className="flex items-center gap-2 pl-4 text-muted-foreground cursor-not-allowed opacity-60">
+                    <Link 
+                      to="/for-providers#application-form" 
+                      className="flex items-center gap-2 pl-4 text-foreground hover:text-primary"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
                       <Briefcase className="w-4 h-4" />
                       Become a Provider
-                    </div>
+                    </Link>
                   </div>
 
                   <Link 
