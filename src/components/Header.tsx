@@ -104,93 +104,10 @@ const Header = () => {
             <Link to="/" className={getLinkClassName("/")}>
               Home
             </Link>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className={`flex items-center gap-1 transition-fast ${
-                  isActive("/providers") || isActive("/services") || isActive("/for-providers")
-                    ? "text-primary font-medium"
-                    : "text-foreground hover:text-primary"
-                }`}>
-                  Get Started
-                  <ChevronDown className="w-3 h-3" aria-hidden="true" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-56 bg-background border border-border shadow-lg z-50">
-                <DropdownMenuItem asChild>
-                  <Link to="/rentals?type=rental" className="cursor-pointer">
-                    <Car className="w-4 h-4 mr-2" />
-                    Rent a Vehicle
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/rentals?type=sale" className="cursor-pointer">
-                    <ShoppingCart className="w-4 h-4 mr-2" />
-                    Buy a Car
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/services" className="cursor-pointer">
-                    <Wrench className="w-4 h-4 mr-2" />
-                    Schedule a Repair
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link to="/for-providers#application-form" className="cursor-pointer">
-                    <Briefcase className="w-4 h-4 mr-2" />
-                    Become a Provider
-                  </Link>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <Link to="/how-it-works" className={getLinkClassName("/how-it-works")}>
-              How It Works
-            </Link>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className={`flex items-center gap-1 transition-fast ${
-                  isActive("/for-providers")
-                    ? "text-primary font-medium"
-                    : "text-foreground hover:text-primary"
-                }`}>
-                  Provider Resources
-                  <ChevronDown className="w-3 h-3" aria-hidden="true" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-56 bg-background border border-border shadow-lg z-50">
-                <DropdownMenuItem asChild>
-                  <Link to="/provider-resources/guides" className="cursor-pointer">
-                    <BookOpen className="w-4 h-4 mr-2" />
-                    Guides & Tutorials
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/provider-resources/announcements" className="cursor-pointer">
-                    <Bell className="w-4 h-4 mr-2" />
-                    Announcements / Updates
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/provider-resources/support" className="cursor-pointer">
-                    <HelpCircle className="w-4 h-4 mr-2" />
-                    Contact Provider Support
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/provider-resources/downloads" className="cursor-pointer">
-                    <Download className="w-4 h-4 mr-2" />
-                    H3 Provider HUB
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link to="/for-providers" className="cursor-pointer">
-                    <Briefcase className="w-4 h-4 mr-2" />
-                    Become a Provider
-                  </Link>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <div className="flex items-center gap-1 text-muted-foreground cursor-not-allowed">
+              Get Started
+              <span className="text-xs ml-2 px-2 py-0.5 bg-muted rounded-full">Coming Soon</span>
+            </div>
             <Link to="/blog" className={getLinkClassName("/blog")}>
               Blog
             </Link>
@@ -224,76 +141,9 @@ const Header = () => {
                     Home
                   </Link>
                   
-                  <div className="space-y-2">
-                    <p className="text-sm font-semibold text-muted-foreground">Get Started</p>
-                    <Link 
-                      to="/rentals?type=rental" 
-                      className="flex items-center gap-2 pl-4 text-foreground hover:text-primary"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      <Car className="w-4 h-4" />
-                      Rent a Vehicle
-                    </Link>
-                    <Link 
-                      to="/rentals?type=sale" 
-                      className="flex items-center gap-2 pl-4 text-foreground hover:text-primary"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      <ShoppingCart className="w-4 h-4" />
-                      Buy a Car
-                    </Link>
-                    <Link 
-                      to="/services" 
-                      className="flex items-center gap-2 pl-4 text-foreground hover:text-primary"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      <Wrench className="w-4 h-4" />
-                      Schedule a Repair
-                    </Link>
-                  </div>
-
-                  <Link 
-                    to="/how-it-works" 
-                    className={getLinkClassName("/how-it-works")}
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    How It Works
-                  </Link>
-
-                  <div className="space-y-2">
-                    <p className="text-sm font-semibold text-muted-foreground">Provider Resources</p>
-                    <Link 
-                      to="/provider-resources/guides" 
-                      className="flex items-center gap-2 pl-4 text-foreground hover:text-primary"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      <BookOpen className="w-4 h-4" />
-                      Guides & Tutorials
-                    </Link>
-                    <Link 
-                      to="/provider-resources/announcements" 
-                      className="flex items-center gap-2 pl-4 text-foreground hover:text-primary"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      <Bell className="w-4 h-4" />
-                      Announcements / Updates
-                    </Link>
-                    <Link 
-                      to="/provider-resources/support" 
-                      className="flex items-center gap-2 pl-4 text-foreground hover:text-primary"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      <HelpCircle className="w-4 h-4" />
-                      Contact Provider Support
-                    </Link>
-                    <Link 
-                      to="/provider-resources/downloads" 
-                      className="flex items-center gap-2 pl-4 text-foreground hover:text-primary"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      <Download className="w-4 h-4" />
-                      H3 Provider HUB
-                    </Link>
+                  <div className="flex items-center gap-2 text-muted-foreground cursor-not-allowed">
+                    Get Started
+                    <span className="text-xs px-2 py-0.5 bg-muted rounded-full">Coming Soon</span>
                   </div>
 
                   <Link 

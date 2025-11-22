@@ -18,7 +18,7 @@ import ListShop from "./pages/ListShop";
 import Admin from "./pages/Admin";
 import ProviderDashboard from "./pages/ProviderDashboard";
 import CustomerDashboard from "./pages/CustomerDashboard";
-import HowItWorks from "./pages/HowItWorks";
+
 import Careers from "./pages/Careers";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
@@ -49,7 +49,7 @@ const AppContent = () => {
           <Route path="/about" element={<About />} />
           <Route path="/for-providers" element={<ForProviders />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/how-it-works" element={<HowItWorks />} />
+          
           <Route path="/careers" element={<Careers />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms-of-service" element={<TermsOfService />} />
