@@ -138,7 +138,6 @@ const Header = () => {
                 <DropdownMenuItem disabled className="cursor-not-allowed opacity-60">
                   <Briefcase className="w-4 h-4 mr-2" />
                   Become a Provider
-                  <span className="text-xs ml-auto px-2 py-0.5 bg-muted rounded-full">Coming Soon</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -204,7 +203,6 @@ const Header = () => {
                     <div className="flex items-center gap-2 pl-4 text-muted-foreground cursor-not-allowed opacity-60">
                       <Briefcase className="w-4 h-4" />
                       Become a Provider
-                      <span className="text-xs ml-auto px-2 py-0.5 bg-muted rounded-full">Coming Soon</span>
                     </div>
                   </div>
 
